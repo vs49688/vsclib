@@ -1,0 +1,108 @@
+/*
+ * vsclib
+ * https://{github.com,codeberg.org}/vs49688/vsclib
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright (c) 2020 Zane van Iperen (zane@zanevaniperen.com)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+#define _GNU_SOURCE
+#include <assert.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <grp.h>
+#include <pwd.h>
+
+#include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include "vsclib_i.h"
+
+int vsc_enum_groupsa(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user, const vsc_allocator_t *a)
+{
+	size_t buflen = 10; /* 2048 is enough for the HPC. */
+	char *buf = NULL;
+	int ret = 0, rc = 0;
+
+	assert(passwd != NULL);
+	assert(proc != NULL);
+
+	errno = 0;
+	setgrent();
+	if(errno != 0)
+		return -1;
+
+	for(struct group *g = NULL;;)
+	{
+		struct group grp;
+		void *buf2;
+
+		if(buf == NULL || rc == ERANGE)
+		{
+			if((buf2 = vsci_xrealloc(a, buf, buflen)) == NULL)
+				break;
+			buf = buf2;
+		}
+
+		if((rc = getgrent_r(&grp, buf, buflen, &g)) == ENOENT)
+			break;
+
+		if(rc == ERANGE)
+		{
+			buflen *= 2;
+			continue;
+		}
+
+		if(rc != 0)
+		{
+			errno = rc;
+			break;
+		}
+
+		if(g->gr_gid == passwd->pw_gid)
+		{
+			if((ret = proc(g, user)) != 0)
+				goto done;
+			continue;
+		}
+
+		for(char * const *u = g->gr_mem; *u != NULL; ++u)
+		{
+			if(strcmp(passwd->pw_name, *u) != 0)
+				continue;
+
+			if((ret = proc(g, user)) != 0)
+				goto done;
+			break;
+		}
+	}
+
+done:
+	if(buf != NULL)
+		vsci_xfree(a, buf);
+
+	int errrr = errno;
+	endgrent();
+
+	if(ret != 0)
+		return ret;
+
+	return errrr != 0 ? -1 : 0;
+}
+
+int vsc_enum_groups(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user)
+{
+	return vsc_enum_groupsa(passwd, proc, user, &vsclib_system_allocator);
+}

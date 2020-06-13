@@ -1,0 +1,43 @@
+project(vsclib)
+
+include(TestBigEndian)
+
+TEST_BIG_ENDIAN(VSC_ENDIAN_BIG)
+
+if(MINGW OR WIN32)
+	set(OS_FILES searchpath_win32.c)
+else()
+	set(OS_FILES
+			searchpath.c
+			enum_groups.c
+	)
+endif()
+
+set(VSCLIB_GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}" )
+configure_file("${PROJECT_SOURCE_DIR}/vsclib_config.h.in"
+			   "${VSCLIB_GENERATED_INCLUDE_DIR}/include/vsclib_config.h")
+
+add_library(vsclib STATIC
+		vsclib.c
+
+		freadall.c
+		fnullify.c
+		vsprintfa.c
+		fopena.c
+		stdio.c
+		${OS_FILES}
+
+		vsclib_i.h
+		vsclib_config.h.in
+		${VSCLIB_GENERATED_INCLUDE_DIR}/include/vsclib_config.h
+		include/vsclib.h
+)
+
+set_target_properties(vsclib PROPERTIES
+		CMAKE_C_STANDARD 99
+		CMAKE_C_STANDARD_REQURED ON
+)
+target_include_directories(vsclib PUBLIC
+		include
+		${VSCLIB_GENERATED_INCLUDE_DIR}/include
+)
