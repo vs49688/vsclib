@@ -79,10 +79,10 @@ static int get_blksize_ioctl(int fd, blksize_t *blksize)
 static int get_size_seektell(FILE *f, size_t *size)
 {
 	vsc_off_t off;
-	if(vsci_fseeko(f, 0, SEEK_END) < 0)
+	if(vsc_fseeko(f, 0, SEEK_END) < 0)
 		return -1;
 
-	if((off = vsci_ftello(f)) < 0)
+	if((off = vsc_ftello(f)) < 0)
 		return -1;
 
 	*size = (size_t)off;
@@ -94,7 +94,7 @@ static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
 	*_size = 0;
 	*_blksize = 4096;
 
-	int fd = vsci_fileno(f);
+	int fd = vsc_fileno(f);
 	if(fd < 0)
 	{
 		if(errno != EBADF)
@@ -161,7 +161,7 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const vsc_allocator_t *a)
 	}
 
 	/* Save our current position if possible. */
-	if((save = vsci_ftello(f)) < 0)
+	if((save = vsc_ftello(f)) < 0)
 	{
 		/*
 		 * EBADF: Not a seekable stream.
@@ -186,7 +186,7 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const vsc_allocator_t *a)
 	if(save >= 0)
 	{
 		/* Restore our position, if any. */
-		if(vsci_fseeko(f, save, SEEK_SET) < 0)
+		if(vsc_fseeko(f, save, SEEK_SET) < 0)
 			return -1;
 
 		/* If we're already not at the start, don't allocate more than we need to. */

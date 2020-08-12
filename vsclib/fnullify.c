@@ -28,13 +28,13 @@ int vsc_fnullify(FILE *f)
     int fd, devnull, errno_;
 
     /* Only if NULL, or fmemopen()'d */
-    if((fd = vsci_fileno(f)) < 0)
+    if((fd = vsc_fileno(f)) < 0)
         return -1;
 
-    if((devnull = vsci_open(VSC_DEVNULL, O_RDWR)) < 0)
+    if((devnull = vsc_open(VSC_DEVNULL, O_RDWR)) < 0)
 		goto fail;
 
-    if(vsci_dup2(devnull, fd) < 0)
+    if(vsc_dup2(devnull, fd) < 0)
 		goto fail;
 
     return fd;
@@ -43,7 +43,7 @@ fail:
 	errno_ = errno;
 
 	/* What do I actually do if this fails? */
-	vsci_close(devnull);
+	vsc_close(devnull);
 
 	errno = errno_;
 	return -1;

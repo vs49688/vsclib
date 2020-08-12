@@ -48,6 +48,13 @@ extern "C" {
 #endif
 
 /* stdio.c */
+
+#if defined(WIN32)
+typedef __int64 vsc_off_t;
+#else
+typedef off_t vsc_off_t;
+#endif
+
 FILE *vsc_fopen(const char *pathname, const char *mode);
 /**
  * @brief fopen(), but correctly handles UTF-8 pathnames on Windows.
@@ -55,6 +62,13 @@ FILE *vsc_fopen(const char *pathname, const char *mode);
  * Memory is allocated in a linear-compatible fashion.
  */
 FILE *vsc_fopena(const char *pathname, const char *mode, const vsc_allocator_t *a);
+
+int vsc_fileno(FILE *stream);
+int vsc_open(const char *pathname, int flags);
+int vsc_dup2(int oldfd, int newfd);
+int vsc_close(int fd);
+vsc_off_t vsc_ftello(FILE *stream);
+int vsc_fseeko(FILE *stream, vsc_off_t offset, int whence);
 
 /* freadall.c */
 int vsc_freadall(void **ptr, size_t *size, FILE *f);

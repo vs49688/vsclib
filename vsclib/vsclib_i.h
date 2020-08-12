@@ -24,20 +24,6 @@
 
 extern vsc_allocator_t vsclib_system_allocator;
 
-/* stdio.c */
-#if defined(WIN32)
-typedef __int64 vsc_off_t;
-#else
-typedef off_t vsc_off_t;
-#endif
-
-int			vsci_fileno(FILE *stream);
-int			vsci_open(const char *pathname, int flags);
-int			vsci_dup2(int oldfd, int newfd);
-int			vsci_close(int fd);
-vsc_off_t	vsci_ftello(FILE *stream);
-int			vsci_fseeko(FILE *stream, vsc_off_t offset, int whence);
-
 void		*vsci_xalloc(const vsc_allocator_t *a, size_t size);
 void		vsci_xfree(const vsc_allocator_t *a, void *p);
 void		*vsci_xrealloc(const vsc_allocator_t *a, void *ptr, size_t size);

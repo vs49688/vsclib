@@ -29,7 +29,7 @@
 #include <fcntl.h>
 #include "vsclib_i.h"
 
-int vsci_fileno(FILE *stream)
+int vsc_fileno(FILE *stream)
 {
 #if defined(_WIN32)
 	return _fileno(stream);
@@ -38,7 +38,7 @@ int vsci_fileno(FILE *stream)
 #endif
 }
 
-int vsci_open(const char *pathname, int flags)
+int vsc_open(const char *pathname, int flags)
 {
 #if defined(_WIN32)
 	return _open(pathname, flags);
@@ -47,7 +47,7 @@ int vsci_open(const char *pathname, int flags)
 #endif
 }
 
-int vsci_dup2(int oldfd, int newfd)
+int vsc_dup2(int oldfd, int newfd)
 {
 #if defined(_WIN32)
 	return _dup2(oldfd, newfd);
@@ -56,7 +56,7 @@ int vsci_dup2(int oldfd, int newfd)
 #endif
 }
 
-int vsci_close(int fd)
+int vsc_close(int fd)
 {
 #if defined(_WIN32)
 	return _close(fd);
@@ -65,7 +65,7 @@ int vsci_close(int fd)
 #endif
 }
 
-vsc_off_t vsci_ftello(FILE *stream)
+vsc_off_t vsc_ftello(FILE *stream)
 {
 #if defined(WIN32)
 	return _ftelli64(stream);
@@ -74,7 +74,7 @@ vsc_off_t vsci_ftello(FILE *stream)
 #endif
 }
 
-int vsci_fseeko(FILE *stream, vsc_off_t offset, int whence)
+int vsc_fseeko(FILE *stream, vsc_off_t offset, int whence)
 {
 #if defined(WIN32)
 	return _fseeki64(stream, offset, whence);
