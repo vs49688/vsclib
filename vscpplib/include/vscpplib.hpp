@@ -20,9 +20,11 @@
 #ifndef _VSCPPLIB_HPP
 #define _VSCPPLIB_HPP
 
+#include <cstdio>
 #include <type_traits>
 #include <algorithm>
 #include <string_view>
+#include <memory>
 
 #include <vsclib.h>
 
@@ -129,6 +131,14 @@ bool for_each_delim(InputIt begin, InputIt end, CharT delim, V&& proc)
 
 	return true;
 }
+
+struct stdio_deleter
+{
+	using pointer = std::FILE*;
+	inline void operator()(pointer p) noexcept { (void)fclose(p); }
+};
+using stdio_ptr = std::unique_ptr<std::FILE, stdio_deleter>;
+
 
 }
 
