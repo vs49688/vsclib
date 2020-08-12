@@ -37,6 +37,13 @@ using allocator_t        = vsc_allocator_t;
 const auto fopen         = ::vsc_fopen;
 const auto fopena        = ::vsc_fopena;
 
+const auto fileno        = ::vsc_fileno;
+const auto open          = ::vsc_open;
+const auto dup2          = ::vsc_dup2;
+const auto close         = ::vsc_close;
+const auto ftello        = ::vsc_ftello;
+const auto fseeko        = ::vsc_fseeko;
+
 const auto freadall      = ::vsc_freadall;
 const auto freadalla     = ::vsc_freadalla;
 
