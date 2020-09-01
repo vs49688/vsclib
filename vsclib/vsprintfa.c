@@ -33,11 +33,12 @@ char *vsc_vasprintfa(const vsc_allocator_t *a, const char *fmt, va_list ap)
 	if(nreq < 0)
 		return errno = EINVAL, NULL;
 
+	++nreq;
 	char *s = vsci_xalloc(a, (size_t)nreq);
 	if(s == NULL)
 		return errno = ENOMEM, NULL;
 
-	if(vsnprintf(s, (size_t)nreq + 1, fmt, ap) != nreq)
+	if(vsnprintf(s, (size_t)nreq, fmt, ap) != nreq - 1)
 	{
 		vsci_xfree(a, s);
 		return errno = EINVAL, NULL;
