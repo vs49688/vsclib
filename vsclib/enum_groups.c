@@ -17,12 +17,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define _GNU_SOURCE
+#define _GNU_SOURCE /* For getgrent_r() */
+
 #include <assert.h>
 #include <errno.h>
-#include <sys/types.h>
-#include <grp.h>
-#include <pwd.h>
+
+#if !defined(_WIN32)
+#   include <sys/types.h>
+#   include <grp.h>
+#   include <pwd.h>
+#endif
 
 #include <stddef.h>
 #include <string.h>
@@ -32,6 +36,11 @@
 
 int vsc_enum_groupsa(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user, const vsc_allocator_t *a)
 {
+	/* Absolutely disgusting. */
+#if defined(_WIN32)
+	errno = EOPNOTSUPP;
+	return -1;
+#else
 	size_t buflen = 10; /* 2048 is enough for the HPC. */
 	char *buf = NULL;
 	int ret = 0, rc = 0;
@@ -100,6 +109,7 @@ done:
 		return ret;
 
 	return errrr != 0 ? -1 : 0;
+#endif
 }
 
 int vsc_enum_groups(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user)

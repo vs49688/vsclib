@@ -107,7 +107,6 @@ char *vsc_asprintfa(const vsc_allocator_t *a, const char *fmt, ...);
 char *vsc_vasprintf(const char *fmt, va_list ap);
 char *vsc_vasprintfa(const vsc_allocator_t *a, const char *fmt, va_list ap);
 
-#if _XOPEN_SOURCE > 500
 /* enum_groups.c */
 struct passwd;
 struct group;
@@ -116,7 +115,6 @@ typedef int(*vsc_enum_groups_proc_t)(const struct group *grp, void *user);
 
 int vsc_enum_groups(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user);
 int vsc_enum_groupsa(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user, const vsc_allocator_t *a);
-#endif
 
 #if defined(_WIN32)
 wchar_t *vsc_cstrtowstr(const char *s, size_t *len, unsigned int cp);

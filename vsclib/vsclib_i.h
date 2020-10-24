@@ -20,6 +20,8 @@
 #ifndef _VSCLIB_I_H
 #define _VSCLIB_I_H
 
+#include <errno.h>
+
 #include "vsclib.h"
 
 extern vsc_allocator_t vsclib_system_allocator;
@@ -27,5 +29,10 @@ extern vsc_allocator_t vsclib_system_allocator;
 void		*vsci_xalloc(const vsc_allocator_t *a, size_t size);
 void		vsci_xfree(const vsc_allocator_t *a, void *p);
 void		*vsci_xrealloc(const vsc_allocator_t *a, void *ptr, size_t size);
+
+#ifndef EOPNOTSUPP
+#   error EOPNOTSUPP not defined, please fix your system.
+#endif
+
 
 #endif /* _VSCLIB_I_H */

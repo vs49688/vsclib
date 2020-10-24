@@ -9,7 +9,6 @@ if(MINGW OR WIN32)
 else()
 	set(OS_FILES
 			searchpath.c
-			enum_groups.c
 	)
 endif()
 
@@ -25,6 +24,7 @@ add_library(vsclib STATIC
 		vsprintfa.c
 		fopena.c
 		stdio.c
+		enum_groups.c
 		${OS_FILES}
 
 		vsclib_i.h
