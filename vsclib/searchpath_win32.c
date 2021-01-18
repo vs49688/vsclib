@@ -20,6 +20,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <assert.h>
+#include <limits.h>
 
 #include "vsclib_i.h"
 
