@@ -19,7 +19,21 @@
  */
 #include <errno.h>
 #include <assert.h>
-#include <sys/stat.h>
+
+/* From https://stackoverflow.com/a/62371749 */
+#if defined(_MSC_VER)
+#	undef _CRT_INTERNAL_NONSTDC_NAMES
+#	define _CRT_INTERNAL_NONSTDC_NAMES 1
+#	include <sys/stat.h>
+#	if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
+#		define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#	endif
+#	if !defined(S_ISDIR) && defined(S_IFMT) && defined(S_IFDIR)
+#		define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#	endif
+#else
+#	include <sys/stat.h>
+#endif
 
 #if defined(__linux__)
 #	include <linux/fs.h>
@@ -125,6 +139,7 @@ static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
 	{
 		*_size = (size_t)statbuf.st_size;
 	}
+#if !defined(_WIN32)
 	else if(S_ISBLK(statbuf.st_mode))
 	{
 		/*
@@ -138,6 +153,7 @@ static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
 
 		errno = 0;
 	}
+#endif
 	else if(!S_ISREG(statbuf.st_mode))
 	{
 		/* Sockets, pipes, and character devices have to be streamed. */
