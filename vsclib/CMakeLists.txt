@@ -41,3 +41,7 @@ target_include_directories(vsclib PUBLIC
 		include
 		${VSCLIB_GENERATED_INCLUDE_DIR}/include
 )
+
+if(MSVC)
+	target_compile_definitions(vsclib PRIVATE _CRT_SECURE_NO_WARNINGS=0)
+endif()
