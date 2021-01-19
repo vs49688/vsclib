@@ -26,6 +26,7 @@ add_library(vsclib STATIC
 		fopena.c
 		stdio.c
 		for_each.c
+		chdir.c
 		enum_groups.c
 		${OS_FILES}
 

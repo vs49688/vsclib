@@ -139,6 +139,10 @@ char *vsc_asprintfa(const vsc_allocator_t *a, const char *fmt, ...);
 char *vsc_vasprintf(const char *fmt, va_list ap);
 char *vsc_vasprintfa(const vsc_allocator_t *a, const char *fmt, va_list ap);
 
+/* chdir.c */
+int vsc_chdir(const char *path);
+int vsc_chdira(const char *path, const vsc_allocator_t *a);
+
 /* enum_groups.c */
 struct passwd;
 struct group;
