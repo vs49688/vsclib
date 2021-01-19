@@ -102,6 +102,13 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const vsc_allocator_t *a);
  */
 int vsc_fnullify(FILE *f);
 
+/* getline.c */
+vsc_ssize_t vsc_getdelim(char **lineptr, size_t *n, int delim, FILE *stream);
+vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, const vsc_allocator_t *a);
+
+vsc_ssize_t vsc_getline(char **lineptr, size_t *n, FILE *stream);
+vsc_ssize_t vsc_getlinea(char **lineptr, size_t *n, FILE *stream, const vsc_allocator_t *a);
+
 /* searchpath.c */
 char *vsc_searchpath(const char *f, size_t *len);
 char *vsc_searchpatha(const char *f, size_t *len, const vsc_allocator_t *a);

@@ -22,6 +22,7 @@ add_library(vsclib STATIC
 		freadall.c
 		fnullify.c
 		vsprintfa.c
+		getline.c
 		fopena.c
 		stdio.c
 		enum_groups.c
