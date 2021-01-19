@@ -19,8 +19,7 @@
  */
 #include <stddef.h>
 #include <string.h>
-
-typedef int (*vsc_for_each_delim_proc_t)(const char *s, const char *e, void *user);
+#include <vsclib.h>
 
 int vsc_for_each_delim(const char *begin, const char *end, char delim, vsc_for_each_delim_proc_t proc, void *user)
 {
