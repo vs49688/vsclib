@@ -25,6 +25,7 @@ add_library(vsclib STATIC
 		getline.c
 		fopena.c
 		stdio.c
+		for_each.c
 		enum_groups.c
 		${OS_FILES}
 
