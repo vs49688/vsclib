@@ -230,10 +230,10 @@ VSCLIB_DECLARE_IO_CONVERTERS(l, b)
 	\
 	static inline void vsc_write_int##bits(void *p, int##bits##_t v) \
 	{ memcpy(p, &v, sizeof(v)); } \
-	static inline uint##bits##_t vsc_read_uint##bits(void *p) \
+	static inline uint##bits##_t vsc_read_uint##bits(const void *p) \
 	{ uint##bits##_t v; memcpy(&v, p, sizeof(v)); return v; } \
 	\
-	static inline int##bits##_t vsc_read_int##bits(void *p) \
+	static inline int##bits##_t vsc_read_int##bits(const void *p) \
 	{ int##bits##_t v; memcpy(&v, p, sizeof(v)); return v; }
 
 #define VSCLIB_DECLARE_READWRITE_E(endian, bits) \
@@ -243,10 +243,10 @@ VSCLIB_DECLARE_IO_CONVERTERS(l, b)
 	static inline void vsc_write_##endian## e##bits(void *p, int##bits##_t val) \
 	{ vsc_write_int ##bits(p, vsc_native_to_##endian##e ##bits(val)); } \
 	\
-	static inline uint##bits##_t vsc_read_##endian##eu##bits(void *p) \
+	static inline uint##bits##_t vsc_read_##endian##eu##bits(const void *p) \
 	{ return vsc_##endian##eu##bits##_to_native(vsc_read_uint##bits(p)); } \
 	\
-	static inline int##bits##_t vsc_read_##endian##e ##bits(void *p) \
+	static inline int##bits##_t vsc_read_##endian##e ##bits(const void *p) \
 	{ return vsc_##endian##e##bits##_to_native(vsc_read_int##bits(p)); }
 
 VSCLIB_DECLARE_READWRITE(8);
