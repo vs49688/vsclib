@@ -7,9 +7,7 @@ TEST_BIG_ENDIAN(VSC_ENDIAN_BIG)
 if(MINGW OR WIN32)
 	set(OS_FILES searchpath_win32.c)
 else()
-	set(OS_FILES
-			searchpath.c
-	)
+	set(OS_FILES searchpath.c)
 endif()
 
 set(VSCLIB_GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}" )
