@@ -52,8 +52,13 @@ extern "C" {
 
 #if defined(WIN32)
 typedef __int64 vsc_off_t;
+#	if defined(_MSC_VER)
+#		include <BaseTsd.h>
+typedef SSIZE_T vsc_ssize_t;
+#	endif
 #else
 typedef off_t vsc_off_t;
+typedef ssize_t vsc_ssize_t;
 #endif
 
 FILE *vsc_fopen(const char *pathname, const char *mode);
