@@ -3,7 +3,7 @@
  * https://{github.com,codeberg.org}/vs49688/vsclib
  *
  * SPDX-License-Identifier: Apache-2.0
- * Copyright (c) 2020 Zane van Iperen (zane@zanevaniperen.com)
+ * Copyright (c) 2021 Zane van Iperen (zane@zanevaniperen.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
