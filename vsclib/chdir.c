@@ -41,7 +41,7 @@ int vsc_chdira(const char *path, const vsc_allocator_t *a)
     if((wpath = vsc_cstrtowstra(path, NULL, CP_UTF8, a)) == NULL)
         goto done;
 
-    if((dwResult = SetCurrentDirectoryW(wpath))) {
+    if(!(dwResult = SetCurrentDirectoryW(wpath))) {
         switch(GetLastError()) {
             case ERROR_FILE_NOT_FOUND:
             case ERROR_PATH_NOT_FOUND:
