@@ -138,8 +138,8 @@ char *vsc_vasprintf(const char *fmt, va_list ap);
 char *vsc_vasprintfa(const vsc_allocator_t *a, const char *fmt, va_list ap);
 
 /* string.c */
-char *vsc_strrdup(const char *start, const char *end);
-char *vsc_strrdupa(const char *start, const char *end, const vsc_allocator_t *a);
+char *vsc_strdupr(const char *start, const char *end);
+char *vsc_strdupra(const char *start, const char *end, const vsc_allocator_t *a);
 
 /* chdir.c */
 int vsc_chdir(const char *path);

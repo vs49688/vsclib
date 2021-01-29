@@ -20,7 +20,7 @@
 #include <assert.h>
 #include "vsclib_i.h"
 
-char *vsc_strrdupa(const char *start, const char *end, const vsc_allocator_t *a)
+char *vsc_strdupra(const char *start, const char *end, const vsc_allocator_t *a)
 {
     char *buf;
     size_t len;
@@ -38,7 +38,7 @@ char *vsc_strrdupa(const char *start, const char *end, const vsc_allocator_t *a)
 }
 
 
-char *vsc_strrdup(const char *start, const char *end)
+char *vsc_strdupr(const char *start, const char *end)
 {
-    return vsc_strrdupa(start, end, &vsclib_system_allocator);
+    return vsc_strdupra(start, end, &vsclib_system_allocator);
 }
