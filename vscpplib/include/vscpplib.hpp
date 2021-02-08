@@ -146,6 +146,14 @@ struct stdio_deleter
 };
 using stdio_ptr = std::unique_ptr<std::FILE, stdio_deleter>;
 
+template<typename T>
+struct cmem_deleter
+{
+    using pointer = T*;
+    inline void operator()(pointer p) noexcept { free(p); }
+};
+template<typename T>
+using cmem_ptr = std::unique_ptr<T, cmem_deleter<T>>;
 
 }
 
