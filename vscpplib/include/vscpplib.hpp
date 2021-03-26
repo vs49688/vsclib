@@ -24,6 +24,7 @@
 #include <type_traits>
 #include <algorithm>
 #include <string_view>
+#include <string>
 #include <memory>
 
 #include <vsclib.h>
