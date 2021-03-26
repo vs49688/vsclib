@@ -51,213 +51,213 @@ typedef long blksize_t; /* Isn't used anyway. */
 static int get_size_ioctl(int fd, size_t *size)
 {
 #if defined(__linux__)
-	if(ioctl(fd, BLKGETSIZE64, size) < 0)
-	{
-		unsigned long s;
-		if(ioctl(fd, BLKGETSIZE, &s) < 0)
-			return -1;
+    if(ioctl(fd, BLKGETSIZE64, size) < 0)
+    {
+        unsigned long s;
+        if(ioctl(fd, BLKGETSIZE, &s) < 0)
+            return -1;
 
-		/* NB: This isn't sector size, it's always 512. */
-		*size = s * 512;
-	}
-	return 0;
+        /* NB: This isn't sector size, it's always 512. */
+        *size = s * 512;
+    }
+    return 0;
 #else
-	errno = ENOTSUP;
-	return -1;
+    errno = ENOTSUP;
+    return -1;
 #endif
 }
 
 static int get_blksize_ioctl(int fd, blksize_t *blksize)
 {
 #if defined(__linux__)
-	unsigned int _blksize;
-	if(ioctl(fd, BLKIOOPT, &_blksize) < 0)
-		return -1;
+    unsigned int _blksize;
+    if(ioctl(fd, BLKIOOPT, &_blksize) < 0)
+        return -1;
 
-	/* Most physical disks don't supply this. */
-	if(_blksize == 0)
-	{
-		errno = ENOTSUP;
-		return -1;
-	}
+    /* Most physical disks don't supply this. */
+    if(_blksize == 0)
+    {
+        errno = ENOTSUP;
+        return -1;
+    }
 
-	*blksize = (blksize_t)_blksize;
-	return 0;
+    *blksize = (blksize_t)_blksize;
+    return 0;
 #else
-	errno = ENOTSUP;
-	return -1;
+    errno = ENOTSUP;
+    return -1;
 #endif
 }
 
 /* NB: This doesn't restore the stream to its original position. */
 static int get_size_seektell(FILE *f, size_t *size)
 {
-	vsc_off_t off;
-	if(vsc_fseeko(f, 0, SEEK_END) < 0)
-		return -1;
+    vsc_off_t off;
+    if(vsc_fseeko(f, 0, SEEK_END) < 0)
+        return -1;
 
-	if((off = vsc_ftello(f)) < 0)
-		return -1;
+    if((off = vsc_ftello(f)) < 0)
+        return -1;
 
-	*size = (size_t)off;
-	return 0;
+    *size = (size_t)off;
+    return 0;
 }
 
 static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
 {
-	int fd;
-	struct stat statbuf;
+    int fd;
+    struct stat statbuf;
 
-	*_size = 0;
-	*_blksize = 4096;
+    *_size = 0;
+    *_blksize = 4096;
 
-	if((fd = vsc_fileno(f)) < 0)
-	{
-		if(errno != EBADF)
-			return -1;
+    if((fd = vsc_fileno(f)) < 0)
+    {
+        if(errno != EBADF)
+            return -1;
 
-		/*
-		 * Not necessarily an error, f could be from fmemopen().
-		 * Try seek/tell, then fall back to streaming.
-		 */
-		errno = 0;
-		(void)get_size_seektell(f, _size);
-		return 0;
-	}
+        /*
+         * Not necessarily an error, f could be from fmemopen().
+         * Try seek/tell, then fall back to streaming.
+         */
+        errno = 0;
+        (void)get_size_seektell(f, _size);
+        return 0;
+    }
 
-	if(fstat(fd, &statbuf) < 0)
-		return -1;
+    if(fstat(fd, &statbuf) < 0)
+        return -1;
 
-	/* Fail-fast if we're a directory. */
-	if(S_ISDIR(statbuf.st_mode))
-		return errno = EISDIR, -1;
+    /* Fail-fast if we're a directory. */
+    if(S_ISDIR(statbuf.st_mode))
+        return errno = EISDIR, -1;
 
 #if !defined(_WIN32)
-	*_blksize = statbuf.st_blksize;
+    *_blksize = statbuf.st_blksize;
 #endif
 
-	if(S_ISREG(statbuf.st_mode))
-	{
-		*_size = (size_t)statbuf.st_size;
-	}
+    if(S_ISREG(statbuf.st_mode))
+    {
+        *_size = (size_t)statbuf.st_size;
+    }
 #if !defined(_WIN32)
-	else if(S_ISBLK(statbuf.st_mode))
-	{
-		/*
-		 * For block devices, try to use ioctl, then fall back to seek/tell.
-		 * If seek/tell fails, fall back to streaming.
-		 */
-		if(get_size_ioctl(fd, _size) < 0)
-			(void)get_size_seektell(f, _size);
+    else if(S_ISBLK(statbuf.st_mode))
+    {
+        /*
+         * For block devices, try to use ioctl, then fall back to seek/tell.
+         * If seek/tell fails, fall back to streaming.
+         */
+        if(get_size_ioctl(fd, _size) < 0)
+            (void)get_size_seektell(f, _size);
 
-		(void)get_blksize_ioctl(fd, _blksize);
+        (void)get_blksize_ioctl(fd, _blksize);
 
-		errno = 0;
-	}
+        errno = 0;
+    }
 #endif
-	else if(!S_ISREG(statbuf.st_mode))
-	{
-		/* Sockets, pipes, and character devices have to be streamed. */
-		*_size = 0;
-	}
+    else if(!S_ISREG(statbuf.st_mode))
+    {
+        /* Sockets, pipes, and character devices have to be streamed. */
+        *_size = 0;
+    }
 
-	return 0;
+    return 0;
 }
 
 int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
 {
-	vsc_off_t save;
-	size_t fsize;
-	blksize_t blksize;
-	size_t currpos;
+    vsc_off_t save;
+    size_t fsize;
+    blksize_t blksize;
+    size_t currpos;
 
-	if(ptr == NULL || size == NULL || f == NULL)
-	{
-		errno = EINVAL;
-		return -1;
-	}
+    if(ptr == NULL || size == NULL || f == NULL)
+    {
+        errno = EINVAL;
+        return -1;
+    }
 
-	/* Save our current position if possible. */
-	if((save = vsc_ftello(f)) < 0)
-	{
-		/*
-		 * EBADF: Not a seekable stream.
-		 * ESPIPE: Can't seek on a pipe.
-		 * Anything else: something screwy
-		 */
-		if(errno != EBADF && errno != ESPIPE)
-			return -1;
+    /* Save our current position if possible. */
+    if((save = vsc_ftello(f)) < 0)
+    {
+        /*
+         * EBADF: Not a seekable stream.
+         * ESPIPE: Can't seek on a pipe.
+         * Anything else: something screwy
+         */
+        if(errno != EBADF && errno != ESPIPE)
+            return -1;
 
-		errno = 0;
-	}
+        errno = 0;
+    }
 
-	/*
-	 * Get the sizes.
-	 * If fsize is 0, then it's either an actual 0-byte file, or the size can't be determined.
-	 * blksize will be the "Block size for filesystem I/O".
-	 * Mapped directly to the st_blksize field of `struct stat`. If not
-	 */
-	if(get_sizes(f, &fsize, &blksize) < 0)
-		return -1;
+    /*
+     * Get the sizes.
+     * If fsize is 0, then it's either an actual 0-byte file, or the size can't be determined.
+     * blksize will be the "Block size for filesystem I/O".
+     * Mapped directly to the st_blksize field of `struct stat`. If not
+     */
+    if(get_sizes(f, &fsize, &blksize) < 0)
+        return -1;
 
-	if(save >= 0)
-	{
-		/* Restore our position, if any. */
-		if(vsc_fseeko(f, save, SEEK_SET) < 0)
-			return -1;
+    if(save >= 0)
+    {
+        /* Restore our position, if any. */
+        if(vsc_fseeko(f, save, SEEK_SET) < 0)
+            return -1;
 
-		/* If we're already not at the start, don't allocate more than we need to. */
-		if(fsize > 0)
-		{
-			assert(save <= fsize);
-			fsize -= save;
-		}
-	}
+        /* If we're already not at the start, don't allocate more than we need to. */
+        if(fsize > 0)
+        {
+            assert(save <= fsize);
+            fsize -= save;
+        }
+    }
 
-	if(fsize > 0)
-		++fsize; /* Read past EOF, to avoid an additional malloc() + fread(). */
-	else
-		fsize = (size_t)blksize;
+    if(fsize > 0)
+        ++fsize; /* Read past EOF, to avoid an additional malloc() + fread(). */
+    else
+        fsize = (size_t)blksize;
 
-	char *p = NULL;
+    char *p = NULL;
 
-	currpos = 0;
-	for(;!feof(f) && !ferror(f);)
-	{
-		if(p == NULL || currpos >= fsize)
-		{
-			while(currpos >= fsize)
-				fsize += blksize;
+    currpos = 0;
+    for(;!feof(f) && !ferror(f);)
+    {
+        if(p == NULL || currpos >= fsize)
+        {
+            while(currpos >= fsize)
+                fsize += blksize;
 
-			void *_p;
-			if((_p = vsci_xrealloc(a, p, fsize)) == NULL)
-			{
-				vsci_xfree(a, p);
-				return errno = ENOMEM, -1;
-			}
-			p = _p;
-		}
+            void *_p;
+            if((_p = vsci_xrealloc(a, p, fsize)) == NULL)
+            {
+                vsci_xfree(a, p);
+                return errno = ENOMEM, -1;
+            }
+            p = _p;
+        }
 
 
-		size_t nread = fread(p + currpos, 1, fsize - currpos, f);
-		currpos += nread;
-	}
+        size_t nread = fread(p + currpos, 1, fsize - currpos, f);
+        currpos += nread;
+    }
 
-	if(ferror(f))
-		errno = EIO;
+    if(ferror(f))
+        errno = EIO;
 
-	if(errno != 0)
-	{
-		vsci_xfree(a, p);
-		return -1;
-	}
+    if(errno != 0)
+    {
+        vsci_xfree(a, p);
+        return -1;
+    }
 
-	*ptr = p;
-	*size = currpos;
-	return 0;
+    *ptr = p;
+    *size = currpos;
+    return 0;
 }
 
 int vsc_freadall(void **ptr, size_t *size, FILE *f)
 {
-	return vsc_freadalla(ptr, size, f, &vsclib_system_allocator);
+    return vsc_freadalla(ptr, size, f, &vsclib_system_allocator);
 }

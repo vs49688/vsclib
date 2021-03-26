@@ -27,36 +27,36 @@
 FILE *vsc_fopena(const char *pathname, const char *mode, const VscAllocator *a)
 {
 #if defined(_WIN32)
-	wchar_t *wpath = NULL, *wmode = NULL;
-	FILE *f = NULL;
-	int errno_;
+    wchar_t *wpath = NULL, *wmode = NULL;
+    FILE *f = NULL;
+    int errno_;
 
-	if((wpath = vsc_cstrtowstra(pathname, NULL, CP_UTF8, a)) == NULL)
-		goto done;
+    if((wpath = vsc_cstrtowstra(pathname, NULL, CP_UTF8, a)) == NULL)
+        goto done;
 
-	if((wmode = vsc_cstrtowstra(mode, NULL, CP_UTF8, a)) == NULL)
-		goto done;
+    if((wmode = vsc_cstrtowstra(mode, NULL, CP_UTF8, a)) == NULL)
+        goto done;
 
-	if((f = _wfopen(wpath, wmode)) == NULL)
-		goto done;
+    if((f = _wfopen(wpath, wmode)) == NULL)
+        goto done;
 
 done:
-	errno_ = errno;
+    errno_ = errno;
 
-	if(wmode != NULL)
-		vsci_xfree(a, wmode);
+    if(wmode != NULL)
+        vsci_xfree(a, wmode);
 
-	if(wpath != NULL)
-		vsci_xfree(a, wpath);
+    if(wpath != NULL)
+        vsci_xfree(a, wpath);
 
-	errno = errno_;
-	return f;
+    errno = errno_;
+    return f;
 #else
-	return fopen(pathname, mode);
+    return fopen(pathname, mode);
 #endif
 }
 
 FILE *vsc_fopen(const char *pathname, const char *mode)
 {
-	return vsc_fopena(pathname, mode, &vsclib_system_allocator);
+    return vsc_fopena(pathname, mode, &vsclib_system_allocator);
 }

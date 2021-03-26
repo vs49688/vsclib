@@ -27,101 +27,101 @@
 
 static int statfile(const char *p, uid_t uid, gid_t gid)
 {
-	struct stat statbuf;
-	memset(&statbuf, 0, sizeof(statbuf));
+    struct stat statbuf;
+    memset(&statbuf, 0, sizeof(statbuf));
 
-	if(stat(p, &statbuf) < 0)
-		return -1;
+    if(stat(p, &statbuf) < 0)
+        return -1;
 
-	/* EACCES The file or a script interpreter is not a regular file. */
-	if(!S_ISREG(statbuf.st_mode))
-		return errno = EACCES, -1;
+    /* EACCES The file or a script interpreter is not a regular file. */
+    if(!S_ISREG(statbuf.st_mode))
+        return errno = EACCES, -1;
 
-	/* Check permissions, least-specific to most-specific.  */
-	if(statbuf.st_mode & S_IXOTH)
-		return 0;
+    /* Check permissions, least-specific to most-specific.  */
+    if(statbuf.st_mode & S_IXOTH)
+        return 0;
 
-	if((statbuf.st_mode & S_IXGRP) && (statbuf.st_gid == gid))
-		return 0;
+    if((statbuf.st_mode & S_IXGRP) && (statbuf.st_gid == gid))
+        return 0;
 
-	if((statbuf.st_mode & S_IXUSR) && (statbuf.st_uid == uid))
-		return 0;
+    if((statbuf.st_mode & S_IXUSR) && (statbuf.st_uid == uid))
+        return 0;
 
-	/* EACCES Execute permission is denied for the file or a script or ELF interpreter. */
-	return errno = EACCES, -1;
+    /* EACCES Execute permission is denied for the file or a script or ELF interpreter. */
+    return errno = EACCES, -1;
 }
 
 char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
 {
-	/* Get PATH. If empty, fall back to _CS_PATH. */
-	const char *path = getenv("PATH");
-	const char *pend;
-	char *buf;
-	size_t dlen = 0, flen;
-	uid_t uid;
-	gid_t gid;
+    /* Get PATH. If empty, fall back to _CS_PATH. */
+    const char *path = getenv("PATH");
+    const char *pend;
+    char *buf;
+    size_t dlen = 0, flen;
+    uid_t uid;
+    gid_t gid;
 
-	if(path == NULL || path[0] == '\0') {
-		char *_path;
-		size_t n;
+    if(path == NULL || path[0] == '\0') {
+        char *_path;
+        size_t n;
 
-		if((n = confstr(_CS_PATH, NULL, 0)) == 0)
-			return errno = EINVAL, NULL;
+        if((n = confstr(_CS_PATH, NULL, 0)) == 0)
+            return errno = EINVAL, NULL;
 
-		/* If _CS_PATH overflows the stack then something's wrong. */
-		_path = (char*)alloca(n * sizeof(char));
-		if(confstr(_CS_PATH, _path, n))
-			return errno = EINVAL, NULL;
+        /* If _CS_PATH overflows the stack then something's wrong. */
+        _path = (char*)alloca(n * sizeof(char));
+        if(confstr(_CS_PATH, _path, n))
+            return errno = EINVAL, NULL;
 
-		path = _path;
-	}
+        path = _path;
+    }
 
-	pend = path + strlen(path);
+    pend = path + strlen(path);
 
-	/* Get the max buffer size. */
-	dlen = 0;
-	for(const char *o = path, *c = strchr(o, ':'); o < pend; o = c + 1, c = strchr(o, ':')) {
-		size_t dist;
-		if(c == NULL)
-			c = pend;
+    /* Get the max buffer size. */
+    dlen = 0;
+    for(const char *o = path, *c = strchr(o, ':'); o < pend; o = c + 1, c = strchr(o, ':')) {
+        size_t dist;
+        if(c == NULL)
+            c = pend;
 
-		dist = c - o;
-		if(dist > dlen)
-			dlen = dist;
-	}
+        dist = c - o;
+        if(dist > dlen)
+            dlen = dist;
+    }
 
-	flen  = strlen(f) + 1; /* /%s */
-	dlen += flen + 1;
+    flen  = strlen(f) + 1; /* /%s */
+    dlen += flen + 1;
 
-	if((buf = vsci_xalloc(a, dlen * sizeof(char))) == NULL)
-		return errno = ENOMEM, NULL;
+    if((buf = vsci_xalloc(a, dlen * sizeof(char))) == NULL)
+        return errno = ENOMEM, NULL;
 
-	uid = getuid();
-	gid = getgid();
+    uid = getuid();
+    gid = getgid();
 
-	for(const char *o = path, *c = strchr(o, ':'); o < pend; o = c + 1, c = strchr(o, ':'))
-	{
-		if(c == NULL)
-			c = pend;
+    for(const char *o = path, *c = strchr(o, ':'); o < pend; o = c + 1, c = strchr(o, ':'))
+    {
+        if(c == NULL)
+            c = pend;
 
-		size_t dist = c - o;
-		strncpy(buf, o, dist);
-		buf[dist] = '/';
-		strcpy(buf + dist + 1, f);
+        size_t dist = c - o;
+        strncpy(buf, o, dist);
+        buf[dist] = '/';
+        strcpy(buf + dist + 1, f);
 
-		if((statfile(buf, uid, gid)) < 0)
-			continue;
+        if((statfile(buf, uid, gid)) < 0)
+            continue;
 
-		if(len)
-			*len = dist + flen;
-		return buf;
-	}
+        if(len)
+            *len = dist + flen;
+        return buf;
+    }
 
-	vsci_xfree(a, buf);
-	return errno = ENOENT, NULL;
+    vsci_xfree(a, buf);
+    return errno = ENOENT, NULL;
 }
 
 char *vsc_searchpath(const char *f, size_t *len)
 {
-	return vsc_searchpatha(f, len, &vsclib_system_allocator);
+    return vsc_searchpatha(f, len, &vsclib_system_allocator);
 }

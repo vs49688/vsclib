@@ -32,19 +32,19 @@ int vsc_fnullify(FILE *f)
         return -1;
 
     if((devnull = vsc_open(VSC_DEVNULL, O_RDWR)) < 0)
-		goto fail;
+        goto fail;
 
     if(vsc_dup2(devnull, fd) < 0)
-		goto fail;
+        goto fail;
 
     return fd;
 
 fail:
-	errno_ = errno;
+    errno_ = errno;
 
-	/* What do I actually do if this fails? */
-	vsc_close(devnull);
+    /* What do I actually do if this fails? */
+    vsc_close(devnull);
 
-	errno = errno_;
-	return -1;
+    errno = errno_;
+    return -1;
 }

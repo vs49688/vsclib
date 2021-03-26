@@ -24,63 +24,63 @@
 
 static void *_malloc(size_t size, void *user)
 {
-	int errno_ = errno;
-	void *p = malloc(size);
-	errno = errno_;
-	return p;
+    int errno_ = errno;
+    void *p = malloc(size);
+    errno = errno_;
+    return p;
 }
 
 static void _free(void *p, void *user)
 {
-	int errno_ = errno;
-	free(p);
-	errno = errno_;
+    int errno_ = errno;
+    free(p);
+    errno = errno_;
 }
 
 static void *_realloc(void *ptr, size_t size, void *user)
 {
-	int errno_ = errno;
-	void *p = realloc(ptr, size);
-	errno = errno_;
-	return p;
+    int errno_ = errno;
+    void *p = realloc(ptr, size);
+    errno = errno_;
+    return p;
 }
 
 VscAllocator vsclib_system_allocator = {
-	.alloc = _malloc,
-	.free = _free,
-	.realloc = _realloc,
-	.user = NULL
+    .alloc = _malloc,
+    .free = _free,
+    .realloc = _realloc,
+    .user = NULL
 };
 
 
 void *vsci_xalloc(const VscAllocator *a, size_t size)
 {
-	assert(a != NULL);
+    assert(a != NULL);
 
-	int errno_ = errno;
-	void *p = a->alloc(size, a->user);
-	errno = errno_;
-	return p;
+    int errno_ = errno;
+    void *p = a->alloc(size, a->user);
+    errno = errno_;
+    return p;
 }
 
 void vsci_xfree(const VscAllocator *a, void *p)
 {
-	assert(a != NULL);
+    assert(a != NULL);
 
-	if(p == NULL)
-		return;
+    if(p == NULL)
+        return;
 
-	int errno_ = errno;
-	a->free(p, a->user);
-	errno = errno_;
+    int errno_ = errno;
+    a->free(p, a->user);
+    errno = errno_;
 }
 
 void *vsci_xrealloc(const VscAllocator *a, void *ptr, size_t size)
 {
-	assert(a != NULL);
+    assert(a != NULL);
 
-	int errno_ = errno;
-	void *p = a->realloc(ptr, size, a->user);
-	errno = errno_;
-	return p;
+    int errno_ = errno;
+    void *p = a->realloc(ptr, size, a->user);
+    errno = errno_;
+    return p;
 }

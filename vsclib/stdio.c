@@ -32,53 +32,53 @@
 int vsc_fileno(FILE *stream)
 {
 #if defined(_WIN32)
-	return _fileno(stream);
+    return _fileno(stream);
 #else
-	return fileno(stream);
+    return fileno(stream);
 #endif
 }
 
 int vsc_open(const char *pathname, int flags)
 {
 #if defined(_WIN32)
-	return _open(pathname, flags);
+    return _open(pathname, flags);
 #else
-	return open(pathname, flags);
+    return open(pathname, flags);
 #endif
 }
 
 int vsc_dup2(int oldfd, int newfd)
 {
 #if defined(_WIN32)
-	return _dup2(oldfd, newfd);
+    return _dup2(oldfd, newfd);
 #else
-	return dup2(oldfd, newfd);
+    return dup2(oldfd, newfd);
 #endif
 }
 
 int vsc_close(int fd)
 {
 #if defined(_WIN32)
-	return _close(fd);
+    return _close(fd);
 #else
-	return close(fd);
+    return close(fd);
 #endif
 }
 
 vsc_off_t vsc_ftello(FILE *stream)
 {
 #if defined(WIN32)
-	return _ftelli64(stream);
+    return _ftelli64(stream);
 #else
-	return ftello(stream);
+    return ftello(stream);
 #endif
 }
 
 int vsc_fseeko(FILE *stream, vsc_off_t offset, int whence)
 {
 #if defined(WIN32)
-	return _fseeki64(stream, offset, whence);
+    return _fseeki64(stream, offset, whence);
 #else
-	return fseeko(stream, offset, whence);
+    return fseeko(stream, offset, whence);
 #endif
 }

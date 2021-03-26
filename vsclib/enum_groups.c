@@ -36,77 +36,77 @@
 
 int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, const VscAllocator *a)
 {
-	/* Absolutely disgusting. */
+    /* Absolutely disgusting. */
 #if defined(_WIN32)
-	errno = EOPNOTSUPP;
-	return -1;
+    errno = EOPNOTSUPP;
+    return -1;
 #else
-	size_t buflen = 10; /* 2048 is enough for the HPC. */
-	char *buf = NULL;
-	int ret = 0, rc = 0;
+    size_t buflen = 10; /* 2048 is enough for the HPC. */
+    char *buf = NULL;
+    int ret = 0, rc = 0;
 
-	assert(passwd != NULL);
-	assert(proc != NULL);
+    assert(passwd != NULL);
+    assert(proc != NULL);
 
-	errno = 0;
-	setgrent();
-	if(errno != 0)
-		return -1;
+    errno = 0;
+    setgrent();
+    if(errno != 0)
+        return -1;
 
-	for(struct group *g = NULL;;) {
-		struct group grp;
-		void *buf2;
+    for(struct group *g = NULL;;) {
+        struct group grp;
+        void *buf2;
 
-		if(buf == NULL || rc == ERANGE) {
-			if((buf2 = vsci_xrealloc(a, buf, buflen)) == NULL)
-				break;
-			buf = buf2;
-		}
+        if(buf == NULL || rc == ERANGE) {
+            if((buf2 = vsci_xrealloc(a, buf, buflen)) == NULL)
+                break;
+            buf = buf2;
+        }
 
-		if((rc = getgrent_r(&grp, buf, buflen, &g)) == ENOENT)
-			break;
+        if((rc = getgrent_r(&grp, buf, buflen, &g)) == ENOENT)
+            break;
 
-		if(rc == ERANGE) {
-			buflen *= 2;
-			continue;
-		}
+        if(rc == ERANGE) {
+            buflen *= 2;
+            continue;
+        }
 
-		if(rc != 0) {
-			errno = rc;
-			break;
-		}
+        if(rc != 0) {
+            errno = rc;
+            break;
+        }
 
-		if(g->gr_gid == passwd->pw_gid) {
-			if((ret = proc(g, user)) != 0)
-				goto done;
-			continue;
-		}
+        if(g->gr_gid == passwd->pw_gid) {
+            if((ret = proc(g, user)) != 0)
+                goto done;
+            continue;
+        }
 
-		for(char * const *u = g->gr_mem; *u != NULL; ++u) {
-			if(strcmp(passwd->pw_name, *u) != 0)
-				continue;
+        for(char * const *u = g->gr_mem; *u != NULL; ++u) {
+            if(strcmp(passwd->pw_name, *u) != 0)
+                continue;
 
-			if((ret = proc(g, user)) != 0)
-				goto done;
-			break;
-		}
-	}
+            if((ret = proc(g, user)) != 0)
+                goto done;
+            break;
+        }
+    }
 
 done:
-	if(buf != NULL)
-		vsci_xfree(a, buf);
+    if(buf != NULL)
+        vsci_xfree(a, buf);
 
-	int errrr = errno;
-	endgrent();
+    int errrr = errno;
+    endgrent();
 
-	if(ret != 0)
-		return ret;
+    if(ret != 0)
+        return ret;
 
-	return errrr != 0 ? -1 : 0;
+    return errrr != 0 ? -1 : 0;
 #endif
 }
 
 int vsc_enum_groups(struct passwd *passwd, VscEnumGroupsProc proc, void *user)
 {
-	return vsc_enum_groupsa(passwd, proc, user, &vsclib_system_allocator);
+    return vsc_enum_groupsa(passwd, proc, user, &vsclib_system_allocator);
 }
