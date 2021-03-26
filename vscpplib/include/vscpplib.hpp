@@ -59,7 +59,7 @@ const auto vasprintf     = ::vsc_vasprintf;
 const auto vasprintfa    = ::vsc_vasprintfa;
 
 #if _XOPEN_SOURCE > 500
-using enum_groups_proc_t = ::vsc_enum_groups_proc_t;
+using enum_groups_proc_t = ::VscEnumGroupsProc;
 
 const auto enum_groups   = ::vsc_enum_groups;
 const auto enum_groupsa  = ::vsc_enum_groupsa;

@@ -22,7 +22,7 @@
  * Try to limit types to C/POSIX types only.
  * Obvious exceptions are:
  * - VscAllocator
- * - vsc_enum_groups_proc_t
+ * - VscEnumGroupsProc
  * - vsc_for_each_delim_proc_t
  */
 #ifndef _VSCLIB_H
@@ -149,10 +149,10 @@ int vsc_chdira(const char *path, const VscAllocator *a);
 struct passwd;
 struct group;
 
-typedef int(*vsc_enum_groups_proc_t)(const struct group *grp, void *user);
+typedef int(*VscEnumGroupsProc)(const struct group *grp, void *user);
 
-int vsc_enum_groups(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user);
-int vsc_enum_groupsa(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user, const VscAllocator *a);
+int vsc_enum_groups(struct passwd *passwd, VscEnumGroupsProc proc, void *user);
+int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, const VscAllocator *a);
 
 #if defined(_WIN32)
 wchar_t *vsc_cstrtowstr(const char *s, size_t *len, unsigned int cp);

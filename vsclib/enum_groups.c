@@ -34,7 +34,7 @@
 
 #include "vsclib_i.h"
 
-int vsc_enum_groupsa(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user, const VscAllocator *a)
+int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, const VscAllocator *a)
 {
 	/* Absolutely disgusting. */
 #if defined(_WIN32)
@@ -112,7 +112,7 @@ done:
 #endif
 }
 
-int vsc_enum_groups(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user)
+int vsc_enum_groups(struct passwd *passwd, VscEnumGroupsProc proc, void *user)
 {
 	return vsc_enum_groupsa(passwd, proc, user, &vsclib_system_allocator);
 }
