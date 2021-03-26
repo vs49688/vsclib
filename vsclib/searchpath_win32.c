@@ -27,7 +27,10 @@
 wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscAllocator *a)
 {
 	int x;
-	size_t _len = strlen(s) + 1;
+	size_t _len;
+	wchar_t *ws;
+
+	_len = strlen(s) + 1;
 	if(_len >= INT_MAX)
 		return errno = EOVERFLOW, NULL;
 
@@ -36,13 +39,11 @@ wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscA
 		return errno = EINVAL, NULL;
 	assert(x > 0);
 
-	wchar_t *ws = vsci_xalloc(a, x * sizeof(wchar_t));
-	if(ws == NULL)
+	if((ws = vsci_xalloc(a, x * sizeof(wchar_t))) == NULL)
 		return errno = ENOMEM, NULL;
 
 	/* Now convert. */
-	if((x = MultiByteToWideChar(cp, 0, s, (int)_len, ws, x)) == 0)
-	{
+	if((x = MultiByteToWideChar(cp, 0, s, (int)_len, ws, x)) == 0) {
 		vsci_xfree(a, ws);
 		return errno = EINVAL, NULL;
 	}
@@ -62,7 +63,9 @@ wchar_t *vsc_cstrtowstr(const char *s, size_t *len, unsigned int cp)
 char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a)
 {
 	int x;
+	char *s;
 	size_t _len = wcslen(ws) + 1;
+
 	if(_len >= INT_MAX)
 		return errno = EOVERFLOW, NULL;
 
@@ -70,12 +73,10 @@ char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const Vsc
 		return errno = EINVAL, NULL;
     assert(x > 0);
 
-    char *s = vsci_xalloc(a, x * sizeof(char));
-    if(s == NULL)
+    if((s = vsci_xalloc(a, x * sizeof(char))) == NULL)
 		return errno = ENOMEM, NULL;
 
-    if((x = WideCharToMultiByte(cp, 0, ws, (int)_len, s, x, NULL, NULL)) == 0)
-	{
+    if((x = WideCharToMultiByte(cp, 0, ws, (int)_len, s, x, NULL, NULL)) == 0) {
 		vsci_xfree(a, s);
 		return errno = EINVAL, NULL;
 	}

@@ -24,9 +24,12 @@
 
 char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap)
 {
+	char *s;
+	int nreq;
 	va_list ap2;
+
 	va_copy(ap2, ap);
-	int nreq = vsnprintf(NULL, 0, fmt, ap2);
+	nreq = vsnprintf(NULL, 0, fmt, ap2);
 	va_end(ap2);
 
 	/* Not really EINVAL, but vsnprintf doesn't provide. */
@@ -34,12 +37,10 @@ char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap)
 		return errno = EINVAL, NULL;
 
 	++nreq;
-	char *s = vsci_xalloc(a, (size_t)nreq);
-	if(s == NULL)
+	if((s = vsci_xalloc(a, (size_t)nreq)) == NULL)
 		return errno = ENOMEM, NULL;
 
-	if(vsnprintf(s, (size_t)nreq, fmt, ap) != nreq - 1)
-	{
+	if(vsnprintf(s, (size_t)nreq, fmt, ap) != nreq - 1) {
 		vsci_xfree(a, s);
 		return errno = EINVAL, NULL;
 	}
@@ -54,18 +55,22 @@ char *vsc_vasprintf(const char *fmt, va_list ap)
 
 char *vsc_asprintfa(const VscAllocator *a, const char *fmt, ...)
 {
+	char *s;
 	va_list ap;
+
 	va_start(ap, fmt);
-	char *s = vsc_vasprintfa(a, fmt, ap);
+	s = vsc_vasprintfa(a, fmt, ap);
 	va_end(ap);
 	return s;
 }
 
 char *vsc_asprintf(const char *fmt, ...)
 {
+	char *s;
 	va_list ap;
+
 	va_start(ap, fmt);
-	char *s = vsc_vasprintfa(&vsclib_system_allocator, fmt, ap);
+	s = vsc_vasprintfa(&vsclib_system_allocator, fmt, ap);
 	va_end(ap);
 	return s;
 }

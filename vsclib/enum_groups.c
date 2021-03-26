@@ -53,13 +53,11 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
 	if(errno != 0)
 		return -1;
 
-	for(struct group *g = NULL;;)
-	{
+	for(struct group *g = NULL;;) {
 		struct group grp;
 		void *buf2;
 
-		if(buf == NULL || rc == ERANGE)
-		{
+		if(buf == NULL || rc == ERANGE) {
 			if((buf2 = vsci_xrealloc(a, buf, buflen)) == NULL)
 				break;
 			buf = buf2;
@@ -68,27 +66,23 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
 		if((rc = getgrent_r(&grp, buf, buflen, &g)) == ENOENT)
 			break;
 
-		if(rc == ERANGE)
-		{
+		if(rc == ERANGE) {
 			buflen *= 2;
 			continue;
 		}
 
-		if(rc != 0)
-		{
+		if(rc != 0) {
 			errno = rc;
 			break;
 		}
 
-		if(g->gr_gid == passwd->pw_gid)
-		{
+		if(g->gr_gid == passwd->pw_gid) {
 			if((ret = proc(g, user)) != 0)
 				goto done;
 			continue;
 		}
 
-		for(char * const *u = g->gr_mem; *u != NULL; ++u)
-		{
+		for(char * const *u = g->gr_mem; *u != NULL; ++u) {
 			if(strcmp(passwd->pw_name, *u) != 0)
 				continue;
 

@@ -55,43 +55,49 @@ char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
 {
 	/* Get PATH. If empty, fall back to _CS_PATH. */
 	const char *path = getenv("PATH");
-	if(path == NULL || path[0] == '\0')
-	{
-		size_t n = confstr(_CS_PATH, NULL, 0);
-		if(n == 0)
+	const char *pend;
+	char *buf;
+	size_t dlen = 0, flen;
+	uid_t uid;
+	gid_t gid;
+
+	if(path == NULL || path[0] == '\0') {
+		char *_path;
+		size_t n;
+
+		if((n = confstr(_CS_PATH, NULL, 0)) == 0)
 			return errno = EINVAL, NULL;
 
 		/* If _CS_PATH overflows the stack then something's wrong. */
-		char *_path = (char*)alloca(n * sizeof(char));
+		_path = (char*)alloca(n * sizeof(char));
 		if(confstr(_CS_PATH, _path, n))
 			return errno = EINVAL, NULL;
 
 		path = _path;
 	}
 
-	const char *pend = path + strlen(path);
+	pend = path + strlen(path);
 
 	/* Get the max buffer size. */
-	size_t dlen = 0;
-	for(const char *o = path, *c = strchr(o, ':'); o < pend; o = c + 1, c = strchr(o, ':'))
-	{
+	dlen = 0;
+	for(const char *o = path, *c = strchr(o, ':'); o < pend; o = c + 1, c = strchr(o, ':')) {
+		size_t dist;
 		if(c == NULL)
 			c = pend;
 
-		size_t dist = c - o;
+		dist = c - o;
 		if(dist > dlen)
 			dlen = dist;
 	}
 
-	size_t flen = strlen(f) + 1; /* /%s */
+	flen  = strlen(f) + 1; /* /%s */
 	dlen += flen + 1;
 
-	char *buf = vsci_xalloc(a, dlen * sizeof(char));
-	if(buf == NULL)
+	if((buf = vsci_xalloc(a, dlen * sizeof(char))) == NULL)
 		return errno = ENOMEM, NULL;
 
-	uid_t uid = getuid();
-	gid_t gid = getgid();
+	uid = getuid();
+	gid = getgid();
 
 	for(const char *o = path, *c = strchr(o, ':'); o < pend; o = c + 1, c = strchr(o, ':'))
 	{
