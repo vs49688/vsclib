@@ -105,11 +105,13 @@ static int get_size_seektell(FILE *f, size_t *size)
 
 static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
 {
+	int fd;
+	struct stat statbuf;
+
 	*_size = 0;
 	*_blksize = 4096;
 
-	int fd = vsc_fileno(f);
-	if(fd < 0)
+	if((fd = vsc_fileno(f)) < 0)
 	{
 		if(errno != EBADF)
 			return -1;
@@ -123,7 +125,6 @@ static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
 		return 0;
 	}
 
-	struct stat statbuf;
 	if(fstat(fd, &statbuf) < 0)
 		return -1;
 
