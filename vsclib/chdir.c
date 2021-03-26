@@ -31,7 +31,7 @@ int vsc_chdir(const char *path)
     return vsc_chdira(path, &vsclib_system_allocator);
 }
 
-int vsc_chdira(const char *path, const vsc_allocator_t *a)
+int vsc_chdira(const char *path, const VscAllocator *a)
 {
 #if defined(_WIN32)
     wchar_t *wpath = NULL;

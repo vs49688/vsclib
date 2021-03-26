@@ -22,7 +22,7 @@
 #include <stdarg.h>
 #include "vsclib_i.h"
 
-char *vsc_vasprintfa(const vsc_allocator_t *a, const char *fmt, va_list ap)
+char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap)
 {
 	va_list ap2;
 	va_copy(ap2, ap);
@@ -52,7 +52,7 @@ char *vsc_vasprintf(const char *fmt, va_list ap)
 	return vsc_vasprintfa(&vsclib_system_allocator, fmt, ap);
 }
 
-char *vsc_asprintfa(const vsc_allocator_t *a, const char *fmt, ...)
+char *vsc_asprintfa(const VscAllocator *a, const char *fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);

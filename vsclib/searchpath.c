@@ -51,7 +51,7 @@ static int statfile(const char *p, uid_t uid, gid_t gid)
 	return errno = EACCES, -1;
 }
 
-char *vsc_searchpatha(const char *f, size_t *len, const vsc_allocator_t *a)
+char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
 {
 	/* Get PATH. If empty, fall back to _CS_PATH. */
 	const char *path = getenv("PATH");

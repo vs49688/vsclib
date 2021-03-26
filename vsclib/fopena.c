@@ -24,7 +24,7 @@
 
 #include "vsclib_i.h"
 
-FILE *vsc_fopena(const char *pathname, const char *mode, const vsc_allocator_t *a)
+FILE *vsc_fopena(const char *pathname, const char *mode, const VscAllocator *a)
 {
 #if defined(_WIN32)
 	wchar_t *wpath = NULL, *wmode = NULL;

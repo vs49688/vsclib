@@ -24,11 +24,11 @@
 
 #include "vsclib.h"
 
-extern vsc_allocator_t vsclib_system_allocator;
+extern VscAllocator vsclib_system_allocator;
 
-void		*vsci_xalloc(const vsc_allocator_t *a, size_t size);
-void		vsci_xfree(const vsc_allocator_t *a, void *p);
-void		*vsci_xrealloc(const vsc_allocator_t *a, void *ptr, size_t size);
+void		*vsci_xalloc(const VscAllocator *a, size_t size);
+void		vsci_xfree(const VscAllocator *a, void *p);
+void		*vsci_xrealloc(const VscAllocator *a, void *ptr, size_t size);
 
 #ifndef EOPNOTSUPP
 #   error EOPNOTSUPP not defined, please fix your system.

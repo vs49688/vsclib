@@ -20,7 +20,7 @@
 #include <assert.h>
 #include "vsclib_i.h"
 
-char *vsc_strdupra(const char *start, const char *end, const vsc_allocator_t *a)
+char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a)
 {
     char *buf;
     size_t len;

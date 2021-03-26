@@ -32,7 +32,7 @@ namespace vsc {
 
 /* NB: Relying on the compiler to inline these. */
 
-using allocator_t        = vsc_allocator_t;
+using allocator_t        = VscAllocator;
 
 const auto fopen         = ::vsc_fopen;
 const auto fopena        = ::vsc_fopena;

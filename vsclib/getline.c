@@ -24,7 +24,7 @@
 #   endif
 #endif
 
-vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, const vsc_allocator_t *a) {
+vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, const VscAllocator *a) {
     char *cur_pos, *new_lineptr;
     size_t new_lineptr_len;
     int c;
@@ -86,7 +86,7 @@ vsc_ssize_t vsc_getdelim(char **lineptr, size_t *n, int delim, FILE *stream) {
     return vsc_getdelima(lineptr, n, delim, stream, &vsclib_system_allocator);
 }
 
-vsc_ssize_t vsc_getlinea(char **lineptr, size_t *n, FILE *stream, const vsc_allocator_t *a) {
+vsc_ssize_t vsc_getlinea(char **lineptr, size_t *n, FILE *stream, const VscAllocator *a) {
     return vsc_getdelima(lineptr, n, '\n', stream, a);
 }
 

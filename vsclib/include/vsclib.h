@@ -21,7 +21,7 @@
  *
  * Try to limit types to C/POSIX types only.
  * Obvious exceptions are:
- * - vsc_allocator_t
+ * - VscAllocator
  * - vsc_enum_groups_proc_t
  * - vsc_for_each_delim_proc_t
  */
@@ -43,7 +43,7 @@ typedef struct
 	void *(*realloc)(void *ptr, size_t size, void *user);
 
 	void *user;
-} vsc_allocator_t;
+} VscAllocator;
 
 #if defined(__cplusplus)
 extern "C" {
@@ -66,7 +66,7 @@ FILE *vsc_fopen(const char *pathname, const char *mode);
  *
  * Memory is allocated in a linear-compatible fashion.
  */
-FILE *vsc_fopena(const char *pathname, const char *mode, const vsc_allocator_t *a);
+FILE *vsc_fopena(const char *pathname, const char *mode, const VscAllocator *a);
 
 int vsc_fileno(FILE *stream);
 int vsc_open(const char *pathname, int flags);
@@ -87,7 +87,7 @@ int vsc_freadall(void **ptr, size_t *size, FILE *f);
  * @return Upon successful completion vsc_freadalla() returns 0, or -1 if an error
  * occurred and errno is set to indicate the error.
  */
-int vsc_freadalla(void **ptr, size_t *size, FILE *f, const vsc_allocator_t *a);
+int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a);
 
 /* fnullify.c */
 
@@ -103,10 +103,10 @@ int vsc_fnullify(FILE *f);
 
 /* getline.c */
 vsc_ssize_t vsc_getdelim(char **lineptr, size_t *n, int delim, FILE *stream);
-vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, const vsc_allocator_t *a);
+vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, const VscAllocator *a);
 
 vsc_ssize_t vsc_getline(char **lineptr, size_t *n, FILE *stream);
-vsc_ssize_t vsc_getlinea(char **lineptr, size_t *n, FILE *stream, const vsc_allocator_t *a);
+vsc_ssize_t vsc_getlinea(char **lineptr, size_t *n, FILE *stream, const VscAllocator *a);
 
 /* for_each.c */
 typedef int (*vsc_for_each_delim_proc_t)(const char *s, const char *e, void *user);
@@ -128,22 +128,22 @@ int vsc_for_each_delim(const char *begin, const char *end, char delim, vsc_for_e
 
 /* searchpath.c */
 char *vsc_searchpath(const char *f, size_t *len);
-char *vsc_searchpatha(const char *f, size_t *len, const vsc_allocator_t *a);
+char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a);
 
 /* vsprintfa.c */
 char *vsc_asprintf(const char *fmt, ...);
-char *vsc_asprintfa(const vsc_allocator_t *a, const char *fmt, ...);
+char *vsc_asprintfa(const VscAllocator *a, const char *fmt, ...);
 
 char *vsc_vasprintf(const char *fmt, va_list ap);
-char *vsc_vasprintfa(const vsc_allocator_t *a, const char *fmt, va_list ap);
+char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap);
 
 /* string.c */
 char *vsc_strdupr(const char *start, const char *end);
-char *vsc_strdupra(const char *start, const char *end, const vsc_allocator_t *a);
+char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a);
 
 /* chdir.c */
 int vsc_chdir(const char *path);
-int vsc_chdira(const char *path, const vsc_allocator_t *a);
+int vsc_chdira(const char *path, const VscAllocator *a);
 
 /* enum_groups.c */
 struct passwd;
@@ -152,14 +152,14 @@ struct group;
 typedef int(*vsc_enum_groups_proc_t)(const struct group *grp, void *user);
 
 int vsc_enum_groups(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user);
-int vsc_enum_groupsa(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user, const vsc_allocator_t *a);
+int vsc_enum_groupsa(struct passwd *passwd, vsc_enum_groups_proc_t proc, void *user, const VscAllocator *a);
 
 #if defined(_WIN32)
 wchar_t *vsc_cstrtowstr(const char *s, size_t *len, unsigned int cp);
-wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const vsc_allocator_t *a);
+wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscAllocator *a);
 
 char *vsc_wstrtocstr(const wchar_t *ws, size_t *len, unsigned int cp);
-char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const vsc_allocator_t *a);
+char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a);
 #endif
 
 

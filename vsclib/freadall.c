@@ -164,7 +164,7 @@ static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
 	return 0;
 }
 
-int vsc_freadalla(void **ptr, size_t *size, FILE *f, const vsc_allocator_t *a)
+int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
 {
 	vsc_off_t save;
 	size_t fsize;

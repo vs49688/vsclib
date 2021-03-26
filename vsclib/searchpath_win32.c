@@ -24,7 +24,7 @@
 
 #include "vsclib_i.h"
 
-wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const vsc_allocator_t *a)
+wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscAllocator *a)
 {
 	int x;
 	size_t _len = strlen(s) + 1;
@@ -59,7 +59,7 @@ wchar_t *vsc_cstrtowstr(const char *s, size_t *len, unsigned int cp)
 	return vsc_cstrtowstra(s, len, cp, &vsclib_system_allocator);
 }
 
-char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const vsc_allocator_t *a)
+char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a)
 {
 	int x;
 	size_t _len = wcslen(ws) + 1;
@@ -92,7 +92,7 @@ char *vsc_wstrtocstr(const wchar_t *ws, size_t *len, unsigned int cp)
 	return vsc_wstrtocstra(ws, len, cp, &vsclib_system_allocator);
 }
 
-char *vsc_searchpatha(const char *f, size_t *len, const vsc_allocator_t *a)
+char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
 {
 	DWORD x;
 	size_t _len;
