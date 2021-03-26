@@ -21,7 +21,7 @@
 #include <string.h>
 #include <vsclib.h>
 
-int vsc_for_each_delim(const char *begin, const char *end, char delim, vsc_for_each_delim_proc_t proc, void *user)
+int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEachDelimProc proc, void *user)
 {
     int r;
     for(const char *start = begin, *next; start != end; start = next) {

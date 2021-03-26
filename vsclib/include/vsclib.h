@@ -23,7 +23,7 @@
  * Obvious exceptions are:
  * - VscAllocator
  * - VscEnumGroupsProc
- * - vsc_for_each_delim_proc_t
+ * - VscForEachDelimProc
  */
 #ifndef _VSCLIB_H
 #define _VSCLIB_H
@@ -109,7 +109,7 @@ vsc_ssize_t vsc_getline(char **lineptr, size_t *n, FILE *stream);
 vsc_ssize_t vsc_getlinea(char **lineptr, size_t *n, FILE *stream, const VscAllocator *a);
 
 /* for_each.c */
-typedef int (*vsc_for_each_delim_proc_t)(const char *s, const char *e, void *user);
+typedef int (*VscForEachDelimProc)(const char *s, const char *e, void *user);
 
 /**
  * @brief Invoke a procedure for each element between successive @par delim characters.
@@ -124,7 +124,7 @@ typedef int (*vsc_for_each_delim_proc_t)(const char *s, const char *e, void *use
  * @param user A user pointer that is passed to @par proc.
  * @return If @par proc returns a non-zero value, that value is returned. Otherwise 0.
  */
-int vsc_for_each_delim(const char *begin, const char *end, char delim, vsc_for_each_delim_proc_t proc, void *user);
+int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEachDelimProc proc, void *user);
 
 /* searchpath.c */
 char *vsc_searchpath(const char *f, size_t *len);
