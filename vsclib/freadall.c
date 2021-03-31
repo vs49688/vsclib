@@ -43,6 +43,13 @@
 
 #include "vsclib_i.h"
 
+const static VscFreadallState default_state = {
+	.file_size  = 0,
+	.blk_size   = 4096,
+	.bytes_read = 0,
+	.statbuf    = { 0 },
+};
+
 /* Use ioctl() to get the size of a block device. */
 static int get_size_ioctl(int fd, size_t *size)
 {
@@ -97,13 +104,11 @@ static int get_size_seektell(FILE *f, size_t *size)
     return 0;
 }
 
-static int get_sizes(FILE *f, size_t *_size, vsc_blksize_t *_blksize)
+static int get_sizes(FILE *f, VscFreadallState *state)
 {
     int fd;
-    struct stat statbuf;
 
-    *_size = 0;
-    *_blksize = 4096;
+    *state = default_state;
 
     if((fd = vsc_fileno(f)) < 0) {
         if(errno != EBADF)
@@ -114,55 +119,83 @@ static int get_sizes(FILE *f, size_t *_size, vsc_blksize_t *_blksize)
          * Try seek/tell, then fall back to streaming.
          */
         errno = 0;
-        (void)get_size_seektell(f, _size);
+        (void)get_size_seektell(f, &state->file_size);
         return 0;
     }
 
-    if(fstat(fd, &statbuf) < 0)
+    if(fstat(fd, &state->statbuf) < 0)
         return -1;
 
     /* Fail-fast if we're a directory. */
-    if(S_ISDIR(statbuf.st_mode))
+    if(S_ISDIR(state->statbuf.st_mode))
         return errno = EISDIR, -1;
 
 #if !defined(_WIN32)
-    *_blksize = statbuf.st_blksize;
+    state->blk_size = state->statbuf.st_blksize;
 #endif
 
-    if(S_ISREG(statbuf.st_mode)) {
-        *_size = (size_t)statbuf.st_size;
+    if(S_ISREG(state->statbuf.st_mode)) {
+        state->file_size = (size_t)state->statbuf.st_size;
     }
 #if !defined(_WIN32)
-    else if(S_ISBLK(statbuf.st_mode)) {
+    else if(S_ISBLK(state->statbuf.st_mode)) {
         /*
          * For block devices, try to use ioctl, then fall back to seek/tell.
          * If seek/tell fails, fall back to streaming.
          */
-        if(get_size_ioctl(fd, _size) < 0)
-            (void)get_size_seektell(f, _size);
+        if(get_size_ioctl(fd, &state->file_size) < 0)
+            (void)get_size_seektell(f, &state->file_size);
 
-        (void)get_blksize_ioctl(fd, _blksize);
+        (void)get_blksize_ioctl(fd, &state->blk_size);
 
         errno = 0;
     }
 #endif
-    else if(!S_ISREG(statbuf.st_mode)) {
+    else if(!S_ISREG(state->statbuf.st_mode)) {
         /* Sockets, pipes, and character devices have to be streamed. */
-        *_size = 0;
+        state->file_size = 0;
     }
 
     return 0;
 }
 
+/* Default do-nothing procedures. Always allows continue. */
+static int default_init_proc(VscFreadallState *state, void *user)
+{
+    (void)state;
+    (void)user;
+    return 0;
+}
+
+static int default_chunk_proc(const VscFreadallState *state, void *user)
+{
+    (void)state;
+    (void)user;
+    return 0;
+}
+
 int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
 {
+    return vsc_freadalla_ex(ptr, size, f, default_init_proc, default_chunk_proc, NULL, a);
+}
+
+int vsc_freadall(void **ptr, size_t *size, FILE *f)
+{
+    return vsc_freadalla(ptr, size, f, &vsclib_system_allocator);
+}
+
+int vsc_freadall_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_proc, VscFreadallChunkProc chunk_proc, void *user)
+{
+    return vsc_freadalla_ex(ptr, size, f, init_proc, chunk_proc, user, &vsclib_system_allocator);
+}
+
+int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_proc, VscFreadallChunkProc chunk_proc, void *user, const VscAllocator *a)
+{
+    VscFreadallState state, user_state;
     vsc_off_t save;
-    size_t fsize;
-    vsc_blksize_t blksize;
-    size_t currpos;
     char *p;
 
-    if(ptr == NULL || size == NULL || f == NULL) {
+    if(ptr == NULL || size == NULL || f == NULL || init_proc == NULL || chunk_proc == NULL || a == NULL) {
         errno = EINVAL;
         return -1;
     }
@@ -180,13 +213,7 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
         errno = 0;
     }
 
-    /*
-     * Get the sizes.
-     * If fsize is 0, then it's either an actual 0-byte file, or the size can't be determined.
-     * blksize will be the "Block size for filesystem I/O".
-     * Mapped directly to the st_blksize field of `struct stat`. If not
-     */
-    if(get_sizes(f, &fsize, &blksize) < 0)
+    if(get_sizes(f, &state) < 0)
         return -1;
 
     if(save >= 0) {
@@ -195,36 +222,53 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
             return -1;
 
         /* If we're already not at the start, don't allocate more than we need to. */
-        if(fsize > 0)
-        {
-            assert(save <= fsize);
-            fsize -= save;
+        if(state.file_size > 0) {
+            assert(save <= state.file_size);
+            state.file_size -= save;
         }
     }
 
-    if(fsize > 0)
-        ++fsize; /* Read past EOF, to avoid an additional malloc() + fread(). */
+    if(state.file_size > 0)
+        ++state.file_size; /* Read past EOF, to avoid an additional malloc() + fread(). */
     else
-        fsize = (size_t)blksize;
+        state.file_size = (size_t)state.blk_size;
 
     p = NULL;
 
-    currpos = 0;
+    state.bytes_read = 0;
+
+    /* Invoke the "init" callback. The caller may want to check/tweak our discovered properties. */
+    user_state = state;
+    if(init_proc(&user_state, user) < 0) {
+        errno = ECANCELED;
+        return -1;
+    }
+
+    /* Only accept changes on these fields. */
+    state.file_size = user_state.file_size;
+    state.blk_size  = user_state.blk_size;
+
     for(;!feof(f) && !ferror(f);) {
-        if(p == NULL || currpos >= fsize) {
+        if(p == NULL || state.bytes_read >= state.file_size) {
             void *_p;
 
-            while(currpos >= fsize)
-                fsize += blksize;
+            while(state.bytes_read >= state.file_size)
+                state.file_size += state.blk_size;
 
-            if((_p = vsci_xrealloc(a, p, fsize)) == NULL) {
+            if((_p = vsci_xrealloc(a, p, state.file_size)) == NULL) {
                 vsci_xfree(a, p);
                 return errno = ENOMEM, -1;
             }
             p = _p;
         }
 
-        currpos += fread(p + currpos, 1, fsize - currpos, f);
+        state.bytes_read += fread(p + state.bytes_read, 1, state.file_size - state.bytes_read, f);
+
+        if(chunk_proc(&state, user) < 0) {
+            vsci_xfree(a, p);
+            errno = ECANCELED;
+            return -1;
+        }
     }
 
     if(ferror(f))
@@ -235,12 +279,7 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
         return -1;
     }
 
-    *ptr = p;
-    *size = currpos;
+    *ptr  = p;
+    *size = state.bytes_read;
     return 0;
-}
-
-int vsc_freadall(void **ptr, size_t *size, FILE *f)
-{
-    return vsc_freadalla(ptr, size, f, &vsclib_system_allocator);
 }

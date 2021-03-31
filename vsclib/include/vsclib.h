@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "vsclib_config.h"
 
@@ -77,19 +78,63 @@ int vsc_close(int fd);
 vsc_off_t vsc_ftello(FILE *stream);
 int vsc_fseeko(FILE *stream, vsc_off_t offset, int whence);
 
+typedef struct VscFreadallState {
+	/**
+	* @brief The size of the file, in bytes.
+	* @remark If this is 0, then the file is either an actual 0-byte
+	*                 file, or the size cannot be determined.
+	*/
+	size_t          file_size;
+
+	/**
+	* @brief Optimal block size for filesystem I/O.
+	*
+	* @remark This is maps directly to the `st_blocksize` field of `struct stat`.
+	* @return This may be different to the `statbuf::st_blocksize` field. If this
+	*         is the case, then alternative methods were used in order to find the
+	*         block size. The value in `statbuf` is the original.
+	*/
+	vsc_blksize_t       blk_size;
+
+	/**
+	* @brief The number of bytes read so far.
+	*/
+	size_t          bytes_read;
+
+	/**
+	* @brief A `struct stat` of the file.
+	*/
+	struct stat statbuf;
+} VscFreadallState;
+
+typedef int (*VscFreadallInitProc)(VscFreadallState *state, void *user);
+typedef int (*VscFreadallChunkProc)(const VscFreadallState *state, void *user);
+
 /* freadall.c */
 int vsc_freadall(void **ptr, size_t *size, FILE *f);
 
+int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a);
+
+int vsc_freadall_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_proc, VscFreadallChunkProc chunk_proc, void *user);
+
 /**
  * @brief Read an entire stream into memory.
- * @param ptr The pointer to receive the allocated buffer.
- * @param size A pointer to receive the size of the file.
- * @param f The stream to read.
- * @param a The allocator to use.
+ *
+ * @param ptr        The pointer to receive the allocated buffer.
+ * @param size       A pointer to receive the size of the file.
+ * @param f          The stream to read.
+ * @param init_proc  A initialisation callback that may used to inspect and modify stream parameters
+ *                   before reading commences. Only the `file_size` and `blk_size` fields of `VscFreadallState`
+ *                   may be modified.
+ * @param chunk_proc A callback used to report progress. This is invoked after each internal read.
+ * @param user       A user-provided pointer to be passed to `init_proc` and `chunk_proc`
+ * @param a          The allocator to use.
+ *
  * @return Upon successful completion vsc_freadalla() returns 0, or -1 if an error
- * occurred and errno is set to indicate the error.
+ *         occurred and errno is set to indicate the error. If the failure is caused by a negative
+ *         return from `init_proc` or `chunk_proc`, `errno` will be `ECANCELED`.
  */
-int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a);
+int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_proc, VscFreadallChunkProc chunk_proc, void *user, const VscAllocator *a);
 
 /* fnullify.c */
 
