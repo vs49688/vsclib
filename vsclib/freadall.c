@@ -51,8 +51,7 @@ typedef long blksize_t; /* Isn't used anyway. */
 static int get_size_ioctl(int fd, size_t *size)
 {
 #if defined(__linux__)
-    if(ioctl(fd, BLKGETSIZE64, size) < 0)
-    {
+    if(ioctl(fd, BLKGETSIZE64, size) < 0) {
         unsigned long s;
         if(ioctl(fd, BLKGETSIZE, &s) < 0)
             return -1;
@@ -75,8 +74,7 @@ static int get_blksize_ioctl(int fd, blksize_t *blksize)
         return -1;
 
     /* Most physical disks don't supply this. */
-    if(_blksize == 0)
-    {
+    if(_blksize == 0) {
         errno = ENOTSUP;
         return -1;
     }
@@ -111,8 +109,7 @@ static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
     *_size = 0;
     *_blksize = 4096;
 
-    if((fd = vsc_fileno(f)) < 0)
-    {
+    if((fd = vsc_fileno(f)) < 0) {
         if(errno != EBADF)
             return -1;
 
@@ -136,13 +133,11 @@ static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
     *_blksize = statbuf.st_blksize;
 #endif
 
-    if(S_ISREG(statbuf.st_mode))
-    {
+    if(S_ISREG(statbuf.st_mode)) {
         *_size = (size_t)statbuf.st_size;
     }
 #if !defined(_WIN32)
-    else if(S_ISBLK(statbuf.st_mode))
-    {
+    else if(S_ISBLK(statbuf.st_mode)) {
         /*
          * For block devices, try to use ioctl, then fall back to seek/tell.
          * If seek/tell fails, fall back to streaming.
@@ -155,8 +150,7 @@ static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
         errno = 0;
     }
 #endif
-    else if(!S_ISREG(statbuf.st_mode))
-    {
+    else if(!S_ISREG(statbuf.st_mode)) {
         /* Sockets, pipes, and character devices have to be streamed. */
         *_size = 0;
     }
@@ -170,16 +164,15 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
     size_t fsize;
     blksize_t blksize;
     size_t currpos;
+    char *p;
 
-    if(ptr == NULL || size == NULL || f == NULL)
-    {
+    if(ptr == NULL || size == NULL || f == NULL) {
         errno = EINVAL;
         return -1;
     }
 
     /* Save our current position if possible. */
-    if((save = vsc_ftello(f)) < 0)
-    {
+    if((save = vsc_ftello(f)) < 0) {
         /*
          * EBADF: Not a seekable stream.
          * ESPIPE: Can't seek on a pipe.
@@ -200,8 +193,7 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
     if(get_sizes(f, &fsize, &blksize) < 0)
         return -1;
 
-    if(save >= 0)
-    {
+    if(save >= 0) {
         /* Restore our position, if any. */
         if(vsc_fseeko(f, save, SEEK_SET) < 0)
             return -1;
@@ -219,35 +211,30 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
     else
         fsize = (size_t)blksize;
 
-    char *p = NULL;
+    p = NULL;
 
     currpos = 0;
-    for(;!feof(f) && !ferror(f);)
-    {
-        if(p == NULL || currpos >= fsize)
-        {
+    for(;!feof(f) && !ferror(f);) {
+        if(p == NULL || currpos >= fsize) {
+            void *_p;
+
             while(currpos >= fsize)
                 fsize += blksize;
 
-            void *_p;
-            if((_p = vsci_xrealloc(a, p, fsize)) == NULL)
-            {
+            if((_p = vsci_xrealloc(a, p, fsize)) == NULL) {
                 vsci_xfree(a, p);
                 return errno = ENOMEM, -1;
             }
             p = _p;
         }
 
-
-        size_t nread = fread(p + currpos, 1, fsize - currpos, f);
-        currpos += nread;
+        currpos += fread(p + currpos, 1, fsize - currpos, f);
     }
 
     if(ferror(f))
         errno = EIO;
 
-    if(errno != 0)
-    {
+    if(errno != 0) {
         vsci_xfree(a, p);
         return -1;
     }
