@@ -43,7 +43,7 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
 #else
     size_t buflen = 10; /* 2048 is enough for the HPC. */
     char *buf = NULL;
-    int ret = 0, rc = 0;
+    int ret = 0, rc = 0, olderr;
 
     assert(passwd != NULL);
     assert(proc != NULL);
@@ -96,13 +96,13 @@ done:
     if(buf != NULL)
         vsci_xfree(a, buf);
 
-    int errrr = errno;
+    olderr = errno;
     endgrent();
 
     if(ret != 0)
         return ret;
 
-    return errrr != 0 ? -1 : 0;
+    return olderr != 0 ? -1 : 0;
 #endif
 }
 
