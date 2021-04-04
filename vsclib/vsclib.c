@@ -45,7 +45,7 @@ static void *_realloc(void *ptr, size_t size, void *user)
     return p;
 }
 
-VscAllocator vsclib_system_allocator = {
+const VscAllocator vsclib_system_allocator = {
     .alloc = _malloc,
     .free = _free,
     .realloc = _realloc,

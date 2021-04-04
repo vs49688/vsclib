@@ -24,7 +24,7 @@
 
 #include "vsclib.h"
 
-extern VscAllocator vsclib_system_allocator;
+extern const VscAllocator vsclib_system_allocator;
 
 void *vsci_xalloc(const VscAllocator *a, size_t size);
 void  vsci_xfree(const VscAllocator *a, void *p);
