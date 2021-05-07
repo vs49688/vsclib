@@ -63,6 +63,9 @@ static inline int vsc_is_aligned(void *p, size_t alignment)
     return VSC_IS_ALIGNED(p, alignment);
 }
 
+void *vsc_aligned_malloc(size_t size, size_t alignment);
+void vsc_aligned_free(void *ptr);
+
 /* stdio.c */
 
 #if defined(WIN32)

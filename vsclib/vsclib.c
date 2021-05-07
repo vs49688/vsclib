@@ -84,3 +84,35 @@ void *vsci_xrealloc(const VscAllocator *a, void *ptr, size_t size)
     errno = errno_;
     return p;
 }
+
+#if defined(_MSC_VER)
+void *vsc_aligned_malloc(size_t size, size_t alignment)
+{
+    assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
+    return _aligned_malloc(size, alignment);
+}
+
+void vsc_aligned_free(void *ptr)
+{
+    _aligned_free(ptr);
+}
+#else
+void *vsc_aligned_malloc(size_t size, size_t alignment)
+{
+    void *p = NULL;
+
+    assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
+
+    if(posix_memalign(&p, alignment, size) != 0) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    return p;
+}
+
+void vsc_aligned_free(void *ptr)
+{
+    free(ptr);
+}
+#endif
