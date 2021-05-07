@@ -53,4 +53,12 @@ char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap);
 char *vsc_strdupr(const char *start, const char *end);
 char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a);
 
+#if defined(_WIN32)
+wchar_t *vsc_cstrtowstr(const char *s, size_t *len, unsigned int cp);
+wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscAllocator *a);
+
+char *vsc_wstrtocstr(const wchar_t *ws, size_t *len, unsigned int cp);
+char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a);
+#endif
+
 #endif /* _VSCLIB_STRING_H */
