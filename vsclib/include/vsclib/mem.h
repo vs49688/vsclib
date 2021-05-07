@@ -23,6 +23,10 @@
 #include <stddef.h>
 #include "memdef.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 static inline int vsc_is_pot(unsigned int alignment)
 {
     return VSC_IS_POT(alignment);
@@ -43,5 +47,9 @@ void  vsc_aligned_free(void *ptr);
 void *vsc_xalloc(const VscAllocator *a, size_t size);
 void  vsc_xfree(const VscAllocator *a, void *p);
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _VSCLIB_MEM_H */

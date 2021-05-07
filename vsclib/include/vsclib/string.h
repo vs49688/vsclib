@@ -23,6 +23,10 @@
 #include "types.h"
 #include "stringdef.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 vsc_ssize_t vsc_getdelim(char **lineptr, size_t *n, int delim, FILE *stream);
 vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, const VscAllocator *a);
 
@@ -59,6 +63,10 @@ wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscA
 
 char *vsc_wstrtocstr(const wchar_t *ws, size_t *len, unsigned int cp);
 char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a);
+#endif
+
+#if defined(__cplusplus)
+}
 #endif
 
 #endif /* _VSCLIB_STRING_H */

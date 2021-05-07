@@ -23,6 +23,10 @@
 #include "vsclib_config.h"
 #include "iodef.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 FILE *vsc_fopen(const char *pathname, const char *mode);
 
 /**
@@ -221,5 +225,9 @@ VSCLIB_DECLARE_FREADWRITE_E(b, 64);
 
 #undef VSCLIB_DECLARE_FREADWRITE
 #undef VSCLIB_DECLARE_FREADWRITE_E
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _VSCLIB_IO_H */
