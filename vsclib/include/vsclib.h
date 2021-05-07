@@ -44,14 +44,6 @@
 extern "C" {
 #endif
 
-/* searchpath.c */
-char *vsc_searchpath(const char *f, size_t *len);
-char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a);
-
-/* chdir.c */
-int vsc_chdir(const char *path);
-int vsc_chdira(const char *path, const VscAllocator *a);
-
 /* enum_groups.c */
 struct passwd;
 struct group;

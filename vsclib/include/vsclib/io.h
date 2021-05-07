@@ -73,6 +73,11 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
  */
 int vsc_fnullify(FILE *f);
 
+char *vsc_searchpath(const char *f, size_t *len);
+char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a);
+
+int   vsc_chdir(const char *path);
+int   vsc_chdira(const char *path, const VscAllocator *a);
 
 #if (_MSC_VER >= 1400)
 static inline uint16_t vsc_swap_uint16(uint16_t x) { return _byteswap_ushort(x); }
