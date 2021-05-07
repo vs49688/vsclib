@@ -40,6 +40,9 @@ add_library(vsclib STATIC
 
 		include/vsclib/iodef.h
 		include/vsclib/io.h
+
+		include/vsclib/stringdef.h
+		include/vsclib/string.h
 )
 
 set_target_properties(vsclib PROPERTIES
