@@ -25,7 +25,7 @@
 static void *_malloc(size_t size, void *user)
 {
     int errno_ = errno;
-    void *p = malloc(size);
+    void *p = vsc_malloc(size);
     errno = errno_;
     return p;
 }
@@ -33,14 +33,14 @@ static void *_malloc(size_t size, void *user)
 static void _free(void *p, void *user)
 {
     int errno_ = errno;
-    free(p);
+    vsc_free(p);
     errno = errno_;
 }
 
 static void *_realloc(void *ptr, size_t size, void *user)
 {
     int errno_ = errno;
-    void *p = realloc(ptr, size);
+    void *p = vsc_realloc(ptr, size);
     errno = errno_;
     return p;
 }
