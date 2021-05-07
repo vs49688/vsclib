@@ -17,10 +17,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <stdlib.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <assert.h>
-#include "vsclib_i.h"
+#include <vsclib/mem.h>
 
 static void *_malloc(size_t size, void *user)
 {
@@ -51,7 +51,6 @@ const VscAllocator vsclib_system_allocator = {
     .realloc = _realloc,
     .user = NULL
 };
-
 
 void *vsci_xalloc(const VscAllocator *a, size_t size)
 {

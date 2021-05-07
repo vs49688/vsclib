@@ -15,8 +15,6 @@ configure_file("${PROJECT_SOURCE_DIR}/vsclib_config.h.in"
 			   "${VSCLIB_GENERATED_INCLUDE_DIR}/include/vsclib_config.h")
 
 add_library(vsclib STATIC
-		vsclib.c
-
 		freadall.c
 		fnullify.c
 		vsprintfa.c
@@ -27,12 +25,16 @@ add_library(vsclib STATIC
 		chdir.c
 		enum_groups.c
 		string.c
+		memory.c
 		${OS_FILES}
 
 		vsclib_i.h
 		vsclib_config.h.in
 		${VSCLIB_GENERATED_INCLUDE_DIR}/include/vsclib_config.h
 		include/vsclib.h
+
+		include/vsclib/memdef.h
+		include/vsclib/mem.h
 )
 
 set_target_properties(vsclib PROPERTIES

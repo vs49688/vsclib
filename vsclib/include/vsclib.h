@@ -36,35 +36,11 @@
 #include <sys/stat.h>
 
 #include "vsclib_config.h"
-
-#define VSC_IS_POT(a) ((a) != 0 && ((a) & ((a) - 1)) == 0)
-#define VSC_IS_ALIGNED(p, a) (((uintptr_t)(p) & ((a) - 1)) == 0)
-
-typedef struct
-{
-    void *(*alloc)(size_t size, void *user);
-    void (*free)(void *p, void *user);
-    void *(*realloc)(void *ptr, size_t size, void *user);
-
-    void *user;
-} VscAllocator;
+#include "vsclib/mem.h"
 
 #if defined(__cplusplus)
 extern "C" {
 #endif
-
-static inline int vsc_is_pot(unsigned int alignment)
-{
-    return VSC_IS_POT(alignment);
-}
-
-static inline int vsc_is_aligned(void *p, size_t alignment)
-{
-    return VSC_IS_ALIGNED(p, alignment);
-}
-
-void *vsc_aligned_malloc(size_t size, size_t alignment);
-void vsc_aligned_free(void *ptr);
 
 /* stdio.c */
 
@@ -72,7 +48,7 @@ void vsc_aligned_free(void *ptr);
 #   include <basetsd.h>
 typedef __int64   vsc_off_t;
 typedef SSIZE_T   vsc_ssize_t;
-typedef long int  vsc_blksize_t;
+typedef long int  vsc_blksi ze_t;
 #else
 typedef off_t     vsc_off_t;
 typedef ssize_t   vsc_ssize_t;
