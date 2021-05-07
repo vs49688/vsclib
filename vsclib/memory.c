@@ -84,6 +84,21 @@ void *vsci_xrealloc(const VscAllocator *a, void *ptr, size_t size)
     return p;
 }
 
+void *vsc_malloc(size_t size)
+{
+    return malloc(size);
+}
+
+void  vsc_free(void *p)
+{
+    return free(p);
+}
+
+void *vsc_realloc(void *ptr, size_t size)
+{
+    return realloc(ptr, size);
+}
+
 #if defined(_MSC_VER)
 void *vsc_aligned_malloc(size_t size, size_t alignment)
 {
