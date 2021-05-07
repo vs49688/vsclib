@@ -26,9 +26,9 @@
 
 extern const VscAllocator vsclib_system_allocator;
 
-void *vsci_xalloc(const VscAllocator *a, size_t size);
-void  vsci_xfree(const VscAllocator *a, void *p);
-void *vsci_xrealloc(const VscAllocator *a, void *ptr, size_t size);
+#define vsci_xalloc vsc_xalloc
+#define vsci_xfree vsc_xfree
+#define vsci_xrealloc vsc_xrealloc
 
 #ifndef EOPNOTSUPP
 #   error EOPNOTSUPP not defined, please fix your system.

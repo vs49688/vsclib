@@ -52,7 +52,7 @@ const VscAllocator vsclib_system_allocator = {
     .user = NULL
 };
 
-void *vsci_xalloc(const VscAllocator *a, size_t size)
+void *vsc_xalloc(const VscAllocator *a, size_t size)
 {
     assert(a != NULL);
 
@@ -62,7 +62,7 @@ void *vsci_xalloc(const VscAllocator *a, size_t size)
     return p;
 }
 
-void vsci_xfree(const VscAllocator *a, void *p)
+void vsc_xfree(const VscAllocator *a, void *p)
 {
     assert(a != NULL);
 
@@ -74,7 +74,7 @@ void vsci_xfree(const VscAllocator *a, void *p)
     errno = errno_;
 }
 
-void *vsci_xrealloc(const VscAllocator *a, void *ptr, size_t size)
+void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
 {
     assert(a != NULL);
 
