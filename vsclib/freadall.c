@@ -255,8 +255,8 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
             while(state.bytes_read >= state.file_size)
                 state.file_size += state.blk_size;
 
-            if((_p = vsci_xrealloc(a, p, state.file_size)) == NULL) {
-                vsci_xfree(a, p);
+            if((_p = vsc_xrealloc(a, p, state.file_size)) == NULL) {
+                vsc_xfree(a, p);
                 return errno = ENOMEM, -1;
             }
             p = _p;
@@ -265,7 +265,7 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
         state.bytes_read += fread(p + state.bytes_read, 1, state.file_size - state.bytes_read, f);
 
         if(chunk_proc(&state, user) < 0) {
-            vsci_xfree(a, p);
+            vsc_xfree(a, p);
             errno = ECANCELED;
             return -1;
         }
@@ -275,7 +275,7 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
         errno = EIO;
 
     if(errno != 0) {
-        vsci_xfree(a, p);
+        vsc_xfree(a, p);
         return -1;
     }
 

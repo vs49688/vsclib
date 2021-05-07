@@ -93,7 +93,7 @@ char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
     flen  = strlen(f) + 1; /* /%s */
     dlen += flen + 1;
 
-    if((buf = vsci_xalloc(a, dlen * sizeof(char))) == NULL)
+    if((buf = vsc_xalloc(a, dlen * sizeof(char))) == NULL)
         return errno = ENOMEM, NULL;
 
     uid = getuid();
@@ -117,7 +117,7 @@ char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
         return buf;
     }
 
-    vsci_xfree(a, buf);
+    vsc_xfree(a, buf);
     return errno = ENOENT, NULL;
 }
 

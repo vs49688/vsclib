@@ -36,7 +36,7 @@ vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, co
 
     if (*lineptr == NULL) {
         *n = 128; /* init len */
-        if ((*lineptr = (char *)vsci_xalloc(a, *n)) == NULL) {
+        if ((*lineptr = (char *)vsc_xalloc(a, *n)) == NULL) {
             errno = ENOMEM;
             return -1;
         }
@@ -63,7 +63,7 @@ vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, co
             }
             new_lineptr_len = *n * 2;
 
-            if ((new_lineptr = (char *)vsci_xrealloc(a, *lineptr, new_lineptr_len)) == NULL) {
+            if ((new_lineptr = (char *)vsc_xrealloc(a, *lineptr, new_lineptr_len)) == NULL) {
                 errno = ENOMEM;
                 return -1;
             }

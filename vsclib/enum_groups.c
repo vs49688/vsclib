@@ -58,7 +58,7 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
         void *buf2;
 
         if(buf == NULL || rc == ERANGE) {
-            if((buf2 = vsci_xrealloc(a, buf, buflen)) == NULL)
+            if((buf2 = vsc_xrealloc(a, buf, buflen)) == NULL)
                 break;
             buf = buf2;
         }
@@ -94,7 +94,7 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
 
 done:
     if(buf != NULL)
-        vsci_xfree(a, buf);
+        vsc_xfree(a, buf);
 
     olderr = errno;
     endgrent();

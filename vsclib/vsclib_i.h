@@ -26,10 +26,6 @@
 
 extern const VscAllocator vsclib_system_allocator;
 
-#define vsci_xalloc vsc_xalloc
-#define vsci_xfree vsc_xfree
-#define vsci_xrealloc vsc_xrealloc
-
 #ifndef EOPNOTSUPP
 #   error EOPNOTSUPP not defined, please fix your system.
 #endif

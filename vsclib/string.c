@@ -27,7 +27,7 @@ char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a)
     assert(start != NULL && end != NULL && end >= start && a != NULL);
 
     len = (size_t)(end - start);
-    if((buf = vsci_xalloc(a, (len + 1) * sizeof(char))) == NULL) {
+    if((buf = vsc_xalloc(a, (len + 1) * sizeof(char))) == NULL) {
         errno = ENOMEM;
         return NULL;
     }

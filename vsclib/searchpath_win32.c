@@ -39,12 +39,12 @@ wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscA
         return errno = EINVAL, NULL;
     assert(x > 0);
 
-    if((ws = vsci_xalloc(a, x * sizeof(wchar_t))) == NULL)
+    if((ws = vsc_xalloc(a, x * sizeof(wchar_t))) == NULL)
         return errno = ENOMEM, NULL;
 
     /* Now convert. */
     if((x = MultiByteToWideChar(cp, 0, s, (int)_len, ws, x)) == 0) {
-        vsci_xfree(a, ws);
+        vsc_xfree(a, ws);
         return errno = EINVAL, NULL;
     }
     assert(x > 0);
@@ -73,11 +73,11 @@ char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const Vsc
         return errno = EINVAL, NULL;
     assert(x > 0);
 
-    if((s = vsci_xalloc(a, x * sizeof(char))) == NULL)
+    if((s = vsc_xalloc(a, x * sizeof(char))) == NULL)
         return errno = ENOMEM, NULL;
 
     if((x = WideCharToMultiByte(cp, 0, ws, (int)_len, s, x, NULL, NULL)) == 0) {
-        vsci_xfree(a, s);
+        vsc_xfree(a, s);
         return errno = EINVAL, NULL;
     }
     assert(x > 0);
@@ -106,7 +106,7 @@ char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
     if((x = SearchPathW(NULL, wf, L".exe", 0, NULL, NULL)) == 0)
         goto done;
 
-    if((ws = vsci_xalloc(a, (size_t)x * sizeof(wchar_t))) == NULL)
+    if((ws = vsc_xalloc(a, (size_t)x * sizeof(wchar_t))) == NULL)
         goto done;
 
     if((x = SearchPathW(NULL, wf, L".exe", x, ws, NULL)) == 0)
@@ -120,10 +120,10 @@ done:
         errno = ENOENT;
 
     if(ws != NULL)
-        vsci_xfree(a, ws);
+        vsc_xfree(a, ws);
 
     if(wf != NULL)
-        vsci_xfree(a, wf);
+        vsc_xfree(a, wf);
 
     return of;
 }

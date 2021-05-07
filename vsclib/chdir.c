@@ -61,7 +61,7 @@ done:
     errno_ = errno;
 
     if(wpath != NULL)
-        vsci_xfree(a, wpath);
+        vsc_xfree(a, wpath);
 
     errno = errno_;
     return r;

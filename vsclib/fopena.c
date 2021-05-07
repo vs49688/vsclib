@@ -44,10 +44,10 @@ done:
     errno_ = errno;
 
     if(wmode != NULL)
-        vsci_xfree(a, wmode);
+        vsc_xfree(a, wmode);
 
     if(wpath != NULL)
-        vsci_xfree(a, wpath);
+        vsc_xfree(a, wpath);
 
     errno = errno_;
     return f;
