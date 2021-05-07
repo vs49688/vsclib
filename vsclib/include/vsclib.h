@@ -37,6 +37,9 @@
 
 #include "vsclib_config.h"
 
+#define VSC_IS_POT(a) ((a) != 0 && ((a) & ((a) - 1)) == 0)
+#define VSC_IS_ALIGNED(p, a) (((uintptr_t)(p) & ((a) - 1)) == 0)
+
 typedef struct
 {
     void *(*alloc)(size_t size, void *user);
@@ -49,6 +52,16 @@ typedef struct
 #if defined(__cplusplus)
 extern "C" {
 #endif
+
+static inline int vsc_is_pot(unsigned int alignment)
+{
+    return VSC_IS_POT(alignment);
+}
+
+static inline int vsc_is_aligned(void *p, size_t alignment)
+{
+    return VSC_IS_ALIGNED(p, alignment);
+}
 
 /* stdio.c */
 
