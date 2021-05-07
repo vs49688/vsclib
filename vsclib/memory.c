@@ -89,9 +89,9 @@ void *vsc_malloc(size_t size)
     return malloc(size);
 }
 
-void  vsc_free(void *p)
+void vsc_free(void *p)
 {
-    return free(p);
+    free(p);
 }
 
 void *vsc_realloc(void *ptr, size_t size)
