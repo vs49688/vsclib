@@ -35,6 +35,9 @@ add_library(vsclib STATIC
 
 		include/vsclib/memdef.h
 		include/vsclib/mem.h
+
+		include/vsclib/iodef.h
+		include/vsclib/io.h
 )
 
 set_target_properties(vsclib PROPERTIES
