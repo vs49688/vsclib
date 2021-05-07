@@ -43,10 +43,6 @@
 
 #include "vsclib_i.h"
 
-#if defined(_WIN32)
-typedef long blksize_t; /* Isn't used anyway. */
-#endif
-
 /* Use ioctl() to get the size of a block device. */
 static int get_size_ioctl(int fd, size_t *size)
 {
@@ -66,7 +62,7 @@ static int get_size_ioctl(int fd, size_t *size)
 #endif
 }
 
-static int get_blksize_ioctl(int fd, blksize_t *blksize)
+static int get_blksize_ioctl(int fd, vsc_blksize_t *blksize)
 {
 #if defined(__linux__)
     unsigned int _blksize;
@@ -79,7 +75,7 @@ static int get_blksize_ioctl(int fd, blksize_t *blksize)
         return -1;
     }
 
-    *blksize = (blksize_t)_blksize;
+    *blksize = (vsc_blksize_t)_blksize;
     return 0;
 #else
     errno = ENOTSUP;
@@ -101,7 +97,7 @@ static int get_size_seektell(FILE *f, size_t *size)
     return 0;
 }
 
-static int get_sizes(FILE *f, size_t *_size, blksize_t *_blksize)
+static int get_sizes(FILE *f, size_t *_size, vsc_blksize_t *_blksize)
 {
     int fd;
     struct stat statbuf;
@@ -162,7 +158,7 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
 {
     vsc_off_t save;
     size_t fsize;
-    blksize_t blksize;
+    vsc_blksize_t blksize;
     size_t currpos;
     char *p;
 

@@ -55,9 +55,11 @@ extern "C" {
 typedef __int64 vsc_off_t;
 #   include <basetsd.h>
 typedef SSIZE_T vsc_ssize_t;
+typedef long int vsc_blksize_t;
 #else
 typedef off_t vsc_off_t;
 typedef ssize_t vsc_ssize_t;
+typedef blksize_t vsc_blksize_t;
 #endif
 
 FILE *vsc_fopen(const char *pathname, const char *mode);
