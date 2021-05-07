@@ -24,7 +24,7 @@ add_library(vsclib STATIC
 		for_each.c
 		chdir.c
 		enum_groups.c
-		string.c
+		strdupr.c
 		memory.c
 		${OS_FILES}
 
