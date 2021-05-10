@@ -32,6 +32,7 @@ add_library(vsclib STATIC
 		vsclib_config.h.in
 		${VSCLIB_GENERATED_INCLUDE_DIR}/include/vsclib_config.h
 		include/vsclib.h
+		include/vsclib/platform.h
 
 		include/vsclib/assert.h
 		include/vsclib/types.h

@@ -17,16 +17,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef _VSCLIB_ASSERT_H
-#define _VSCLIB_ASSERT_H
+#ifndef _VSCLIB_PLATFORM_H
+#define _VSCLIB_PLATFORM_H
 
-#include <assert.h>
-#include "platform.h"
+/*
+ * This file is mainly so consumers don't need to
+ * include vsclib_config.h
+ */
+#include "vsclib_config.h"
 
-#if defined(VSC_DEBUG)
-#   define vsc_assert(x) assert(x)
+#if defined(_WIN32)
+#	define VSC_DEVNULL "NUL"
 #else
-#   define vsc_assert(x)
+#	define VSC_DEVNULL "/dev/null"
 #endif
 
-#endif /* _VSCLIB_ASSERT_H */
+/* CMake sets NDEBUG this in all non-debug builds, so just use that. */
+#if !defined(VSC_DEBUG) && !defined(NDEBUG)
+#   define VSC_DEBUG
+#endif
+
+#endif /* _VSCLIB_PLATFORM_H */

@@ -20,7 +20,7 @@
 #ifndef _VSCLIB_IO_H
 #define _VSCLIB_IO_H
 
-#include "vsclib_config.h"
+#include "platform.h"
 #include "iodef.h"
 
 #if defined(__cplusplus)
