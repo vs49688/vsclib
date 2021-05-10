@@ -18,7 +18,6 @@
  * limitations under the License.
  */
 #include <errno.h>
-#include <assert.h>
 
 /* From https://stackoverflow.com/a/62371749 */
 #if defined(_MSC_VER)
@@ -223,7 +222,7 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
 
         /* If we're already not at the start, don't allocate more than we need to. */
         if(state.file_size > 0) {
-            assert((size_t)save <= state.file_size);
+            vsc_assert((size_t)save <= state.file_size);
             state.file_size -= save;
         }
     }

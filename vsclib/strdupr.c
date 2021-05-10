@@ -24,7 +24,7 @@ char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a)
 {
     char *buf;
     size_t len;
-    assert(start != NULL && end != NULL && end >= start && a != NULL);
+    vsc_assert(start != NULL && end != NULL && end >= start && a != NULL);
 
     len = (size_t)(end - start);
     if((buf = vsc_xalloc(a, (len + 1) * sizeof(char))) == NULL) {

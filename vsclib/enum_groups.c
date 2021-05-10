@@ -19,7 +19,6 @@
  */
 #define _GNU_SOURCE /* For getgrent_r() */
 
-#include <assert.h>
 #include <errno.h>
 
 #if !defined(_WIN32)
@@ -45,8 +44,8 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
     char *buf = NULL;
     int ret = 0, rc = 0, olderr;
 
-    assert(passwd != NULL);
-    assert(proc != NULL);
+    vsc_assert(passwd != NULL);
+    vsc_assert(proc != NULL);
 
     errno = 0;
     setgrent();

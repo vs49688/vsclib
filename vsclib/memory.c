@@ -19,7 +19,7 @@
  */
 #include <errno.h>
 #include <stdlib.h>
-#include <assert.h>
+#include <vsclib/assert.h>
 #include <vsclib/mem.h>
 
 static void *_malloc(size_t size, void *user)
@@ -54,7 +54,7 @@ const VscAllocator vsclib_system_allocator = {
 
 void *vsc_xalloc(const VscAllocator *a, size_t size)
 {
-    assert(a != NULL);
+    vsc_assert(a != NULL);
 
     int errno_ = errno;
     void *p = a->alloc(size, a->user);
@@ -64,7 +64,7 @@ void *vsc_xalloc(const VscAllocator *a, size_t size)
 
 void vsc_xfree(const VscAllocator *a, void *p)
 {
-    assert(a != NULL);
+    vsc_assert(a != NULL);
 
     if(p == NULL)
         return;
@@ -76,7 +76,7 @@ void vsc_xfree(const VscAllocator *a, void *p)
 
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
 {
-    assert(a != NULL);
+    vsc_assert(a != NULL);
 
     int errno_ = errno;
     void *p = a->realloc(ptr, size, a->user);
@@ -102,7 +102,7 @@ void *vsc_realloc(void *ptr, size_t size)
 #if defined(_MSC_VER)
 void *vsc_aligned_malloc(size_t size, size_t alignment)
 {
-    assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
+    vsc_assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
     return _aligned_malloc(size, alignment);
 }
 

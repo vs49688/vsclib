@@ -19,7 +19,6 @@
  */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <assert.h>
 #include <limits.h>
 
 #include "vsclib_i.h"
@@ -37,7 +36,7 @@ wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscA
     /* Get the required size. */
     if((x = MultiByteToWideChar(cp, 0, s, (int)_len, NULL, 0)) == 0)
         return errno = EINVAL, NULL;
-    assert(x > 0);
+    vsc_assert(x > 0);
 
     if((ws = vsc_xalloc(a, x * sizeof(wchar_t))) == NULL)
         return errno = ENOMEM, NULL;
@@ -47,7 +46,7 @@ wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscA
         vsc_xfree(a, ws);
         return errno = EINVAL, NULL;
     }
-    assert(x > 0);
+    vsc_assert(x > 0);
 
     if(len)
         *len = (size_t)x;
@@ -71,7 +70,7 @@ char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const Vsc
 
     if((x = WideCharToMultiByte(cp, 0, ws, (int)_len, NULL, 0, NULL, NULL)) == 0)
         return errno = EINVAL, NULL;
-    assert(x > 0);
+    vsc_assert(x > 0);
 
     if((s = vsc_xalloc(a, x * sizeof(char))) == NULL)
         return errno = ENOMEM, NULL;
@@ -80,7 +79,7 @@ char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const Vsc
         vsc_xfree(a, s);
         return errno = EINVAL, NULL;
     }
-    assert(x > 0);
+    vsc_assert(x > 0);
 
     if(len)
         *len = (size_t)x;
