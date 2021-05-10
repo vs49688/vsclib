@@ -33,6 +33,7 @@ add_library(vsclib STATIC
 		${VSCLIB_GENERATED_INCLUDE_DIR}/include/vsclib_config.h
 		include/vsclib.h
 
+		include/vsclib/assert.h
 		include/vsclib/types.h
 
 		include/vsclib/memdef.h
