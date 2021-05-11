@@ -96,6 +96,11 @@ void *vsc_malloc(size_t size)
     return malloc(size);
 }
 
+void *vsc_calloc(size_t nmemb, size_t size)
+{
+    return calloc(nmemb, size);
+}
+
 void vsc_free(void *p)
 {
     free(p);

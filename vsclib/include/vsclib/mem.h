@@ -38,6 +38,7 @@ static inline int vsc_is_aligned(void *p, size_t alignment)
 }
 
 void *vsc_malloc(size_t size);
+void *vsc_calloc(size_t nmemb, size_t size);
 void  vsc_free(void *p);
 void *vsc_realloc(void *ptr, size_t size);
 
