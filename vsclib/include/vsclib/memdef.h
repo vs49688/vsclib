@@ -22,10 +22,6 @@
 
 #include <stdint.h>
 
-/* FIXME: Find a better place for these. */
-#define VSC_IS_POT(a) ((a) != 0 && ((a) & ((a) - 1)) == 0)
-#define VSC_IS_ALIGNED(p, a) (((uintptr_t)(p) & ((a) - 1)) == 0)
-
 typedef enum VscAllocFlags {
     VSC_ALLOC_ZERO   = 1 << 0,
     /* VSC_ALLOC_NOFAIL = 1 << 1, */

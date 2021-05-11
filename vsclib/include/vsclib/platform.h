@@ -37,4 +37,7 @@
 #   define VSC_DEBUG
 #endif
 
+#define VSC_IS_POT(a) ((a) != 0 && ((a) & ((a) - 1)) == 0)
+#define VSC_IS_ALIGNED(p, a) (((uintptr_t)(p) & ((a) - 1)) == 0)
+
 #endif /* _VSCLIB_PLATFORM_H */
