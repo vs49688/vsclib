@@ -22,7 +22,7 @@
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
 
-static void *_malloc(size_t size, void *user)
+static void *_malloc(size_t size, VscAllocFlags flags, void *user)
 {
     int errno_ = errno;
     void *p = vsc_malloc(size);
@@ -57,7 +57,7 @@ void *vsc_xalloc(const VscAllocator *a, size_t size)
     vsc_assert(a != NULL);
 
     int errno_ = errno;
-    void *p = a->alloc(size, a->user);
+    void *p = a->alloc(size, 0, a->user);
     errno = errno_;
     return p;
 }
