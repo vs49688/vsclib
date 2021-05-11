@@ -23,10 +23,10 @@
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
 
-static void *_malloc(size_t size, VscAllocFlags flags, void *user)
+static void *_malloc(size_t size, size_t alignment, VscAllocFlags flags, void *user)
 {
     int errno_ = errno;
-    void *p = vsc_malloc(size);
+    void *p = vsc_aligned_malloc(size, alignment);
     errno = errno_;
     if(p == NULL)
         return NULL;
@@ -56,15 +56,17 @@ const VscAllocator vsclib_system_allocator = {
     .alloc = _malloc,
     .free = _free,
     .realloc = _realloc,
+    .alignment = 16, /* FIXME: Find a way to get this per-platform. */
     .user = NULL
 };
 
 void *vsc_xalloc(const VscAllocator *a, size_t size)
 {
     vsc_assert(a != NULL);
+    vsc_assert(VSC_IS_POT(a->alignment));
 
     int errno_ = errno;
-    void *p = a->alloc(size, 0, a->user);
+    void *p = a->alloc(size, a->alignment, 0, a->user);
     errno = errno_;
     return p;
 }
