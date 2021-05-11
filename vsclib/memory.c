@@ -19,6 +19,7 @@
  */
 #include <errno.h>
 #include <stdlib.h>
+#include <string.h>
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
 
@@ -27,6 +28,12 @@ static void *_malloc(size_t size, VscAllocFlags flags, void *user)
     int errno_ = errno;
     void *p = vsc_malloc(size);
     errno = errno_;
+    if(p == NULL)
+        return NULL;
+
+    if(flags & VSC_ALLOC_ZERO)
+        memset(p, 0, size);
+
     return p;
 }
 
