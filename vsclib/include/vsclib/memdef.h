@@ -34,7 +34,7 @@ typedef struct
     void *(*realloc)(void *ptr, size_t size, void *user);
 
     size_t alignment;
-    void *user;
+    void  *user;
 } VscAllocator;
 
 #endif /* _VSCLIB_MEMDEF_H */

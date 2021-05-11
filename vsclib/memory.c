@@ -25,9 +25,13 @@
 
 static void *_malloc(size_t size, size_t alignment, VscAllocFlags flags, void *user)
 {
-    int errno_ = errno;
-    void *p = vsc_aligned_malloc(size, alignment);
-    errno = errno_;
+    int errno_;
+    void *p;
+
+    errno_ = errno;
+    p      = vsc_aligned_malloc(size, alignment);
+    errno  = errno_;
+
     if(p == NULL)
         return NULL;
 
@@ -53,43 +57,53 @@ static void *_realloc(void *ptr, size_t size, void *user)
 }
 
 const VscAllocator vsclib_system_allocator = {
-    .alloc = _malloc,
-    .free = _free,
-    .realloc = _realloc,
+    .alloc     = _malloc,
+    .free      = _free,
+    .realloc   = _realloc,
     .alignment = 16, /* FIXME: Find a way to get this per-platform. */
-    .user = NULL
+    .user      = NULL,
 };
 
 void *vsc_xalloc(const VscAllocator *a, size_t size)
 {
+    int errno_;
+    void *p;
+
     vsc_assert(a != NULL);
     vsc_assert(VSC_IS_POT(a->alignment));
 
-    int errno_ = errno;
-    void *p = a->alloc(size, a->alignment, 0, a->user);
-    errno = errno_;
+    errno_ = errno;
+    p      = a->alloc(size, a->alignment, 0, a->user);
+    errno  = errno_;
+
     return p;
 }
 
 void vsc_xfree(const VscAllocator *a, void *p)
 {
+    int errno_;
+
     vsc_assert(a != NULL);
 
     if(p == NULL)
         return;
 
-    int errno_ = errno;
+    errno_ = errno;
     a->free(p, a->user);
-    errno = errno_;
+    errno  = errno_;
 }
 
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
 {
+    int errno_;
+    void *p;
+
     vsc_assert(a != NULL);
 
-    int errno_ = errno;
-    void *p = a->realloc(ptr, size, a->user);
-    errno = errno_;
+    errno_ = errno;
+    p      = a->realloc(ptr, size, a->user);
+    errno  = errno_;
+
     return p;
 }
 
