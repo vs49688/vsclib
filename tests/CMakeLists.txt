@@ -12,3 +12,9 @@ set_target_properties(vsclib_tests PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
 )
+
+if(MINGW)
+    set_target_properties(vsclib_tests PROPERTIES
+            LINK_FLAGS "-static-libgcc -static-libstdc++"
+    )
+endif()
