@@ -20,6 +20,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <errno.h>
+#include <assert.h>
 #include <vsclib.h>
 
 int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEachDelimProc proc, void *user)
@@ -31,7 +32,8 @@ int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEac
         return -1;
     }
 
-    for(const char *start = begin, *next; start != end; start = next) {
+    const char *start = begin;
+    for(const char *next; start != end; start = next) {
         next = memchr(start, delim, end - start);
         if(next == NULL)
             next = end;
@@ -43,6 +45,12 @@ int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEac
             ++next;
 
     }
+
+    assert(start == end);
+
+    /* Handle the special case of a trailing delimiter. */
+    if(begin < end && *(end - 1) == delim)
+        return proc(start, end, user);
 
     return 0;
 }
