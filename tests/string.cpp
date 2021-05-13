@@ -31,7 +31,7 @@ static void test_for_each_delim(std::string_view input, const std::vector<std::s
     std::vector<std::string_view> actual;
     actual.reserve(expected.size());
 
-    vsc_for_each_delim(input.begin(), input.end(), ',', [](const char *b, const char *e, void *user){
+    int r = vsc_for_each_delim(input.begin(), input.end(), ',', [](const char *b, const char *e, void *user){
         std::string_view tok(b, e - b);
         std::vector<std::string_view> *out = reinterpret_cast<std::vector<std::string_view>*>(user);
         out->push_back(tok);
@@ -39,6 +39,7 @@ static void test_for_each_delim(std::string_view input, const std::vector<std::s
     }, &actual);
 
     REQUIRE(expected == actual);
+    REQUIRE(0 == r);
 }
 
 TEST_CASE("for_each_delim, w/o trailing delimiter", "[string]") {
