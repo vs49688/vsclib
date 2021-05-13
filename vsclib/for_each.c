@@ -19,11 +19,18 @@
  */
 #include <stddef.h>
 #include <string.h>
+#include <errno.h>
 #include <vsclib.h>
 
 int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEachDelimProc proc, void *user)
 {
     int r;
+
+    if(begin > end) {
+        errno = EINVAL;
+        return -1;
+    }
+
     for(const char *start = begin, *next; start != end; start = next) {
         next = memchr(start, delim, end - start);
         if(next == NULL)
