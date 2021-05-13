@@ -127,7 +127,7 @@ void *vsc_realloc(void *ptr, size_t size)
     return realloc(ptr, size);
 }
 
-#if defined(_MSC_VER)
+#if defined(_WIN32)
 void *vsc_aligned_malloc(size_t size, size_t alignment)
 {
     vsc_assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
