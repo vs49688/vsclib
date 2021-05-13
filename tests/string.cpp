@@ -16,7 +16,7 @@ using vsc_ptr = std::unique_ptr<T, vsc_deleter>;
 TEST_CASE("strdupr", "[string]") {
     std::string_view original = "****hello, world****"sv;
 
-    vsc_ptr<char> actual(vsc_strdupr(original.begin() + 4, original.end() - 4));
+    vsc_ptr<char> actual(vsc_strdupr(original.data() + 4, original.data() + original.size() - 4));
     REQUIRE(actual);
     REQUIRE(strcmp("hello, world", actual.get()) == 0);
 }
@@ -31,7 +31,7 @@ static void test_for_each_delim(std::string_view input, const std::vector<std::s
     std::vector<std::string_view> actual;
     actual.reserve(expected.size());
 
-    int r = vsc_for_each_delim(input.begin(), input.end(), ',', [](const char *b, const char *e, void *user){
+    int r = vsc_for_each_delim(input.data(), input.data() + input.size(), ',', [](const char *b, const char *e, void *user){
         std::string_view tok(b, e - b);
         std::vector<std::string_view> *out = reinterpret_cast<std::vector<std::string_view>*>(user);
         out->push_back(tok);
