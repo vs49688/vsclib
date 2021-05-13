@@ -26,13 +26,13 @@
 int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEachDelimProc proc, void *user)
 {
     int r;
+    const char *start = begin;
 
     if(begin > end) {
         errno = EINVAL;
         return -1;
     }
 
-    const char *start = begin;
     for(const char *next; start != end; start = next) {
         next = memchr(start, delim, end - start);
         if(next == NULL)
