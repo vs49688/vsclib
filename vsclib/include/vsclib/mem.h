@@ -48,6 +48,7 @@ void *vsc_aligned_malloc(size_t size, size_t alignment);
 void  vsc_aligned_free(void *ptr);
 
 void *vsc_xalloc(const VscAllocator *a, size_t size);
+void *vsc_xalloc_ex(const VscAllocator *a, size_t size, VscAllocFlags flags, size_t alignment);
 void  vsc_xfree(const VscAllocator *a, void *p);
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size);
 

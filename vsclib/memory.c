@@ -66,14 +66,20 @@ const VscAllocator vsclib_system_allocator = {
 
 void *vsc_xalloc(const VscAllocator *a, size_t size)
 {
+    vsc_assert(a != NULL);
+    return vsc_xalloc_ex(a, size, 0, a->alignment);
+}
+
+void *vsc_xalloc_ex(const VscAllocator *a, size_t size, VscAllocFlags flags, size_t alignment)
+{
     int errno_;
     void *p;
 
     vsc_assert(a != NULL);
-    vsc_assert(VSC_IS_POT(a->alignment));
+    vsc_assert(VSC_IS_POT(alignment));
 
     errno_ = errno;
-    p      = a->alloc(size, a->alignment, 0, a->user);
+    p      = a->alloc(size, alignment, flags, a->user);
     errno  = errno_;
 
     return p;
