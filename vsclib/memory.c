@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <malloc.h>
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
 
@@ -252,6 +253,14 @@ void vsc_sys_aligned_free(void *ptr)
 {
     _aligned_free(ptr);
 }
+
+size_t vsc_sys_malloc_usable_size(void *ptr)
+{
+    if(ptr == NULL)
+        return 0;
+
+    return _msize(ptr);
+}
 #else
 void *vsc_sys_aligned_malloc(size_t size, size_t alignment)
 {
@@ -261,5 +270,10 @@ void *vsc_sys_aligned_malloc(size_t size, size_t alignment)
 void vsc_sys_aligned_free(void *ptr)
 {
     free(ptr);
+}
+
+size_t vsc_sys_malloc_usable_size(void *ptr)
+{
+    return malloc_usable_size(ptr);
 }
 #endif

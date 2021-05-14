@@ -61,6 +61,7 @@ void  vsc_sys_free(void *p);
 void *vsc_sys_realloc(void *ptr, size_t size);
 void *vsc_sys_aligned_malloc(size_t size, size_t alignment);
 void  vsc_sys_aligned_free(void *ptr);
+size_t vsc_sys_malloc_usable_size(void *ptr);
 
 #if defined(__cplusplus)
 }
