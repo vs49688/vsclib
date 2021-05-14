@@ -77,10 +77,10 @@ const VscAllocator vsclib_system_allocator = {
 void *vsc_xalloc(const VscAllocator *a, size_t size)
 {
     vsc_assert(a != NULL);
-    return vsc_xalloc_ex(a, size, 0, a->alignment);
+    return vsc_xalloc_ex(a, NULL, size, 0, a->alignment);
 }
 
-void *vsc_xalloc_ex(const VscAllocator *a, size_t size, VscAllocFlags flags, size_t alignment)
+void *vsc_xalloc_ex(const VscAllocator *a, void *ptr, size_t size, VscAllocFlags flags, size_t alignment)
 {
     int errno_;
     void *p;
@@ -94,7 +94,7 @@ void *vsc_xalloc_ex(const VscAllocator *a, size_t size, VscAllocFlags flags, siz
 
 
     errno_ = errno;
-    p      = a->alloc(NULL, size, alignment, flags, a->user);
+    p      = a->alloc(ptr, size, alignment, flags, a->user);
     errno  = errno_;
 
     return p;
@@ -116,16 +116,7 @@ void vsc_xfree(const VscAllocator *a, void *p)
 
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
 {
-    int errno_;
-    void *p;
-
-    vsc_assert(a != NULL);
-
-    errno_ = errno;
-    p      = a->realloc(ptr, size, a->user);
-    errno  = errno_;
-
-    return p;
+    return vsc_xalloc_ex(a, ptr, size, VSC_ALLOC_REALLOC, 0);
 }
 
 void *vsc_malloc(size_t size)
@@ -135,7 +126,7 @@ void *vsc_malloc(size_t size)
 
 void *vsc_calloc(size_t nmemb, size_t size)
 {
-    return vsc_xalloc_ex(&vsclib_system_allocator, size, VSC_ALLOC_ZERO, 0);
+    return vsc_xalloc_ex(&vsclib_system_allocator, NULL, size, VSC_ALLOC_ZERO, 0);
 }
 
 void vsc_free(void *p)
@@ -150,7 +141,7 @@ void *vsc_realloc(void *ptr, size_t size)
 
 void *vsc_aligned_malloc(size_t size, size_t alignment)
 {
-    return vsc_xalloc_ex(&vsclib_system_allocator, size, 0, alignment);
+    return vsc_xalloc_ex(&vsclib_system_allocator, NULL, size, 0, alignment);
 }
 
 void vsc_aligned_free(void *ptr)
@@ -206,7 +197,7 @@ void *vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInf
         reqsize += size;
     }
 
-    if((block = vsc_xalloc_ex(a, reqsize, 0, blockinfo[0].alignment)) == NULL)
+    if((block = vsc_xalloc_ex(a, NULL, reqsize, 0, blockinfo[0].alignment)) == NULL)
         return NULL;
 
     /* Pass 2: Calculate the aligned pointers */
