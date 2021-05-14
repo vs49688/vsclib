@@ -23,10 +23,20 @@
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
 
-static void *_malloc(size_t size, size_t alignment, VscAllocFlags flags, void *user)
+static void *_malloc(void *ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
 {
     int errno_;
     void *p;
+
+    /*
+     * NB: Realloc'ing not supported with the system allocator due
+     *     there being no way to realloc with alignment.
+     *     vsc_xalloc_ex can handle this.
+     */
+    if(flags & VSC_ALLOC_REALLOC) {
+        errno = EOPNOTSUPP;
+        return NULL;
+    }
 
     errno_ = errno;
     p      = vsc_sys_aligned_malloc(size, alignment);
@@ -84,7 +94,7 @@ void *vsc_xalloc_ex(const VscAllocator *a, size_t size, VscAllocFlags flags, siz
 
 
     errno_ = errno;
-    p      = a->alloc(size, alignment, flags, a->user);
+    p      = a->alloc(NULL, size, alignment, flags, a->user);
     errno  = errno_;
 
     return p;
