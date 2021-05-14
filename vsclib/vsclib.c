@@ -100,11 +100,12 @@ void vsc_aligned_free(void *ptr)
 void *vsc_aligned_malloc(size_t size, size_t alignment)
 {
     void *p = NULL;
+    int err;
 
     assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
 
-    if(posix_memalign(&p, alignment, size) != 0) {
-        errno = ENOMEM;
+    if((err = posix_memalign(&p, alignment, size)) != 0) {
+        errno = err;
         return NULL;
     }
 
