@@ -44,7 +44,7 @@ static void *_malloc(size_t size, size_t alignment, VscAllocFlags flags, void *u
 static void _free(void *p, void *user)
 {
     int errno_ = errno;
-    vsc_free(p);
+    vsc_aligned_free(p);
     errno = errno_;
 }
 
