@@ -37,6 +37,8 @@ static inline int vsc_is_aligned(void *p, size_t alignment)
     return VSC_IS_ALIGNED(p, alignment);
 }
 
+void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space);
+
 void *vsc_malloc(size_t size);
 void *vsc_calloc(size_t nmemb, size_t size);
 void  vsc_free(void *p);

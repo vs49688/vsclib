@@ -149,3 +149,25 @@ void vsc_aligned_free(void *ptr)
     free(ptr);
 }
 #endif
+
+
+/*
+ * Ported from https://github.com/llvm-mirror/libcxx/blob/6952d1478ddd5a1870079d01f1a0e1eea5b09a1a/src/memory.cpp#L217
+ */
+void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space)
+{
+    void *r = NULL;
+    if(size <= *space) {
+        char *p1 = *ptr;
+        char *p2 = (char*)((size_t)(p1 + (alignment - 1)) & -alignment);
+        size_t d = (size_t)(p2 - p1);
+
+        if(d <= *space - size) {
+            r = p2;
+            *ptr = r;
+            *space -= d;
+        }
+    }
+
+    return r;
+}
