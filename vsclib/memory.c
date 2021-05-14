@@ -58,18 +58,9 @@ static void _free(void *p, void *user)
     errno = errno_;
 }
 
-static void *_realloc(void *ptr, size_t size, void *user)
-{
-    int errno_ = errno;
-    void *p = vsc_sys_realloc(ptr, size);
-    errno = errno_;
-    return p;
-}
-
 const VscAllocator vsclib_system_allocator = {
     .alloc     = _malloc,
     .free      = _free,
-    .realloc   = _realloc,
     .alignment = 16, /* FIXME: Find a way to get this per-platform. */
     .user      = NULL,
 };
