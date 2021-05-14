@@ -1,6 +1,7 @@
 #include <vsclib.h>
 #include <vscpplib.hpp>
 #include <memory>
+#include <array>
 #include "catch.hpp"
 
 using vsc::vsc_ptr;
@@ -96,4 +97,35 @@ TEST_CASE("align", "[memory]") {
 
     /* Now try our actual use case. */
     test_align_header(4, 32, 4, 64);
+
+    {
+        struct TestHeader {
+            uint32_t x, y;
+            uint16_t z;
+        };
+
+        std::array<VscBlockAllocInfo, 4> bai = {{
+            /* 1 dummy header */
+            {  1, sizeof(TestHeader), alignof(TestHeader) },
+            /* 10 uint32_t's */
+            { 10, sizeof(uint32_t),   alignof(uint32_t)   },
+            /* 3 "float vector 3"'s, with a required alignment of 16 */
+            {  3, 12,                 16                   },
+            {  1,  1,                 4096                 },
+        }};
+
+        std::array<void*, bai.size()> ptrs{};
+
+        vsc_ptr<void> block(vsc_block_alloc(ptrs.data(), bai.data(), bai.size()));
+        if(!block)
+            throw std::bad_alloc();
+
+        for(size_t i = 0; i < bai.size(); ++i) {
+            CHECK(ptrs[i] != NULL);
+            if(i > 0)
+                CHECK(ptrs[i] > ptrs[i-1]);
+            CHECK(VSC_IS_ALIGNED(ptrs[i], bai[i].alignment));
+            CHECK((uintptr_t)ptrs[i] % bai[i].alignment == 0);
+        }
+    }
 }
