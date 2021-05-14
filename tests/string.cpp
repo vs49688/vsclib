@@ -1,17 +1,12 @@
 #include <vsclib.h>
+#include <vscpplib.hpp>
 #include <string_view>
 #include <memory>
 #include <vector>
 #include "catch.hpp"
 
 using namespace std::string_view_literals;
-
-struct vsc_deleter {
-    void operator()(void *p) noexcept { vsc_free(p); }
-};
-
-template <typename T>
-using vsc_ptr = std::unique_ptr<T, vsc_deleter>;
+using vsc::vsc_ptr;
 
 TEST_CASE("strdupr", "[string]") {
     std::string_view original = "****hello, world****"sv;

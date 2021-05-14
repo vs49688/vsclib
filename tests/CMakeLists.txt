@@ -7,7 +7,7 @@ add_executable(vsclib_tests
         string.cpp
 )
 
-target_link_libraries(vsclib_tests vsclib)
+target_link_libraries(vsclib_tests vsclib vscpplib)
 set_target_properties(vsclib_tests PROPERTIES
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
