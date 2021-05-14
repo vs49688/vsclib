@@ -23,8 +23,9 @@
 #include <stdint.h>
 
 typedef enum VscAllocFlags {
-    VSC_ALLOC_ZERO   = 1 << 0,
-    /* VSC_ALLOC_NOFAIL = 1 << 1, */
+    VSC_ALLOC_ZERO    = 1 << 0,
+    VSC_ALLOC_REALLOC = 1 << 1,
+    /* VSC_ALLOC_NOFAIL = 1 << x, */
 } VscAllocFlags;
 
 typedef struct
