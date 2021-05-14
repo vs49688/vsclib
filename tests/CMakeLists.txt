@@ -5,6 +5,7 @@ add_executable(vsclib_tests
         catch.hpp
 
         string.cpp
+        memory.cpp
 )
 
 target_link_libraries(vsclib_tests vsclib vscpplib)
