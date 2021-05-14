@@ -29,7 +29,7 @@ static void *_malloc(size_t size, size_t alignment, VscAllocFlags flags, void *u
     void *p;
 
     errno_ = errno;
-    p      = vsc_aligned_malloc(size, alignment);
+    p      = vsc_sys_aligned_malloc(size, alignment);
     errno  = errno_;
 
     if(p == NULL)
@@ -44,14 +44,14 @@ static void *_malloc(size_t size, size_t alignment, VscAllocFlags flags, void *u
 static void _free(void *p, void *user)
 {
     int errno_ = errno;
-    vsc_aligned_free(p);
+    vsc_sys_aligned_free(p);
     errno = errno_;
 }
 
 static void *_realloc(void *ptr, size_t size, void *user)
 {
     int errno_ = errno;
-    void *p = vsc_realloc(ptr, size);
+    void *p = vsc_sys_realloc(ptr, size);
     errno = errno_;
     return p;
 }
@@ -120,46 +120,33 @@ void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
 
 void *vsc_malloc(size_t size)
 {
-    return malloc(size);
+    return vsc_xalloc(&vsclib_system_allocator, size);
 }
 
 void *vsc_calloc(size_t nmemb, size_t size)
 {
-    return calloc(nmemb, size);
+    return vsc_xalloc_ex(&vsclib_system_allocator, size, VSC_ALLOC_ZERO, 0);
 }
 
 void vsc_free(void *p)
 {
-    free(p);
+    vsc_xfree(&vsclib_system_allocator, p);
 }
 
 void *vsc_realloc(void *ptr, size_t size)
 {
-    return realloc(ptr, size);
+    return vsc_xrealloc(&vsclib_system_allocator, ptr, size);
 }
 
-#if defined(_WIN32)
 void *vsc_aligned_malloc(size_t size, size_t alignment)
 {
-    vsc_assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
-    return _aligned_malloc(size, alignment);
+    return vsc_xalloc_ex(&vsclib_system_allocator, size, 0, alignment);
 }
 
 void vsc_aligned_free(void *ptr)
 {
-    _aligned_free(ptr);
+    vsc_xfree(&vsclib_system_allocator, ptr);
 }
-#else
-void *vsc_aligned_malloc(size_t size, size_t alignment)
-{
-    return aligned_alloc(alignment, size);
-}
-
-void vsc_aligned_free(void *ptr)
-{
-    free(ptr);
-}
-#endif
 
 
 /*
