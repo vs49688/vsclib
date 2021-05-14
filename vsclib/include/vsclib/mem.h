@@ -52,6 +52,9 @@ void *vsc_xalloc_ex(const VscAllocator *a, size_t size, VscAllocFlags flags, siz
 void  vsc_xfree(const VscAllocator *a, void *p);
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size);
 
+void *vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks);
+void *vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks);
+
 #if defined(__cplusplus)
 }
 #endif

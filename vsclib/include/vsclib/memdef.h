@@ -37,4 +37,10 @@ typedef struct
     void  *user;
 } VscAllocator;
 
+typedef struct VscBlockAllocInfo {
+    size_t count;
+    size_t element_size;
+    size_t alignment;
+} VscBlockAllocInfo;
+
 #endif /* _VSCLIB_MEMDEF_H */
