@@ -55,6 +55,13 @@ void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size);
 void *vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks);
 void *vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks);
 
+void *vsc_sys_malloc(size_t size);
+void *vsc_sys_calloc(size_t nmemb, size_t size);
+void  vsc_sys_free(void *p);
+void *vsc_sys_realloc(void *ptr, size_t size);
+void *vsc_sys_aligned_malloc(size_t size, size_t alignment);
+void  vsc_sys_aligned_free(void *ptr);
+
 #if defined(__cplusplus)
 }
 #endif
