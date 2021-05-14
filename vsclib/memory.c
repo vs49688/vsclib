@@ -76,7 +76,12 @@ void *vsc_xalloc_ex(const VscAllocator *a, size_t size, VscAllocFlags flags, siz
     void *p;
 
     vsc_assert(a != NULL);
+
+    if(alignment == 0)
+        alignment = a->alignment;
+
     vsc_assert(VSC_IS_POT(alignment));
+
 
     errno_ = errno;
     p      = a->alloc(size, alignment, flags, a->user);
