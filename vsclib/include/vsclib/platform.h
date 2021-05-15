@@ -40,4 +40,7 @@
 #define VSC_IS_POT(a) ((a) != 0 && ((a) & ((a) - 1)) == 0)
 #define VSC_IS_ALIGNED(p, a) (((uintptr_t)(p) & ((a) - 1)) == 0)
 
+#define VSC_MAX(a,b) ((a) > (b) ? (a) : (b))
+#define VSC_MIN(a,b) ((a) < (b) ? (a) : (b))
+
 #endif /* _VSCLIB_PLATFORM_H */
