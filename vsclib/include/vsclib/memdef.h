@@ -23,13 +23,59 @@
 #include <stdint.h>
 
 typedef enum VscAllocFlags {
+    /**
+     * @brief Memory should be zero'd after allocation.
+     */
     VSC_ALLOC_ZERO    = 1 << 0,
+    /**
+     * @brief Attempt to reallocate an existing buffer.
+     * This may not be supported by all allocators.
+     */
     VSC_ALLOC_REALLOC = 1 << 1,
     /* VSC_ALLOC_NOFAIL = 1 << x, */
 } VscAllocFlags;
 
-typedef int  (*VscAllocatorAllocProc)(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user);
+/**
+ * @brief Memory allocation callback procedure.
+ *
+ * Invoked by `vsc_xalloc_ex()` to allocate memory.
+ *
+ * @param[inout] ptr        A pointer to receive the address of the allocated buffer.
+ *                          If the `VSC_ALLOC_REALLOC` flag is set, this may contain a pointer
+ *                          to an already-existing buffer to be reallocated.
+ * @param[in]    size       The requested size of the allocation.
+ * @param[in]    alignment  The required alignment of the buffer. Must be power-of-two.
+ * @param[in]    flags      The memory allocation flags.
+ * @param[in]    user       A user-provided pointer.
+ *
+ * @remark  If reallocation is not supported, and the `VSC_ALLOC_REALLOC` flag is set, then
+ *          this function should fail immediately and return `-EOPNOTSUPP`. There is special
+ *          handling in `vsc_xalloc_ex()` for this situation, which will emulate the behaviour
+ *          if possible.
+ * @remark  This function MAY NOY modify errno.
+ *
+ * @returns On success, this function returns 0 and writes the address of the newly-allocated
+ *          buffer to @par ptr. On error, this functions a negative errno value.
+ */
+typedef int (*VscAllocatorAllocProc)(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user);
+
+/**
+ * @brief Memory release callback procedure.
+ *
+ * @param[in] p     A pointer to the memory to free. NULL pointers are ignored.
+ * @param[in] user  A user-provided pointer.
+ */
 typedef void (*VscAllocatorFreeProc)(void *p, void *user);
+
+/**
+ * @brief Memory size callback procedure.
+ *
+ * @param[in] p     A pointer to target block.
+ * @param[in] user  A user-provided pointer.
+ *
+ * @returns Returns the effective usable size of a block of memory. If @p is NULL,
+ *          returns 0.
+ */
 typedef size_t (*VscAllocatorSizeProc)(void *p, void *user);
 
 typedef struct
