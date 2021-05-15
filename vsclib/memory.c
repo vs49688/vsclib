@@ -24,7 +24,7 @@
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
 
-static void *_malloc(void *ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
+static int _malloc(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
 {
     int errno_;
     void *p;
@@ -34,22 +34,22 @@ static void *_malloc(void *ptr, size_t size, size_t alignment, VscAllocFlags fla
      *     there being no way to realloc with alignment.
      *     vsc_xalloc_ex can handle this.
      */
-    if(flags & VSC_ALLOC_REALLOC) {
-        errno = EOPNOTSUPP;
-        return NULL;
-    }
+    if(flags & VSC_ALLOC_REALLOC)
+        return -EOPNOTSUPP;
 
+    /* We're not allowed to change errno. */
     errno_ = errno;
     p      = vsc_sys_aligned_malloc(size, alignment);
     errno  = errno_;
 
     if(p == NULL)
-        return NULL;
+        return -ENOMEM;
 
     if(flags & VSC_ALLOC_ZERO)
         memset(p, 0, size);
 
-    return p;
+    *ptr = p;
+    return 0;
 }
 
 static void _free(void *p, void *user)
@@ -74,7 +74,7 @@ void *vsc_xalloc(const VscAllocator *a, size_t size)
 
 void *vsc_xalloc_ex(const VscAllocator *a, void *ptr, size_t size, VscAllocFlags flags, size_t alignment)
 {
-    int errno_;
+    int errno_, ret;
     void *p;
 
     vsc_assert(a != NULL);
@@ -84,13 +84,39 @@ void *vsc_xalloc_ex(const VscAllocator *a, void *ptr, size_t size, VscAllocFlags
 
     vsc_assert(VSC_IS_POT(alignment));
 
-
     errno_ = errno;
-    p      = a->alloc(ptr, size, alignment, flags, a->user);
-    errno  = errno_;
+    p      = ptr;
+    ret    = a->alloc(&p, size, alignment, flags, a->user);
 
+    /* If our allocator can't handle realloc'ing, fake it. */
+    if(ret == -EOPNOTSUPP && (flags & VSC_ALLOC_REALLOC)) {
+        size_t msize = vsc_sys_malloc_usable_size(ptr);
+
+        /* Lucky! */
+        if(size <= msize)
+            return ptr;
+
+        p   = ptr;
+        ret = a->alloc(&p, size, alignment, flags & ~VSC_ALLOC_REALLOC, a->user);
+
+        if(ret < 0) {
+            errno = -ret;
+            return NULL;
+        }
+
+        if(ptr != NULL) {
+            memcpy(p, ptr, msize);
+            a->free(ptr, a->user);
+        }
+    } else if(ret < 0) {
+        errno = -ret;
+        return NULL;
+    }
+
+    errno = errno_;
     return p;
 }
+
 
 void vsc_xfree(const VscAllocator *a, void *p)
 {
@@ -108,6 +134,11 @@ void vsc_xfree(const VscAllocator *a, void *p)
 
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
 {
+    if(size == 0) {
+        vsc_free(ptr);
+        return NULL;
+    }
+
     return vsc_xalloc_ex(a, ptr, size, VSC_ALLOC_REALLOC, 0);
 }
 

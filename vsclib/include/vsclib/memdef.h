@@ -30,7 +30,7 @@ typedef enum VscAllocFlags {
 
 typedef struct
 {
-    void *(*alloc)(void *ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user);
+    int   (*alloc)(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user);
     void  (*free)(void *p, void *user);
 
     size_t alignment;
