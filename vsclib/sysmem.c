@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <malloc.h>
+#include <vsclib/assert.h>
 #include <vsclib/mem.h>
 
 void *vsc_sys_malloc(size_t size)

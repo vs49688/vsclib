@@ -21,6 +21,7 @@
 #define _VSCLIB_MEM_H
 
 #include <stddef.h>
+#include "platform.h"
 #include "memdef.h"
 
 #if defined(__cplusplus)
