@@ -58,9 +58,15 @@ static void _free(void *p, void *user)
     errno = errno_;
 }
 
+static size_t _size(void *p, void *user)
+{
+    return vsc_sys_malloc_usable_size(p);
+}
+
 const VscAllocator vsclib_system_allocator = {
     .alloc     = _malloc,
     .free      = _free,
+    .size      = _size,
     .alignment = 16, /* FIXME: Find a way to get this per-platform. */
     .user      = NULL,
 };
