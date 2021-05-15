@@ -95,7 +95,7 @@ void *vsc_xalloc_ex(const VscAllocator *a, void *ptr, size_t size, VscAllocFlags
 
     /* If our allocator can't handle realloc'ing, fake it. */
     if(ret == -EOPNOTSUPP && (flags & VSC_ALLOC_REALLOC)) {
-        size_t msize = vsc_sys_malloc_usable_size(ptr);
+        size_t msize = a->size(ptr, a->user);
 
         /* Lucky! */
         if(size <= msize)
