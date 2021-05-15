@@ -26,6 +26,7 @@ add_library(vsclib STATIC
 		enum_groups.c
 		strdupr.c
 		memory.c
+		sysmem.c
 		${OS_FILES}
 
 		vsclib_i.h

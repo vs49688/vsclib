@@ -20,7 +20,6 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
 
@@ -252,59 +251,3 @@ void *vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nbl
 {
     return vsc_block_xalloc(&vsclib_system_allocator, ptr, blockinfo, nblocks);
 }
-
-void *vsc_sys_malloc(size_t size)
-{
-    return malloc(size);
-}
-
-void *vsc_sys_calloc(size_t nmemb, size_t size)
-{
-    return calloc(nmemb, size);
-}
-
-void vsc_sys_free(void *p)
-{
-    free(p);
-}
-
-void *vsc_sys_realloc(void *ptr, size_t size)
-{
-    return realloc(ptr, size);
-}
-
-#if defined(_WIN32)
-void *vsc_sys_aligned_malloc(size_t size, size_t alignment)
-{
-    vsc_assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
-    return _aligned_malloc(size, alignment);
-}
-
-void vsc_sys_aligned_free(void *ptr)
-{
-    _aligned_free(ptr);
-}
-
-size_t vsc_sys_malloc_usable_size(void *ptr)
-{
-    if(ptr == NULL)
-        return 0;
-
-    return _msize(ptr);
-}
-#else
-void *vsc_sys_aligned_malloc(size_t size, size_t alignment)
-{
-    return aligned_alloc(alignment, size);
-}
-
-void vsc_sys_aligned_free(void *ptr)
-{
-    free(ptr);
-}
-
-size_t vsc_sys_malloc_usable_size(void *ptr)
-{
-    return malloc_usable_size(ptr);
-}
-#endif
