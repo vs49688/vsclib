@@ -28,10 +28,13 @@ typedef enum VscAllocFlags {
     /* VSC_ALLOC_NOFAIL = 1 << x, */
 } VscAllocFlags;
 
+typedef int  (*VscAllocatorAllocProc)(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user);
+typedef void (*VscAllocatorFreeProc)(void *p, void *user);
+
 typedef struct
 {
-    int   (*alloc)(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user);
-    void  (*free)(void *p, void *user);
+    VscAllocatorAllocProc alloc;
+    VscAllocatorFreeProc  free;
 
     size_t alignment;
     void  *user;
