@@ -53,7 +53,12 @@ static int _malloc(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
 
 static void _free(void *p, void *user)
 {
-    int errno_ = errno;
+    int errno_;
+
+    if(p == NULL)
+        return;
+
+    errno_ = errno;
     vsc_sys_aligned_free(p);
     errno = errno_;
 }
