@@ -45,4 +45,14 @@
 #define VSC_MAX(a,b) ((a) > (b) ? (a) : (b))
 #define VSC_MIN(a,b) ((a) < (b) ? (a) : (b))
 
+#if __STDC_VERSION__ >= 201112L
+#   define VSC_ALIGNOF _Alignof
+#elif defined(_MSC_VER)
+#   define VSC_ALIGNOF __alignof
+#elif defined(__GNUC__)
+#   define VSC_ALIGNOF __alignof__
+#else
+#   error Cannot determine how to get type alignment, please fix your system
+#endif
+
 #endif /* _VSCLIB_PLATFORM_H */

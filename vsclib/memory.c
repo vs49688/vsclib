@@ -20,7 +20,6 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdalign.h>
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
 #include <vsclib/types.h>
@@ -74,7 +73,7 @@ const VscAllocator vsclib_system_allocator = {
     .alloc     = _malloc,
     .free      = _free,
     .size      = _size,
-    .alignment = alignof(vsc_max_align_t),
+    .alignment = VSC_ALIGNOF(vsc_max_align_t),
     .user      = NULL,
 };
 
