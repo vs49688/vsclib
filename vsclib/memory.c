@@ -20,8 +20,10 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdalign.h>
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
+#include <vsclib/types.h>
 
 static int _malloc(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
 {
@@ -72,7 +74,7 @@ const VscAllocator vsclib_system_allocator = {
     .alloc     = _malloc,
     .free      = _free,
     .size      = _size,
-    .alignment = 16, /* FIXME: Find a way to get this per-platform. */
+    .alignment = alignof(vsc_max_align_t),
     .user      = NULL,
 };
 
