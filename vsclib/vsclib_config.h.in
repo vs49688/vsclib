@@ -8,4 +8,6 @@
 
 #cmakedefine VSC_ENDIAN_BIG
 
+#cmakedefine VSC_HAVE_MAX_ALIGN_T
+
 #endif /* VSCLIB_CONFIG_H_ */

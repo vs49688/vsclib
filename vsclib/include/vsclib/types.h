@@ -22,6 +22,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "vsclib_config.h"
 
 #if defined(WIN32)
 #   include <basetsd.h>
@@ -30,5 +31,15 @@ typedef SSIZE_T   vsc_ssize_t;
 typedef ssize_t   vsc_ssize_t;
 #endif
 
+#if defined(VSC_HAVE_MAX_ALIGN_T)
+typedef max_align_t vsc_max_align_t;
+#else
+typedef union {
+    char       *p;
+    double      d;
+    long double ld;
+    long int    i;
+} vsc_max_align_t;
+#endif
 
 #endif /* _VSCLIB_TYPES_H */

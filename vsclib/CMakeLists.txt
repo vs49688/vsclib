@@ -4,6 +4,9 @@ include(TestBigEndian)
 
 TEST_BIG_ENDIAN(VSC_ENDIAN_BIG)
 
+check_type_size(max_align_t MAX_ALIGN_T LANGUAGE C)
+set(VSC_HAVE_MAX_ALIGN_T ${HAVE_MAX_ALIGN_T})
+
 if(MINGW OR WIN32)
 	set(OS_FILES searchpath_win32.c)
 else()
