@@ -1,11 +1,11 @@
 # vsclib
 
-C utility library, designed with linear allocators in-mind.
+C utility library.
 
 ## Goals
 
 * Provide useful functionality the C standard library lacks.
-* Be compatible with linear allocators (for games)
+* Strive to be compatible with linear allocators where possible.
 * Have no dependencies other than the C standard library.
 
 ## Notes
