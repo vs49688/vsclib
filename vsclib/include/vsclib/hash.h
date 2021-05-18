@@ -21,8 +21,20 @@
 #define _VSCLIB_HASH_H
 
 #include <stddef.h>
+#include <stdint.h>
 #include "hashdef.h"
 
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
 vsc_hash_t vsc_hash(const void *data, size_t size);
+
+uint32_t vsc_crc32( const void *data, size_t size);
+uint32_t vsc_crc32c(const void *data, size_t size);
+
+#if defined(__cplusplus)
+}
+#endif
 
 #endif /* _VSCLIB_HASH_H */

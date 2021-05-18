@@ -32,6 +32,7 @@ add_library(vsclib STATIC
 		sysmem.c
 
 		hash.c
+		crc32.c
 		xxhash.h
 
 		${OS_FILES}
