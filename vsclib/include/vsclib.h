@@ -40,6 +40,7 @@
 #include "vsclib/mem.h"
 #include "vsclib/io.h"
 #include "vsclib/string.h"
+#include "vsclib/hash.h"
 
 #if defined(__cplusplus)
 extern "C" {

@@ -35,3 +35,4 @@ limitations under the License.
 | Project | License | License URL |
 | ------- | ------- | ----------- |
 | [getline/getdelim](https://github.com/ivanrad/getline) | Public Domain | https://github.com/ivanrad/getline |
+| [xxHash](https://github.com/Cyan4973/xxHash) | BSD 2-Clause License | https://www.opensource.org/licenses/bsd-license.php |

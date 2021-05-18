@@ -30,6 +30,10 @@ add_library(vsclib STATIC
 		strdupr.c
 		memory.c
 		sysmem.c
+
+		hash.c
+		xxhash.h
+
 		${OS_FILES}
 
 		vsclib_i.h
@@ -49,6 +53,9 @@ add_library(vsclib STATIC
 
 		include/vsclib/stringdef.h
 		include/vsclib/string.h
+
+		include/vsclib/hashdef.h
+		include/vsclib/hash.h
 )
 
 set_target_properties(vsclib PROPERTIES
