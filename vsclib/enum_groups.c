@@ -42,7 +42,7 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
     errno = EOPNOTSUPP;
     return -1;
 #else
-    size_t buflen = 10; /* 2048 is enough for the HPC. */
+    size_t buflen = 2048; /* 2048 is enough for the HPC. */
     char *buf = NULL;
     int ret = 0, rc = 0, olderr;
 
