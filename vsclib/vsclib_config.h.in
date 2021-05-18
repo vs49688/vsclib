@@ -10,4 +10,6 @@
 
 #cmakedefine VSC_HAVE_MAX_ALIGN_T
 
+#cmakedefine VSC_HAVE_GETGRENT_R
+
 #endif /* VSCLIB_CONFIG_H_ */

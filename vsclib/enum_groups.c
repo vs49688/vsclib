@@ -17,7 +17,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define _GNU_SOURCE /* For getgrent_r() */
+#if defined(VSC_HAVE_GETGRENT_R)
+#   define _GNU_SOURCE
+#endif
 
 #include <errno.h>
 
@@ -36,7 +38,7 @@
 int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, const VscAllocator *a)
 {
     /* Absolutely disgusting. */
-#if defined(_WIN32)
+#if defined(_WIN32) || !defined(VSC_HAVE_GETGRENT_R)
     errno = EOPNOTSUPP;
     return -1;
 #else
