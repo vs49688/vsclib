@@ -20,6 +20,7 @@
 #ifndef _VSCLIB_MEMDEF_H
 #define _VSCLIB_MEMDEF_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 typedef enum VscAllocFlags {
