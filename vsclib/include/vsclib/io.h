@@ -20,8 +20,11 @@
 #ifndef _VSCLIB_IO_H
 #define _VSCLIB_IO_H
 
+#include <string.h>
+
 #include "platform.h"
 #include "iodef.h"
+#include "memdef.h"
 
 #if defined(__cplusplus)
 extern "C" {
