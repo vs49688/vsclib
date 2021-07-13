@@ -41,6 +41,8 @@ add_library(vsclib STATIC
 		crc32.c
 		xxhash.h
 
+		wav.c
+
 		${OS_FILES}
 
 		vsclib_i.h
@@ -63,6 +65,8 @@ add_library(vsclib STATIC
 
 		include/vsclib/hashdef.h
 		include/vsclib/hash.h
+
+		include/vsclib/wav.h
 )
 
 set_target_properties(vsclib PROPERTIES
