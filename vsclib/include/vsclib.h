@@ -41,6 +41,7 @@
 #include "vsclib/io.h"
 #include "vsclib/string.h"
 #include "vsclib/hash.h"
+#include "vsclib/wav.h"
 
 #if defined(__cplusplus)
 extern "C" {
