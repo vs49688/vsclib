@@ -27,7 +27,12 @@ int vsc_fnullify(FILE *f)
 {
     int fd, devnull, errno_;
 
-    /* Only if NULL, or fmemopen()'d */
+    if(f == NULL) {
+        errno = EINVAL;
+        return -1;
+    }
+
+    /* If fmemopen()'d */
     if((fd = vsc_fileno(f)) < 0)
         return -1;
 
