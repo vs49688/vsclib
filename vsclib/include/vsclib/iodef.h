@@ -22,13 +22,13 @@
 
 #include <stdio.h>
 #include "types.h"
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #if defined(WIN32)
 typedef __int64   vsc_off_t;
 typedef long int  vsc_blksize_t;
 #else
-#   include <sys/stat.h>
-#   include <sys/types.h>
 typedef off_t     vsc_off_t;
 typedef blksize_t vsc_blksize_t;
 #endif

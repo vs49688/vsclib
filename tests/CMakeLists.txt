@@ -22,3 +22,5 @@ if(MINGW)
             LINK_FLAGS "-static-libgcc -static-libstdc++"
     )
 endif()
+
+target_compile_definitions(vsclib_tests PRIVATE "-D_USE_MATH_DEFINES")
