@@ -5,7 +5,7 @@ C utility library.
 ## Goals
 
 * Provide useful functionality the C standard library lacks.
-* Strive to be compatible with linear allocators where possible.
+* Strive to be compatible with linear allocation strategies where possible.
 * Have no dependencies other than the C standard library.
 
 ## Notes
