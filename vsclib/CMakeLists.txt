@@ -19,6 +19,10 @@ else()
 	set(OS_FILES searchpath.c)
 endif()
 
+if(CMAKE_BUILD_TYPE MATCHES Debug)
+	set(VSC_DEBUG 1)
+endif()
+
 set(VSCLIB_GENERATED_INCLUDE_DIR "${CMAKE_CURRENT_BINARY_DIR}" )
 configure_file("${PROJECT_SOURCE_DIR}/vsclib_config.h.in"
 			   "${VSCLIB_GENERATED_INCLUDE_DIR}/include/vsclib_config.h")
