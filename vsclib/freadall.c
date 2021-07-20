@@ -199,6 +199,8 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
         return -1;
     }
 
+    errno = 0;
+
     /* Save our current position if possible. */
     if((save = vsc_ftello(f)) < 0) {
         /*
