@@ -47,6 +47,8 @@ add_library(vsclib STATIC
 
 		wav.c
 
+		hashmap.c
+
 		${OS_FILES}
 
 		vsclib_i.h
@@ -71,6 +73,9 @@ add_library(vsclib STATIC
 		include/vsclib/hash.h
 
 		include/vsclib/wav.h
+
+		include/vsclib/hashmapdef.h
+		include/vsclib/hashmap.h
 )
 
 set_target_properties(vsclib PROPERTIES
