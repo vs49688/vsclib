@@ -64,7 +64,7 @@ int vsc_wav_write(FILE *f, int16_t *data, size_t nsamples, uint32_t sample_rate,
         }
     }
 #else
-    if(fwrite(data, nsamples * nchannels * sizeof(uint16_t), 1, f) != 1) {
+    if(fwrite(data, data_size, 1, f) != 1) {
         errno = EIO;
         return -1;
     }
