@@ -43,25 +43,21 @@ void *vsc_sys_realloc(void *ptr, size_t size)
     return realloc(ptr, size);
 }
 
-#if defined(_WIN32)
 void *vsc_sys_aligned_malloc(size_t size, size_t alignment)
 {
+#if defined(_WIN32)
     vsc_assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
     return _aligned_malloc(size, alignment);
-}
-
-void vsc_sys_aligned_free(void *ptr)
-{
-    _aligned_free(ptr);
-}
 #else
-void *vsc_sys_aligned_malloc(size_t size, size_t alignment)
-{
     return aligned_alloc(alignment, size);
+#endif
 }
 
 void vsc_sys_aligned_free(void *ptr)
 {
+#if defined(_WIN32)
+    _aligned_free(ptr);
+#else
     free(ptr);
-}
 #endif
+}
