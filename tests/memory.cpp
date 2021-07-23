@@ -121,7 +121,7 @@ TEST_CASE("align", "[memory]") {
             throw std::bad_alloc();
 
         for(size_t i = 0; i < bai.size(); ++i) {
-            CHECK(ptrs[i] != NULL);
+            CHECK(ptrs[i] != nullptr);
             if(i > 0)
                 CHECK(ptrs[i] > ptrs[i-1]);
             CHECK(VSC_IS_ALIGNED(ptrs[i], bai[i].alignment));
