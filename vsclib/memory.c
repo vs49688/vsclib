@@ -66,7 +66,14 @@ static void _free(void *p, void *user)
 
 static size_t _size(void *p, void *user)
 {
-    return vsc_sys_malloc_usable_size(p);
+#if defined(_WIN32)
+    if(p == NULL)
+        return 0;
+
+    return _msize(p);
+#else
+    return malloc_usable_size(p);
+#endif
 }
 
 const VscAllocator vsclib_system_allocator = {
