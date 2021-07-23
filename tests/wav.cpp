@@ -39,6 +39,7 @@ TEST_CASE("wav", "[wav]") {
     size_t size;
     r = vsc_freadall(&ptr, &size, f.get());
     REQUIRE(r == 0);
+    free(ptr);
 
     CHECK(110294     == size);
     CHECK(2116742294 == vsc_crc32c(ptr, size));
