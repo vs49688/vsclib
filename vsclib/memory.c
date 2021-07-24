@@ -120,6 +120,9 @@ void *vsc_xalloc_ex(const VscAllocator *a, void *ptr, size_t size, VscAllocFlags
             a->free(ptr, a->user);
         }
     } else if(ret < 0) {
+        if(flags & VSC_ALLOC_NOFAIL)
+            abort();
+
         errno = -ret;
         return NULL;
     }
