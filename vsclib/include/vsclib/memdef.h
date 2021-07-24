@@ -53,7 +53,7 @@ typedef enum VscAllocFlags {
  *          this function should fail immediately and return `-EOPNOTSUPP`. There is special
  *          handling in `vsc_xalloc_ex()` for this situation, which will emulate the behaviour
  *          if possible.
- * @remark  This function MAY NOY modify errno.
+ * @remark  This function MUST NOY modify errno.
  *
  * @returns On success, this function returns 0 and writes the address of the newly-allocated
  *          buffer to @par ptr. On error, this functions a negative errno value.
