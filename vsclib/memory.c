@@ -170,7 +170,12 @@ void *vsc_malloc(size_t size)
 
 void *vsc_calloc(size_t nmemb, size_t size)
 {
-    return vsc_xalloc_ex(&vsclib_system_allocator, NULL, size, VSC_ALLOC_ZERO, 0);
+    if(size > 0 && nmemb > SIZE_MAX / size) {
+        errno = ENOMEM; /* FIXME: Is this the right code? */
+        return NULL;
+    }
+
+    return vsc_xalloc_ex(&vsclib_system_allocator, NULL, size * nmemb, VSC_ALLOC_ZERO, 0);
 }
 
 void vsc_free(void *p)
