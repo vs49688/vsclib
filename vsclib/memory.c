@@ -90,7 +90,7 @@ void *vsc_xalloc(const VscAllocator *a, size_t size)
     return vsc_xalloc_ex(a, NULL, size, 0, a->alignment);
 }
 
-void *vsc_xalloc_ex(const VscAllocator *a, void *ptr, size_t size, VscAllocFlags flags, size_t alignment)
+void *vsc_xalloc_ex(const VscAllocator *a, void *ptr, size_t size, uint32_t flags, size_t alignment)
 {
     int errno_, ret;
     void *p;
