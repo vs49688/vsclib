@@ -27,13 +27,16 @@ typedef enum VscAllocFlags {
     /**
      * @brief Memory should be zero'd after allocation.
      */
-    VSC_ALLOC_ZERO    = 1 << 0,
-    VSC_ALLOC_NOFAIL  = 1 << 1,
+    VSC_ALLOC_ZERO         = 1 << 0,
     /**
-     * @brief Attempt to reallocate an existing buffer.
+     * @brief Allocations must not fail, abort() will be called.
+     */
+    VSC_ALLOC_NOFAIL       = 1 << 1,
+    /**
+     * @brief Memory may be expanded or moved, i.e. realloc(3) semantics.
      * This may not be supported by all allocators.
      */
-    VSC_ALLOC_REALLOC = 1 << 2,
+    VSC_ALLOC_REALLOC     = 1 << 2,
 } VscAllocFlags;
 
 /**
