@@ -129,3 +129,29 @@ TEST_CASE("align", "[memory]") {
         }
     }
 }
+
+TEST_CASE("zero", "[memory]") {
+    uint8_t *p;
+    vsc_ptr<uint8_t> _p;
+
+    p = (uint8_t*)vsc_calloc(1024, 1);
+    REQUIRE(p != nullptr);
+    _p.reset(p);
+
+    for(size_t i = 0; i < 1024; ++i) {
+         CHECK(p[i] == 0);
+         p[i] = UINT8_MAX;
+    }
+
+    p = (uint8_t*)vsc_xalloc_ex(&vsclib_system_allocator, _p.get(), 2048, VSC_ALLOC_REALLOC | VSC_ALLOC_ZERO, 0);
+    REQUIRE(p != nullptr);
+    (void)_p.release();
+    _p.reset(p);
+
+    for(size_t i = 0; i < 2048; ++i) {
+        if(i < 1024)
+            CHECK(p[i] == UINT8_MAX);
+        else
+            CHECK(p[i] == 0);
+    }
+}
