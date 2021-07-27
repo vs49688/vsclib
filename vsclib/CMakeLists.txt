@@ -14,9 +14,13 @@ set(VSC_HAVE_GETGRENT_R ${HAVE_GETGRENT_R})
 set(CMAKE_REQUIRED_DEFINITIONS)
 
 if(MINGW OR WIN32)
-	set(OS_FILES searchpath_win32.c)
+	set(OS_FILES
+			searchpath_win32.c
+	)
 else()
-	set(OS_FILES searchpath.c)
+	set(OS_FILES
+			searchpath.c
+	)
 endif()
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
