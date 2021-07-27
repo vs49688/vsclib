@@ -21,7 +21,6 @@
 #include <string.h>
 #include <errno.h>
 #include <vsclib/hashmap.h>
-#include "vsclib_i.h"
 
 /*
  * Notes:

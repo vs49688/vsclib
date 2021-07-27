@@ -27,7 +27,8 @@
 
 #include <stdio.h>
 #include <fcntl.h>
-#include "vsclib_i.h"
+#include <vsclib/types.h>
+#include <vsclib/iodef.h>
 
 int vsc_fileno(FILE *stream)
 {

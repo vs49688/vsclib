@@ -23,7 +23,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "vsclib_i.h"
+#include <vsclib/mem.h>
 
 static int statfile(const char *p, uid_t uid, gid_t gid)
 {

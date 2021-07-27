@@ -22,7 +22,9 @@
 #	include <windows.h>
 #endif
 
-#include "vsclib_i.h"
+#include <vsclib/io.h>
+#include <vsclib/string.h>
+#include <vsclib/mem.h>
 
 FILE *vsc_fopena(const char *pathname, const char *mode, const VscAllocator *a)
 {

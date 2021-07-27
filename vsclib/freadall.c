@@ -40,7 +40,10 @@
 #	include <sys/types.h>
 #endif
 
-#include "vsclib_i.h"
+#include <vsclib/assert.h>
+#include <vsclib/mem.h>
+#include <vsclib/io.h>
+
 
 const static VscFreadallState default_state = {
 	.file_size  = 0,

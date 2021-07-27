@@ -20,7 +20,8 @@
 
 #include <errno.h>
 #include <stdarg.h>
-#include "vsclib_i.h"
+#include <stdio.h>
+#include <vsclib/mem.h>
 
 char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap)
 {

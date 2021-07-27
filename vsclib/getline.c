@@ -13,8 +13,9 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <limits.h>
-
-#include "vsclib_i.h"
+#include <stdio.h>
+#include <vsclib/types.h>
+#include <vsclib/mem.h>
 
 #if defined(_MSC_VER)
 #   if defined(_WIN64)

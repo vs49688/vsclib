@@ -20,8 +20,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
-
-#include "vsclib_i.h"
+#include <vsclib/io.h>
 
 int vsc_fnullify(FILE *f)
 {

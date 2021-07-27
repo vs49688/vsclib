@@ -17,8 +17,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <assert.h>
-#include "vsclib_i.h"
+#include <errno.h>
+#include <string.h>
+#include <vsclib/assert.h>
+#include <vsclib/mem.h>
 
 char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a)
 {

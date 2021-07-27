@@ -21,7 +21,8 @@
 #include <windows.h>
 #include <limits.h>
 
-#include "vsclib_i.h"
+#include <vsclib/assert.h>
+#include <vsclib/mem.h>
 
 wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscAllocator *a)
 {
