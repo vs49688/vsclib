@@ -16,10 +16,12 @@ set(CMAKE_REQUIRED_DEFINITIONS)
 if(MINGW OR WIN32)
 	set(OS_FILES
 			searchpath_win32.c
+			allocator_win32.c
 	)
 else()
 	set(OS_FILES
 			searchpath.c
+			allocator.c
 	)
 endif()
 

@@ -24,66 +24,6 @@
 #include <vsclib/mem.h>
 #include <vsclib/types.h>
 
-static int _malloc(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
-{
-    int errno_;
-    void *p;
-
-    /*
-     * NB: Realloc'ing not supported with the system allocator due
-     *     there being no way to realloc with alignment.
-     *     vsc_xalloc_ex can handle this.
-     */
-    if(flags & VSC_ALLOC_REALLOC)
-        return -EOPNOTSUPP;
-
-    /* We're not allowed to change errno. */
-    errno_ = errno;
-    p      = vsc_sys_aligned_malloc(size, alignment);
-    errno  = errno_;
-
-    if(p == NULL)
-        return -ENOMEM;
-
-    if(flags & VSC_ALLOC_ZERO)
-        memset(p, 0, size);
-
-    *ptr = p;
-    return 0;
-}
-
-static void _free(void *p, void *user)
-{
-    int errno_;
-
-    if(p == NULL)
-        return;
-
-    errno_ = errno;
-    vsc_sys_aligned_free(p);
-    errno = errno_;
-}
-
-static size_t _size(void *p, void *user)
-{
-#if defined(_WIN32)
-    if(p == NULL)
-        return 0;
-
-    return _msize(p);
-#else
-    return malloc_usable_size(p);
-#endif
-}
-
-const VscAllocator vsclib_system_allocator = {
-    .alloc     = _malloc,
-    .free      = _free,
-    .size      = _size,
-    .alignment = VSC_ALIGNOF(vsc_max_align_t),
-    .user      = NULL,
-};
-
 void *vsc_xalloc(const VscAllocator *a, size_t size)
 {
     vsc_assert(a != NULL);
