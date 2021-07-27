@@ -21,6 +21,7 @@
 #define _VSCLIB_IO_H
 
 #include <string.h>
+#include <stdlib.h>
 
 #include "platform.h"
 #include "iodef.h"
