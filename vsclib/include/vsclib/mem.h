@@ -28,6 +28,8 @@
 extern "C" {
 #endif
 
+extern const VscAllocator vsclib_system_allocator;
+
 static inline int vsc_is_pot(unsigned int alignment)
 {
     return VSC_IS_POT(alignment);
