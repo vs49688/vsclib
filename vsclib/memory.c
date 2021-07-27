@@ -135,6 +135,7 @@ void *vsc_xalloc_ex(const VscAllocator *a, void *ptr, size_t size, uint32_t flag
     }
 
     errno = errno_;
+    vsc_assert(VSC_IS_ALIGNED(p, alignment));
     return p;
 }
 
