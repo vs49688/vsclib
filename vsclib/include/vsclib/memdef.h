@@ -50,7 +50,8 @@ typedef enum VscAllocFlags {
  *
  * @param[in,out] ptr       A pointer to receive the address of the allocated buffer.
  *                          If the #VSC_ALLOC_REALLOC flag is set, this may contain a pointer
- *                          to an already-existing buffer to be reallocated.
+ *                          to an already-existing buffer to be reallocated (or NULL). If the function
+ *                          fails, this value MUST not be touched.
  * \param[in]    size       The requested size of the allocation.
  * \param[in]    alignment  The required alignment of the buffer. Must be power-of-two.
  * \param[in]    flags      The memory allocation flags.

@@ -26,57 +26,54 @@
 
 void *vsc_xalloc(const VscAllocator *a, size_t size)
 {
+    void *p = NULL;
     vsc_assert(a != NULL);
-    return vsc_xalloc_ex(a, NULL, size, 0, a->alignment);
+    if(vsc_xalloc_ex(a, &p, size, 0, a->alignment) < 0) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    return p;
 }
 
-void *vsc_xalloc_ex(const VscAllocator *a, void *ptr, size_t size, uint32_t flags, size_t alignment)
+int vsc_xalloc_ex(const VscAllocator *a, void **ptr, size_t size, uint32_t flags, size_t alignment)
 {
-    int errno_, ret;
-    void *p;
+    int ret;
 
-    vsc_assert(a != NULL);
+    vsc_assert(a != NULL && ptr != NULL);
 
     if(alignment == 0)
         alignment = a->alignment;
 
     vsc_assert(VSC_IS_POT(alignment));
 
-    errno_ = errno;
-    p      = ptr;
-    ret    = a->alloc(&p, size, alignment, flags, a->user);
+    ret = a->alloc(ptr, size, alignment, flags, a->user);
 
     /* If our allocator can't handle realloc'ing, fake it. */
     if(ret == -EOPNOTSUPP && (flags & VSC_ALLOC_REALLOC)) {
-        size_t msize = a->size(ptr, a->user);
+        void *p = *ptr;
+        size_t msize = a->size(*ptr, a->user);
 
         /* Lucky! */
         if(size <= msize)
-            return ptr;
+            return 0;
 
-        p   = ptr;
-        ret = a->alloc(&p, size, alignment, flags & ~VSC_ALLOC_REALLOC, a->user);
+        if((ret = a->alloc(ptr, size, alignment, flags & ~VSC_ALLOC_REALLOC, a->user)) < 0)
+            return ret;
 
-        if(ret < 0) {
-            errno = -ret;
-            return NULL;
-        }
-
-        if(ptr != NULL) {
-            memcpy(p, ptr, msize);
-            a->free(ptr, a->user);
+        if(p != NULL) {
+            memcpy(*ptr, p, msize);
+            a->free(p, a->user);
         }
     } else if(ret < 0) {
         if(flags & VSC_ALLOC_NOFAIL)
             abort();
 
-        errno = -ret;
-        return NULL;
+        return ret;
     }
 
-    errno = errno_;
-    vsc_assert(VSC_IS_ALIGNED(p, alignment));
-    return p;
+    vsc_assert(VSC_IS_ALIGNED(*ptr, alignment));
+    return 0;
 }
 
 
@@ -101,7 +98,12 @@ void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
         return NULL;
     }
 
-    return vsc_xalloc_ex(a, ptr, size, VSC_ALLOC_REALLOC, 0);
+    if(vsc_xalloc_ex(a, &ptr, size, VSC_ALLOC_REALLOC, 0) < 0) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    return ptr;
 }
 
 void *vsc_malloc(size_t size)
@@ -111,12 +113,18 @@ void *vsc_malloc(size_t size)
 
 void *vsc_calloc(size_t nmemb, size_t size)
 {
+    void *p = NULL;
     if(size > 0 && nmemb > SIZE_MAX / size) {
         errno = ENOMEM; /* FIXME: Is this the right code? */
         return NULL;
     }
 
-    return vsc_xalloc_ex(&vsclib_system_allocator, NULL, size * nmemb, VSC_ALLOC_ZERO, 0);
+    if(vsc_xalloc_ex(&vsclib_system_allocator, &p, size * nmemb, VSC_ALLOC_ZERO, 0) < 0) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    return p;
 }
 
 void vsc_free(void *p)
@@ -131,7 +139,13 @@ void *vsc_realloc(void *ptr, size_t size)
 
 void *vsc_aligned_malloc(size_t size, size_t alignment)
 {
-    return vsc_xalloc_ex(&vsclib_system_allocator, NULL, size, 0, alignment);
+    void *p = NULL;
+    if(vsc_xalloc_ex(&vsclib_system_allocator, &p, size, 0, alignment) < 0) {
+        errno = ENOMEM;
+        return NULL;
+    }
+
+    return p;
 }
 
 void vsc_aligned_free(void *ptr)
@@ -164,7 +178,7 @@ void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space)
 void *vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks)
 {
     size_t reqsize;
-    void *block;
+    void *block = NULL;
 
     if(blockinfo == NULL || nblocks < 1 || ptr == NULL || a == NULL) {
         errno = EINVAL;
@@ -187,8 +201,10 @@ void *vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInf
         reqsize += size;
     }
 
-    if((block = vsc_xalloc_ex(a, NULL, reqsize, 0, blockinfo[0].alignment)) == NULL)
+    if(vsc_xalloc_ex(a, &block, reqsize, 0, blockinfo[0].alignment) < 0) {
+        errno = ENOMEM;
         return NULL;
+    }
 
     /* Pass 2: Calculate the aligned pointers */
     ptr[0] = block;

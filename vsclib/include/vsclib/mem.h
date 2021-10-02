@@ -67,21 +67,21 @@ void *vsc_xalloc(const VscAllocator *a, size_t size);
 /**
  * \brief Extended memory allocation routine.
  *
- * \param a         A pointer to the allocator to use. May not be NULL.
- * \param ptr[in]   The address of an already existing block. May be NULL. Ignored if
- *                  the #VSC_ALLOC_REALLOC flag is not set.
- * \param size      The requested size of the allocation.
- * \param flags     The allocation flags. See #VscAllocFlags documentation.
- * \param alignment The alignment of the allocated block. If zero, use the allocator's
- *                  default alignment. If nonzero, must be power-of-two.
+ * \param a           A pointer to the allocator to use. May not be NULL.
+ * \param ptr[in,out] A pointer to receive the address of the allocated block.
+ *                    If the #VSC_ALLOC_REALLOC flag is set, this may contain a pointer to
+ *                    an existing block to be reallocated.
+ * \param size        The requested size of the allocation.
+ * \param flags       The allocation flags. See #VscAllocFlags documentation.
+ * \param alignment   The alignment of the allocated block. If zero, use the allocator's
+ *                    default alignment. If nonzero, must be power-of-two.
  *
  * \remark If the supplied allocator does not support #VSC_ALLOC_REALLOC,
  *         vsc_xalloc_ex() will emulate it with a alloc-copy-free operation.
  *
- * \returns On success, this function returns a pointer to the allocated
- *          block. On failure, returns NULL and sets `errno`.
+ * \returns On success, returns 0. On failure, returns a negative error value.
  */
-void *vsc_xalloc_ex(const VscAllocator *a, void *ptr, size_t size, uint32_t flags, size_t alignment);
+int vsc_xalloc_ex(const VscAllocator *a, void **ptr, size_t size, uint32_t flags, size_t alignment);
 
 /**
  * \brief Free memory allocated by vsc_xalloc(), vsc_xrealloc(), or vsc_xalloc_ex().

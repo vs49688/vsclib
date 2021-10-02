@@ -143,7 +143,8 @@ TEST_CASE("zero", "[memory]") {
          p[i] = UINT8_MAX;
     }
 
-    p = (uint8_t*)vsc_xalloc_ex(&vsclib_system_allocator, _p.get(), 2048, VSC_ALLOC_REALLOC | VSC_ALLOC_ZERO, 0);
+    int ret = vsc_xalloc_ex(&vsclib_system_allocator, (void**)&p, 2048, VSC_ALLOC_REALLOC | VSC_ALLOC_ZERO, 0);
+    REQUIRE(ret == 0);
     REQUIRE(p != nullptr);
     (void)_p.release();
     _p.reset(p);
