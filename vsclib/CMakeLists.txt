@@ -66,6 +66,7 @@ add_library(vsclib STATIC
 
 		include/vsclib/assert.h
 		include/vsclib/types.h
+		include/vsclib/error.h
 
 		include/vsclib/memdef.h
 		include/vsclib/mem.h

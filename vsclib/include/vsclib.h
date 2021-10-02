@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 
 #include "vsclib_config.h"
+#include "vsclib/error.h"
 #include "vsclib/assert.h"
 #include "vsclib/mem.h"
 #include "vsclib/io.h"
