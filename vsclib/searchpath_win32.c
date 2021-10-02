@@ -106,8 +106,10 @@ char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
     if((x = SearchPathW(NULL, wf, L".exe", 0, NULL, NULL)) == 0)
         goto done;
 
-    if((ws = vsc_xalloc(a, (size_t)x * sizeof(wchar_t))) == NULL)
+    if((ws = vsc_xalloc(a, (size_t)x * sizeof(wchar_t))) == NULL) {
+        errno = ENOMEM;
         goto done;
+    }
 
     if((x = SearchPathW(NULL, wf, L".exe", x, ws, NULL)) == 0)
         goto done;
