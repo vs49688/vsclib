@@ -97,7 +97,7 @@ void vsc_xfree(const VscAllocator *a, void *p)
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
 {
     if(size == 0) {
-        vsc_free(ptr);
+        vsc_xfree(a, ptr);
         return NULL;
     }
 
