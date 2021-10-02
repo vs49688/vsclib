@@ -155,3 +155,23 @@ TEST_CASE("zero", "[memory]") {
             CHECK(p[i] == 0);
     }
 }
+
+TEST_CASE("realloc", "[memory]") {
+    uint8_t *p;
+    vsc_ptr<void> _p;
+
+    p = (uint8_t*)vsc_malloc(10);
+    REQUIRE(p != nullptr);
+    _p.reset(p);
+
+    for(size_t i = 0; i < 10; ++i)
+        p[i] = 0xFE;
+
+    uint8_t *p2 = (uint8_t*)vsc_realloc(p, 100);
+    REQUIRE(p2 != nullptr);
+    (void)_p.release();
+    _p.reset(p2);
+
+    for(size_t i = 0; i < 10; ++i)
+        CHECK(p2[i] == 0xFE);
+}
