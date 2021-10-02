@@ -94,10 +94,8 @@ void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
         return NULL;
     }
 
-    if(vsc_xalloc_ex(a, &ptr, size, VSC_ALLOC_REALLOC, 0) < 0) {
-        errno = ENOMEM;
+    if(vsc_xalloc_ex(a, &ptr, size, VSC_ALLOC_REALLOC, 0) < 0)
         return NULL;
-    }
 
     return ptr;
 }
@@ -130,7 +128,11 @@ void vsc_free(void *p)
 
 void *vsc_realloc(void *ptr, size_t size)
 {
-    return vsc_xrealloc(&vsclib_system_allocator, ptr, size);
+    void *p = vsc_xrealloc(&vsclib_system_allocator, ptr, size);
+    if(p == NULL)
+        errno = ENOMEM;
+
+    return p;
 }
 
 void *vsc_aligned_malloc(size_t size, size_t alignment)
