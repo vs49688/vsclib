@@ -59,8 +59,10 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
         void *buf2;
 
         if(buf == NULL || rc == ERANGE) {
-            if((buf2 = vsc_xrealloc(a, buf, buflen)) == NULL)
+            if((buf2 = vsc_xrealloc(a, buf, buflen)) == NULL) {
+                errno = ENOMEM;
                 break;
+            }
             buf = buf2;
         }
 
