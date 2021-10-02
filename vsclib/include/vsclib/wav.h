@@ -36,8 +36,8 @@ extern "C" {
  * @param sample_rate The audio sample rate.
  * @param nchannels   The number of channels.
  *
- * @return Upon successful completion, vsc_wav_write() returns 0, or -1 if an error
- *         occurred and errno is set to indicate the error.
+ * @return Upon successful completion, vsc_wav_write() returns 0.
+ *         Otherwise, returns a negative error value.
  */
 int vsc_wav_write(FILE *f, int16_t *data, size_t nsamples, uint32_t sample_rate, uint16_t nchannels);
 

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <errno.h>
+#include <vsclib/error.h>
 #include <vsclib/io.h>
 
 #define WAV_HEADER_BUF_SIZE 44
@@ -16,20 +17,14 @@ int vsc_wav_write(FILE *f, int16_t *data, size_t nsamples, uint32_t sample_rate,
     const uint16_t block_align = nchannels * sizeof(int16_t);
     const uint32_t data_size   = (uint32_t)(block_align * nsamples);
 
-    if(f == NULL || data == NULL || sample_rate == 0 || (nchannels != 1 && nchannels != 2)) {
-        errno = EINVAL;
-        return -1;
-    }
+    if(f == NULL || data == NULL || sample_rate == 0 || (nchannels != 1 && nchannels != 2))
+        return VSC_ERROR(EINVAL);
 
-    if(nsamples >= UINT32_MAX / block_align) {
-        errno = ERANGE;
-        return -1;
-    }
+    if(nsamples >= UINT32_MAX / block_align)
+        return VSC_ERROR(ERANGE);
 
-    if(data_size > UINT32_MAX - 36) {
-        errno = ERANGE;
-        return -1;
-    }
+    if(data_size > UINT32_MAX - 36)
+        return VSC_ERROR(ERANGE);
 
     vsc_write_beu32(buf  + 0, FOURCC_RIFF);
     vsc_write_leu32(buf  + 4, 36 + data_size);
@@ -49,25 +44,19 @@ int vsc_wav_write(FILE *f, int16_t *data, size_t nsamples, uint32_t sample_rate,
     vsc_write_beu32(buf + 36, FOURCC_data);
     vsc_write_leu32(buf + 40, data_size);
 
-    if(fwrite(buf, WAV_HEADER_BUF_SIZE, 1, f) != 1) {
-        errno = EIO;
-        return -1;
-    }
+    if(fwrite(buf, WAV_HEADER_BUF_SIZE, 1, f) != 1)
+        return VSC_ERROR(EIO);
 
     /* NB: This big-endian path is slow, inefficient, and UNTESTED. */
 #if defined(VSC_ENDIAN_BIG)
     for(size_t i = 0; i < nsamples * nchannels; ++i) {
         int16_t smp = vsc_native_to_be16(data[i]);
-        if(fwrite(&smp, sizeof(smp), 1, f) != 1) {
-            errno = EIO;
-            return -1;
-        }
+        if(fwrite(&smp, sizeof(smp), 1, f) != 1)
+            return VSC_ERROR(EIO);
     }
 #else
-    if(fwrite(data, data_size, 1, f) != 1) {
-        errno = EIO;
-        return -1;
-    }
+    if(fwrite(data, data_size, 1, f) != 1)
+        return VSC_ERROR(EIO);
 #endif
 
     return 0;
