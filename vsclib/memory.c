@@ -79,16 +79,12 @@ int vsc_xalloc_ex(const VscAllocator *a, void **ptr, size_t size, uint32_t flags
 
 void vsc_xfree(const VscAllocator *a, void *p)
 {
-    int errno_;
-
     vsc_assert(a != NULL);
 
     if(p == NULL)
         return;
 
-    errno_ = errno;
     a->free(p, a->user);
-    errno  = errno_;
 }
 
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
