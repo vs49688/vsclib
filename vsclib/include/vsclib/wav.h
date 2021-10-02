@@ -17,6 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** \file vsclib/wav.h */
 #ifndef _VSCLIB_WAV_H
 #define _VSCLIB_WAV_H
 
@@ -28,15 +29,15 @@ extern "C" {
 #endif
 
 /**
- * @brief Write 16-bit PCM to a WAV file.
+ * \brief Write 16-bit PCM to a WAV file.
  *
- * @param f           The file to write to.
- * @param data        A pointer to the sample data.
- * @param nsamples    The number of samples, per channel.
- * @param sample_rate The audio sample rate.
- * @param nchannels   The number of channels.
+ * \param f           The file to write to.
+ * \param data        A pointer to the sample data.
+ * \param nsamples    The number of samples, per channel.
+ * \param sample_rate The audio sample rate.
+ * \param nchannels   The number of channels.
  *
- * @return Upon successful completion, vsc_wav_write() returns 0.
+ * \return Upon successful completion, vsc_wav_write() returns 0.
  *         Otherwise, returns a negative error value.
  */
 int vsc_wav_write(FILE *f, int16_t *data, size_t nsamples, uint32_t sample_rate, uint16_t nchannels);
