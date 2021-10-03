@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vsclib/error.h>
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
 #include <vsclib/types.h>
@@ -175,15 +176,14 @@ void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space)
     return r;
 }
 
-void *vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks)
+int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks)
 {
+    int r;
     size_t reqsize;
     void *block = NULL;
 
-    if(blockinfo == NULL || nblocks < 1 || ptr == NULL || a == NULL) {
-        errno = EINVAL;
-        return NULL;
-    }
+    if(blockinfo == NULL || nblocks < 1 || ptr == NULL || a == NULL)
+        return VSC_ERROR(EINVAL);
 
     /* Pass 1: calculate the buffer size */
     reqsize = blockinfo[0].element_size * blockinfo[0].count;
@@ -201,10 +201,8 @@ void *vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInf
         reqsize += size;
     }
 
-    if(vsc_xalloc_ex(a, &block, reqsize, 0, blockinfo[0].alignment) < 0) {
-        errno = ENOMEM;
-        return NULL;
-    }
+    if((r = vsc_xalloc_ex(a, &block, reqsize, 0, blockinfo[0].alignment)) < 0)
+        return r;
 
     /* Pass 2: Calculate the aligned pointers */
     ptr[0] = block;
@@ -223,15 +221,14 @@ void *vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInf
              */
             vsc_xfree(a, block);
             memset(ptr, 0, sizeof(ptr[0]) * nblocks);
-            errno = ENOSPC;
-            return NULL;
+            return VSC_ERROR(ENOSPC);
         }
     }
 
-    return block;
+    return 0;
 }
 
-void *vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks)
+int vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks)
 {
     return vsc_block_xalloc(&vsclib_system_allocator, ptr, blockinfo, nblocks);
 }

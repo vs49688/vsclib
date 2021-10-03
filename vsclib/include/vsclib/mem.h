@@ -115,8 +115,8 @@ void vsc_xfree(const VscAllocator *a, void *p);
  */
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size);
 
-void *vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks);
-void *vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks);
+int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks);
+int vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks);
 
 /**
  * \brief Invoke the system's memory allocation procedure.
@@ -137,7 +137,7 @@ void *vsc_sys_calloc(size_t nmemb, size_t size);
  *
  * \remark Directly calls free().
  */
-void  vsc_sys_free(void *p);
+void vsc_sys_free(void *p);
 
 /**
  * \brief Invoke the system's reallocation procedure.

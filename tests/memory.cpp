@@ -116,7 +116,10 @@ TEST_CASE("align", "[memory]") {
 
         std::array<void*, bai.size()> ptrs{};
 
-        vsc_ptr<void> block(vsc_block_alloc(ptrs.data(), bai.data(), bai.size()));
+        int r = vsc_block_alloc(ptrs.data(), bai.data(), bai.size());
+        REQUIRE(r == 0);
+
+        vsc_ptr<void> block(ptrs[0]);
         if(!block)
             throw std::bad_alloc();
 
