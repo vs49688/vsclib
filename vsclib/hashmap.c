@@ -18,8 +18,8 @@
  * limitations under the License.
  */
 #include <string.h>
-#include <errno.h>
 #include <vsclib/assert.h>
+#include <vsclib/error.h>
 #include <vsclib/hashmap.h>
 
 #define VSC_HASHMAP_MIN_BUCKET_AUTO_ALLOCATION 16
@@ -63,10 +63,8 @@ int vsc_hashmap_inita(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompare
 {
     vsc_assert(hm != NULL);
 
-    if(hash == NULL || compare == NULL || a == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
+    if(hash == NULL || compare == NULL || a == NULL)
+        return VSC_ERROR(EINVAL);
 
     hm->size          = 0,
     hm->num_buckets   = 0,
@@ -103,10 +101,10 @@ int vsc_hashmap_configure(VscHashMap *hm, uint16_t min_num, uint16_t min_den, ui
     uint32_t numa, numb;
 
     if(min_num == 0 || min_den == 0 || min_num >= min_den)
-        goto invarg;
+        return VSC_ERROR(EINVAL);
 
     if(max_num == 0 || max_den == 0 || max_num >= max_den)
-        goto invarg;
+        return VSC_ERROR(EINVAL);
 
     _hashmap_validate(hm);
 
@@ -122,17 +120,13 @@ int vsc_hashmap_configure(VscHashMap *hm, uint16_t min_num, uint16_t min_den, ui
     numb = max_num * min_den;
 
     if(numa > numb)
-        goto invarg;
+        return VSC_ERROR(EINVAL);
 
     hm->load_min.num = min_num;
     hm->load_min.den = min_den;
     hm->load_max.num = max_num;
     hm->load_max.den = max_den;
     return 0;
-
-invarg:
-    errno = EINVAL;
-    return -1;
 }
 
 void vsc_hashmap_reset(VscHashMap *hm)
@@ -183,27 +177,22 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
 
     _hashmap_validate(hm);
 
-    if(nelem == 0 || nelem < hm->size) {
-        errno = EINVAL;
-        return -1;
-    }
+    if(nelem == 0 || nelem < hm->size)
+        return VSC_ERROR(EINVAL);
 
     /* Nothing to do. */
     if(nelem == hm->size)
         return 0;
 
     /* Make sure the realloc() size won't overflow. */
-    if(nelem >= (SIZE_MAX / sizeof(VscHashMapBucket))) {
-        errno = ERANGE;
-        return -1;
-    }
+    if(nelem >= (SIZE_MAX / sizeof(VscHashMapBucket)))
+        return VSC_ERROR(ERANGE);
 
     /* Reallocate the buckets. */
     bkts = vsc_xrealloc(hm->allocator, hm->buckets, sizeof(VscHashMapBucket) * nelem);
-    if(bkts == NULL) {
-        errno = ENOMEM;
-        return -1;
-    }
+    if(bkts == NULL)
+        return VSC_ERROR(ENOMEM);
+
     hm->buckets = bkts;
 
     for(size_t i = hm->num_buckets; i < nelem; ++i)
@@ -217,10 +206,8 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
      * allocators.
      */
     tmpbkts = vsc_xalloc(hm->allocator, sizeof(VscHashMapBucket) * nelem);
-    if(tmpbkts == NULL) {
-        errno = ENOMEM;
-        return -1;
-    }
+    if(tmpbkts == NULL)
+        return VSC_ERROR(ENOMEM);
 
     for(size_t i = 0; i < nelem; ++i)
         _reset_bucket(tmpbkts + i);
@@ -248,10 +235,8 @@ static inline int _intceil(size_t *result, size_t num, size_t den)
     *result = (num / den) + (size_t)((num % den) != 0);
     return 0;
 #else
-    if(num >= SIZE_MAX - (den - 1)) {
-        errno = ERANGE;
-        return -1;
-    }
+    if(num >= SIZE_MAX - (den - 1))
+        return VSC_ERROR(ERANGE);
 
     *result = (num + den - 1) / den;
     return 0;
@@ -273,10 +258,8 @@ static int _maybe_resize(VscHashMap *hm)
     if((r = _intceil(&tmp, SIZE_MAX, hm->load_max.num)) < 0)
         return r;
 
-    if(hm->num_buckets >= tmp) {
-        errno = ERANGE; /* or EOVERFLOW? */
-        return -1;
-    }
+    if(hm->num_buckets >= tmp)
+        return VSC_ERROR(ERANGE); /* or EOVERFLOW? */
 
     /* Same as "n * load_factor" */
     if((r = _intceil(&thresh, hm->num_buckets * hm->load_max.num, hm->load_max.den)) < 0)
@@ -287,18 +270,14 @@ static int _maybe_resize(VscHashMap *hm)
         return 0;
 
     /* Don't allow resize if explicitly disabled. */
-    if(hm->resize_policy == VSC_HASHMAP_RESIZE_NONE) {
-        errno = EPERM;
-        return -1;
-    }
+    if(hm->resize_policy == VSC_HASHMAP_RESIZE_NONE)
+        return VSC_ERROR(EPERM);
 
     if((r = _intceil(&tmp, SIZE_MAX, hm->load_max.den)) < 0)
         return r;
 
-    if(hm->size + 1 >= tmp) {
-        errno = ERANGE; /* or EOVERFLOW? */
-        return -1;
-    }
+    if(hm->size + 1 >= tmp)
+        return VSC_ERROR(ERANGE); /* or EOVERFLOW? */
 
     /*
      * Determine the minimum number of buckets required to match
@@ -321,10 +300,8 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
     tmpbkt.key   = key;
     tmpbkt.value = value;
 
-    if(tmpbkt.hash == VSC_INVALID_HASH) {
-        errno = ERANGE;
-        return -1;
-    }
+    if(tmpbkt.hash == VSC_INVALID_HASH)
+        return VSC_ERROR(ERANGE);
 
     /* See if we need to resize. */
     if((r = _maybe_resize(hm)) < 0) {
@@ -332,14 +309,12 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
          * Resize required, but not allowed.
          * Not an error, assume the user knows what they're doing.
          */
-        if(errno != EPERM)
+        if(r != VSC_ERROR(EPERM))
             return r;
     }
 
-    if(_add_or_replace_bucket(hm, hm->buckets, hm->num_buckets, &tmpbkt) == NULL) {
-        errno = ENOSPC;
-        return -1;
-    }
+    if(_add_or_replace_bucket(hm, hm->buckets, hm->num_buckets, &tmpbkt) == NULL)
+        return VSC_ERROR(ENOSPC);
 
     ++hm->size;
     return 0;
@@ -347,17 +322,13 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
 
 void *vsc_hashmap_find_by_hash(const VscHashMap *hm, vsc_hash_t hash)
 {
-    if(hash == VSC_INVALID_HASH) {
-        errno = 0;
+    if(hash == VSC_INVALID_HASH)
         return NULL;
-    }
 
     _hashmap_validate(hm);
 
-    if(hm->num_buckets == 0) {
-        errno = 0;
+    if(hm->num_buckets == 0)
         return NULL;
-    }
 
     LOOP_BUCKETS(hm, index, hash % hm->num_buckets) {
         const VscHashMapBucket *bkt = hm->buckets + index;
@@ -369,7 +340,6 @@ void *vsc_hashmap_find_by_hash(const VscHashMap *hm, vsc_hash_t hash)
             return bkt->value;
     }
 
-    errno = 0;
     return NULL;
 }
 
@@ -381,10 +351,8 @@ static const VscHashMapBucket *_find_bucket(const VscHashMap *hm, const void *ke
 
     hash = vsc_hashmap_hash(hm, key);
 
-    if(hm->num_buckets == 0) {
-        errno = 0;
+    if(hm->num_buckets == 0)
         return NULL;
-    }
 
     /*
      * Search for the key starting at index until we:
@@ -413,7 +381,6 @@ static const VscHashMapBucket *_find_bucket(const VscHashMap *hm, const void *ke
         return bkt;
     }
 
-    errno = 0;
     return NULL;
 }
 
@@ -459,6 +426,5 @@ void *vsc_hashmap_remove(VscHashMap *hm, const void *key)
         }
     }
 
-    errno = 0;
     return val;
 }

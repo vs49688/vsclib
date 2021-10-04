@@ -161,8 +161,7 @@ TEST_CASE("hashmap disallow resize", "[hashmap]") {
 
     CHECK(vsc_hashmap_insert(&hm, "a", nullptr) == 0);
     CHECK(vsc_hashmap_insert(&hm, "b", nullptr) == 0);
-    CHECK(vsc_hashmap_insert(&hm, "c", nullptr) <  0);
-    CHECK(errno == ENOSPC);
+    CHECK(vsc_hashmap_insert(&hm, "c", nullptr) == VSC_ERROR(ENOSPC));
 
     hm.resize_policy = VSC_HASHMAP_RESIZE_LOAD_FACTOR;
     CHECK(vsc_hashmap_insert(&hm, "c", nullptr) == 0);

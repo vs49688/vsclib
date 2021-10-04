@@ -57,8 +57,8 @@ int vsc_hashmap_clear(VscHashMap *hm);
  * @param   min_den The denominator of the minimum load factor.
  * @param   max_num The numerator of the maximum load factor.
  * @param   max_den The denominator of the maximum load factor.
- * @return  On success, returns 0. If the function fails, it returns -1 and errno is set
- *          to EINVAL. The function can fail under the following conditions:
+ * @return  On success, returns 0. If the function fails, it returns a negative error value.
+ *          The function can fail under the following conditions:
  *          - `hm` is NULL.
  *          - One or both of the numerators or denominators are 0.
  *          - One of both of the numerators are greater than or equal to its
