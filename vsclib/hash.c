@@ -36,7 +36,7 @@ vsc_hash_t vsc_hash(const void *data, size_t size)
      * Use whichever one matches the machine's native word type.
      * See https://stackoverflow.com/a/67223865
      */
-#if LONG_MAX == 9223372036854775807L
+#if defined(_WIN64) || LONG_MAX == 9223372036854775807L
     return XXH3_64bits_withSeed(data, size, 0);
 #else /* LONG_MAX == 2147483647L */
     return XXH32(data, size, 0);
