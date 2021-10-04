@@ -34,6 +34,9 @@ static void dumpx(const VscHashMap *hm)
 
 static vsc_hash_t hashproc32(const void *key)
 {
+    if(key == nullptr)
+        return 0;
+
     /* Abuse crc32c as a hash function because it's fixed-size. */
     /* fprintf(stderr, "%c: %u\n", s[0], vsc_crc32c(s, 1)); */
     return vsc_crc32c(key, strlen((const char*)key));
@@ -41,11 +44,20 @@ static vsc_hash_t hashproc32(const void *key)
 
 static vsc_hash_t hashproc(const void *key)
 {
+    if(key == nullptr)
+        return VSC_INVALID_HASH;
+
     return vsc_hash(key, strlen((const char*)key));
 }
 
 static int compareproc(const void *a, const void *b)
 {
+    if(a == b)
+        return 1;
+
+    if(a == nullptr || b == nullptr)
+        return 0;
+
     return strcmp((const char*)a, (const char*)b) == 0;
 }
 
@@ -155,3 +167,24 @@ TEST_CASE("hashmap disallow resize", "[hashmap]") {
     hm.resize_policy = VSC_HASHMAP_RESIZE_LOAD_FACTOR;
     CHECK(vsc_hashmap_insert(&hm, "c", nullptr) == 0);
 }
+
+TEST_CASE("null keys", "[hashmap]") {
+    int r;
+    VscHashMap hm;
+    hmptr _hm(&hm);
+
+    r = vsc_hashmap_init(&hm, hashproc32, compareproc);
+    REQUIRE(0 == r);
+
+    CHECK(vsc_hashmap_insert(&hm, "a", (void*)"a") == 0);
+    CHECK(vsc_hashmap_insert(&hm, nullptr, (void*)"NULL") == 0);
+
+    const char *val = (const char*)vsc_hashmap_find(&hm, "a");
+    REQUIRE(val != nullptr);
+    REQUIRE(strcmp("a", val) == 0);
+
+    val = (const char*)vsc_hashmap_find(&hm, nullptr);
+    REQUIRE(val != nullptr);
+    REQUIRE(strcmp("NULL", val) == 0);
+}
+

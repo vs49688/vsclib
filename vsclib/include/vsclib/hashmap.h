@@ -31,9 +31,8 @@ extern "C" {
  *
  * @param   hm The hash map instance. May not be NULL.
  * @param   key A pointer to the key.
- * @return  The hash of the provided key. If either `hm` or `key`
- *          are NULL, then `VSC_INVALID_HASH` is returned and errno
- *          is set to `EINVAL`.
+ * @return  The hash of the provided key, or #VSC_INVALID_HASH if @p key
+ *          the hashing failed.
  */
 vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key);
 
@@ -41,11 +40,9 @@ vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key);
  * @brief Compare two keys for equality.
  *
  * @param   hm The hash map instance. May not be NULL.
- * @param   a A pointer to the first key. May not be NULL.
- * @param   b A pointer to the second key. May not be NULL.
+ * @param   a A pointer to the first key.
+ * @param   b A pointer to the second key.
  * @return  If the keys are equal, returns 1, or 0 if they're not.
- *          If `hm`, `a`, or `b` are NULL, -1 is returned and errno
- *          is set to `EINVAL`.
  */
 int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b);
 

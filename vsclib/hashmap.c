@@ -66,31 +66,14 @@ static inline int _do_compare(const VscHashMap *hm, const void *a, const void *b
 
 vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key)
 {
-    vsc_hash_t hash;
-    if(key == NULL) {
-        errno = EINVAL;
-        return VSC_INVALID_HASH;
-    }
-
-    _hashmap_validate(hm);
-
-    hash = _do_hash(hm, key);
+    vsc_hash_t hash = _do_hash(hm, key);
     errno = 0;
     return hash;
 }
 
 int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b)
 {
-    int r;
-
-    if(a == NULL || b == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
-
-    _hashmap_validate(hm);
-
-    r = _do_compare(hm, a, b);
+    int r = _do_compare(hm, a, b);
     errno = 0;
     return r;
 }
@@ -351,11 +334,6 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
     VscHashMapBucket tmpbkt;
     int r;
 
-    if(key == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
-
     _hashmap_validate(hm);
 
     tmpbkt.hash  = _do_hash(hm, key);
@@ -419,11 +397,6 @@ static const VscHashMapBucket *_find_bucket(const VscHashMap *hm, const void *ke
     vsc_hash_t hash;
 
     _hashmap_validate(hm);
-
-    if(key == NULL) {
-        errno = EINVAL;
-        return NULL;
-    }
 
     if((hash = _do_hash(hm, key)) == VSC_INVALID_HASH) {
         errno = ERANGE;
