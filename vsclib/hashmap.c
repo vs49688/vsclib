@@ -22,13 +22,6 @@
 #include <vsclib/assert.h>
 #include <vsclib/hashmap.h>
 
-/*
- * Notes:
- * - Do NOT use vsc_hashmap_hash() and vsc_hashmap_compare() internally.
- *   These are PUBLIC functions that have errno semantics and can fail.
- *   Use _do_hash() and _do_compare() instead.
- */
-
 #define VSC_HASHMAP_MIN_BUCKET_AUTO_ALLOCATION 16
 
 /* This should be optimised out in Release builds. */
@@ -54,28 +47,14 @@ static inline VscHashMapBucket *_reset_bucket(VscHashMapBucket *bkt)
     return bkt;
 }
 
-static inline vsc_hash_t _do_hash(const VscHashMap *hm, const void *key)
+vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key)
 {
     return hm->hash_proc(key);
 }
 
-static inline int _do_compare(const VscHashMap *hm, const void *a, const void *b)
-{
-    return hm->compare_proc(a, b) != 0;
-}
-
-vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key)
-{
-    vsc_hash_t hash = _do_hash(hm, key);
-    errno = 0;
-    return hash;
-}
-
 int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b)
 {
-    int r = _do_compare(hm, a, b);
-    errno = 0;
-    return r;
+    return hm->compare_proc(a, b);
 }
 
 int vsc_hashmap_inita(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a)
@@ -187,7 +166,7 @@ static VscHashMapBucket *_add_or_replace_bucket(const VscHashMap *hm, VscHashMap
             continue;
 
         /* Duplicate key, replace it. */
-        if(_do_compare(hm, bkt->key, b->key)) {
+        if(vsc_hashmap_compare(hm, bkt->key, b->key)) {
             *b = *bkt;
             return b;
         }
@@ -336,7 +315,7 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
 
     _hashmap_validate(hm);
 
-    tmpbkt.hash  = _do_hash(hm, key);
+    tmpbkt.hash  = vsc_hashmap_hash(hm, key);
     tmpbkt.key   = key;
     tmpbkt.value = value;
 
@@ -398,7 +377,7 @@ static const VscHashMapBucket *_find_bucket(const VscHashMap *hm, const void *ke
 
     _hashmap_validate(hm);
 
-    if((hash = _do_hash(hm, key)) == VSC_INVALID_HASH) {
+    if((hash = vsc_hashmap_hash(hm, key)) == VSC_INVALID_HASH) {
         errno = ERANGE;
         return NULL;
     }
@@ -427,7 +406,7 @@ static const VscHashMapBucket *_find_bucket(const VscHashMap *hm, const void *ke
             continue;
 
         /* In case of hash collision. */
-        if(!_do_compare(hm, key, bkt->key))
+        if(!vsc_hashmap_compare(hm, key, bkt->key))
             continue;
 
         if(outindex != NULL)
