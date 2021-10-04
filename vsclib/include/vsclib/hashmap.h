@@ -31,8 +31,7 @@ extern "C" {
  *
  * @param   hm The hash map instance. May not be NULL.
  * @param   key A pointer to the key.
- * @return  The hash of the provided key, or #VSC_INVALID_HASH if @p key
- *          the hashing failed.
+ * @return  The hash of the provided key. This will never be #VSC_INVALID_HASH.
  */
 vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key);
 
