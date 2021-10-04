@@ -49,7 +49,9 @@ static inline VscHashMapBucket *_reset_bucket(VscHashMapBucket *bkt)
 
 vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key)
 {
-    return hm->hash_proc(key);
+    vsc_hash_t hash = hm->hash_proc(key);
+    vsc_assert(hash != VSC_INVALID_HASH);
+    return hash;
 }
 
 int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b)
