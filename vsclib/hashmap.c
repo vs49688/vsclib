@@ -17,7 +17,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <assert.h>
 #include <string.h>
 #include <errno.h>
 #include <vsclib/assert.h>
@@ -35,16 +34,16 @@
 /* This should be optimised out in Release builds. */
 static inline void _hashmap_validate(const VscHashMap *hm)
 {
-    assert(hm               != NULL);
-    assert(hm->size         <= hm->num_buckets);
-    assert(hm->hash_proc    != NULL);
-    assert(hm->compare_proc != NULL);
-    assert(hm->allocator    != NULL);
-    assert(hm->load_min.den > 0);
-    assert(hm->load_min.num < hm->load_min.den);
-    assert(hm->load_max.den > 0);
-    assert(hm->load_max.num < hm->load_max.den);
-    assert(hm->load_min.num * hm->load_max.den <= hm->load_max.num * hm->load_max.den);
+    vsc_assert(hm               != NULL);
+    vsc_assert(hm->size         <= hm->num_buckets);
+    vsc_assert(hm->hash_proc    != NULL);
+    vsc_assert(hm->compare_proc != NULL);
+    vsc_assert(hm->allocator    != NULL);
+    vsc_assert(hm->load_min.den > 0);
+    vsc_assert(hm->load_min.num < hm->load_min.den);
+    vsc_assert(hm->load_max.den > 0);
+    vsc_assert(hm->load_max.num < hm->load_max.den);
+    vsc_assert(hm->load_min.num * hm->load_max.den <= hm->load_max.num * hm->load_max.den);
 }
 
 static inline VscHashMapBucket *_reset_bucket(VscHashMapBucket *bkt)
@@ -269,7 +268,7 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
             continue;
 
         bkt = _add_or_replace_bucket(hm, tmpbkts, nelem, hm->buckets + i);
-        assert(bkt != NULL);
+        vsc_assert(bkt != NULL);
     }
 
     memcpy(hm->buckets, tmpbkts, sizeof(VscHashMapBucket) * nelem);
