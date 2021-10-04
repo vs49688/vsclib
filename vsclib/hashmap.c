@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <string.h>
 #include <errno.h>
+#include <vsclib/assert.h>
 #include <vsclib/hashmap.h>
 
 /*
@@ -34,6 +35,7 @@
 /* This should be optimised out in Release builds. */
 static inline void _hashmap_validate(const VscHashMap *hm)
 {
+    assert(hm               != NULL);
     assert(hm->size         <= hm->num_buckets);
     assert(hm->hash_proc    != NULL);
     assert(hm->compare_proc != NULL);
@@ -66,7 +68,7 @@ static inline int _do_compare(const VscHashMap *hm, const void *a, const void *b
 vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key)
 {
     vsc_hash_t hash;
-    if(hm == NULL || key == NULL) {
+    if(key == NULL) {
         errno = EINVAL;
         return VSC_INVALID_HASH;
     }
@@ -82,7 +84,7 @@ int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b)
 {
     int r;
 
-    if(hm == NULL || a == NULL || b == NULL) {
+    if(a == NULL || b == NULL) {
         errno = EINVAL;
         return -1;
     }
@@ -96,7 +98,9 @@ int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b)
 
 int vsc_hashmap_inita(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a)
 {
-    if(hm == NULL || hash == NULL || compare == NULL || a == NULL) {
+    vsc_assert(hm != NULL);
+
+    if(hash == NULL || compare == NULL || a == NULL) {
         errno = EINVAL;
         return -1;
     }
@@ -123,11 +127,6 @@ int vsc_hashmap_init(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareP
 
 int vsc_hashmap_clear(VscHashMap *hm)
 {
-    if(hm == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
-
     _hashmap_validate(hm);
     hm->size = 0;
     for(size_t i = 0; i < hm->num_buckets; ++i)
@@ -139,9 +138,6 @@ int vsc_hashmap_clear(VscHashMap *hm)
 int vsc_hashmap_configure(VscHashMap *hm, uint16_t min_num, uint16_t min_den, uint16_t max_num, uint16_t max_den)
 {
     uint32_t numa, numb;
-
-    if(hm == NULL)
-        goto invarg;
 
     if(min_num == 0 || min_den == 0 || min_num >= min_den)
         goto invarg;
@@ -178,10 +174,7 @@ invarg:
 
 void vsc_hashmap_reset(VscHashMap *hm)
 {
-    if(hm == NULL) {
-        errno = EINVAL;
-        return;
-    }
+    _hashmap_validate(hm);
 
     vsc_xfree(hm->allocator, hm->buckets);
     hm->num_buckets = 0;
@@ -225,12 +218,12 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
 {
     VscHashMapBucket *bkts, *tmpbkts;
 
-    if(hm == NULL || nelem == 0 || nelem < hm->size) {
+    _hashmap_validate(hm);
+
+    if(nelem == 0 || nelem < hm->size) {
         errno = EINVAL;
         return -1;
     }
-
-    _hashmap_validate(hm);
 
     /* Nothing to do. */
     if(nelem == hm->size)
@@ -359,7 +352,7 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
     VscHashMapBucket tmpbkt;
     int r;
 
-    if(hm == NULL || key == NULL) {
+    if(key == NULL) {
         errno = EINVAL;
         return -1;
     }
@@ -396,11 +389,6 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
 
 void *vsc_hashmap_find_by_hash(const VscHashMap *hm, vsc_hash_t hash)
 {
-    if(hm == NULL) {
-        errno = EINVAL;
-        return NULL;
-    }
-
     if(hash == VSC_INVALID_HASH) {
         errno = 0;
         return NULL;
@@ -431,12 +419,12 @@ static const VscHashMapBucket *_find_bucket(const VscHashMap *hm, const void *ke
 {
     vsc_hash_t hash;
 
-    if(hm == NULL || key == NULL) {
+    _hashmap_validate(hm);
+
+    if(key == NULL) {
         errno = EINVAL;
         return NULL;
     }
-
-    _hashmap_validate(hm);
 
     if((hash = _do_hash(hm, key)) == VSC_INVALID_HASH) {
         errno = ERANGE;
