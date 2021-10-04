@@ -379,10 +379,7 @@ static const VscHashMapBucket *_find_bucket(const VscHashMap *hm, const void *ke
 
     _hashmap_validate(hm);
 
-    if((hash = vsc_hashmap_hash(hm, key)) == VSC_INVALID_HASH) {
-        errno = ERANGE;
-        return NULL;
-    }
+    hash = vsc_hashmap_hash(hm, key);
 
     if(hm->num_buckets == 0) {
         errno = 0;
