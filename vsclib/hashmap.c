@@ -56,7 +56,7 @@ vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key)
 
 int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b)
 {
-    return hm->compare_proc(a, b);
+    return hm->compare_proc(a, b) != 0;
 }
 
 int vsc_hashmap_inita(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a)
