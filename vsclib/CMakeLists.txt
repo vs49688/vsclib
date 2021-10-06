@@ -46,6 +46,7 @@ add_library(vsclib STATIC
 		strdupr.c
 		memory.c
 		sysmem.c
+		time.c
 
 		hash.c
 		crc32.c
@@ -82,6 +83,9 @@ add_library(vsclib STATIC
 
 		include/vsclib/hashmapdef.h
 		include/vsclib/hashmap.h
+
+		include/vsclib/timedef.h
+		include/vsclib/time.h
 )
 
 set_target_properties(vsclib PROPERTIES
