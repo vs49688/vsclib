@@ -10,6 +10,7 @@ add_executable(vsclib_tests
         hashmap.cpp
 
         wav.cpp
+        time.cpp
 )
 
 target_link_libraries(vsclib_tests vsclib vscpplib)
