@@ -23,6 +23,10 @@ if(MINGW)
     set_target_properties(vsclib_tests PROPERTIES
             LINK_FLAGS "-static-libgcc -static-libstdc++"
     )
+
+    option(MINGW_STDTHREADS_GENERATE_STDHEADERS "" ON)
+    add_subdirectory(mingw-std-threads)
+    target_link_libraries(vsclib_tests mingw_stdthreads)
 endif()
 
 target_compile_definitions(vsclib_tests PRIVATE "-D_USE_MATH_DEFINES")
