@@ -17,6 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** \file vsclib/io.h */
 #ifndef _VSCLIB_IO_H
 #define _VSCLIB_IO_H
 
@@ -34,7 +35,7 @@ extern "C" {
 FILE *vsc_fopen(const char *pathname, const char *mode);
 
 /**
- * @brief fopen(), but correctly handles UTF-8 pathnames on Windows.
+ * \brief fopen(), but correctly handles UTF-8 pathnames on Windows.
  *
  * Memory is allocated in a linear-compatible fashion.
  */
@@ -52,32 +53,32 @@ int       vsc_freadall_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc
                           VscFreadallChunkProc chunk_proc, void *user);
 
 /**
- * @brief Read an entire stream into memory.
+ * \brief Read an entire stream into memory.
  *
- * @param ptr        The pointer to receive the allocated buffer.
- * @param size       A pointer to receive the size of the file.
- * @param f          The stream to read.
- * @param init_proc  A initialisation callback that may used to inspect and modify stream parameters
- *                   before reading commences. Only the `file_size` and `blk_size` fields of `VscFreadallState`
+ * \param ptr        The pointer to receive the allocated buffer.
+ * \param size       A pointer to receive the size of the file.
+ * \param f          The stream to read.
+ * \param init_proc  A initialisation callback that may used to inspect and modify stream parameters
+ *                   before reading commences. Only the `file_size` and `blk_size` fields of #VscFreadallState
  *                   may be modified.
- * @param chunk_proc A callback used to report progress. This is invoked after each internal read.
- * @param user       A user-provided pointer to be passed to `init_proc` and `chunk_proc`
- * @param a          The allocator to use.
+ * \param chunk_proc A callback used to report progress. This is invoked after each internal read.
+ * \param user       A user-provided pointer to be passed to \p init_proc and \p chunk_proc
+ * \param a          The allocator to use.
  *
- * @return Upon successful completion vsc_freadalla() returns 0, or a negative error value.
- *         If the failure is caused by a negative return from `init_proc` or `chunk_proc`, the returned
+ * \return Upon successful completion vsc_freadalla() returns 0, or a negative error value.
+ *         If the failure is caused by a negative return from \p init_proc or \p chunk_proc, the returned
  *         value will be `VSC_ERROR(ECANCELED)`.
  */
 int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_proc,
                      VscFreadallChunkProc chunk_proc, void *user, const VscAllocator *a);
 
 /**
- * @brief Nullify a stream, that is open the platform's bitbucket and dup2() it
- * into @p f.
+ * \brief Nullify a stream, that is open the platform's bitbucket and dup2() it
+ * into \p f.
  *
- * @param f The stream to nullify.
- * @return Upon successful completion vsc_fnullify() returns the file descriptor
- * placed in @par f. Otherwise, a negative error value is returned.
+ * \param f The stream to nullify.
+ * \return Upon successful completion vsc_fnullify() returns the file descriptor
+ * placed in \p f. Otherwise, a negative error value is returned.
  */
 int vsc_fnullify(FILE *f);
 
