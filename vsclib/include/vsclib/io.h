@@ -77,7 +77,7 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
  *
  * @param f The stream to nullify.
  * @return Upon successful completion vsc_fnullify() returns the file descriptor
- * placed in @par f. Otherwise, -1 is returned and errno is set to indicate the error.
+ * placed in @par f. Otherwise, a negative error value is returned.
  */
 int vsc_fnullify(FILE *f);
 

@@ -20,35 +20,28 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <vsclib/error.h>
 #include <vsclib/io.h>
 
 int vsc_fnullify(FILE *f)
 {
-    int fd, devnull, errno_;
+    int fd, devnull, r;
 
-    if(f == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
+    if(f == NULL)
+        return VSC_ERROR(EINVAL);
 
     /* If fmemopen()'d */
     if((fd = vsc_fileno(f)) < 0)
-        return -1;
+        return fd;
 
     if((devnull = vsc_open(VSC_DEVNULL, O_RDWR)) < 0)
-        goto fail;
+        return devnull;
 
-    if(vsc_dup2(devnull, fd) < 0)
-        goto fail;
+    if((r = vsc_dup2(devnull, fd)) < 0) {
+        /* What do I actually do if this fails? */
+        (void)vsc_close(devnull);
+        return r;
+    }
 
     return fd;
-
-fail:
-    errno_ = errno;
-
-    /* What do I actually do if this fails? */
-    vsc_close(devnull);
-
-    errno = errno_;
-    return -1;
 }
