@@ -24,6 +24,7 @@
 #   include <unistd.h>
 #endif
 
+#include <vsclib/error.h>
 #include <vsclib/io.h>
 #include <vsclib/string.h>
 #include <vsclib/mem.h>
@@ -37,37 +38,34 @@ int vsc_chdira(const char *path, const VscAllocator *a)
 {
 #if defined(_WIN32)
     wchar_t *wpath = NULL;
-    int errno_, r = -1;
-    BOOL dwResult;
+    int r;
 
     if((wpath = vsc_cstrtowstra(path, NULL, CP_UTF8, a)) == NULL)
-        goto done;
+        return VSC_ERROR(errno);
 
-    if(!(dwResult = SetCurrentDirectoryW(wpath))) {
+    if(!SetCurrentDirectoryW(wpath)) {
         switch(GetLastError()) {
             case ERROR_FILE_NOT_FOUND:
             case ERROR_PATH_NOT_FOUND:
-                errno = ENOENT;
+                r = VSC_ERROR(ENOENT);
                 break;
             case ERROR_ACCESS_DENIED:
-                errno = EACCES;
+                r = VSC_ERROR(EACCES);
                 break;
             default:
-                errno = EINVAL;
+                r = VSC_ERROR(EINVAL);
         }
         goto done;
     }
 
     r = 0;
 done:
-    errno_ = errno;
-
-    if(wpath != NULL)
-        vsc_xfree(a, wpath);
-
-    errno = errno_;
+    vsc_xfree(a, wpath);
     return r;
 #else
-    return chdir(path);
+    int r = chdir(path);
+    if(r < 0)
+        return VSC_ERROR(errno);
+    return 0;
 #endif
 }
