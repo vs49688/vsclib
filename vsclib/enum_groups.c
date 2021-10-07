@@ -17,10 +17,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#if defined(VSC_HAVE_GETGRENT_R)
-#   define _GNU_SOURCE
-#endif
 
+#define _GNU_SOURCE
+#include <vsclib/platform.h>
 #include <errno.h>
 
 #if !defined(_WIN32)
