@@ -20,13 +20,13 @@
 #ifndef _VSCLIB_PLATFORM_H
 #define _VSCLIB_PLATFORM_H
 
-#include <stdint.h>
-
 /*
  * This file is mainly so consumers don't need to
  * include vsclib_config.h
  */
 #include "vsclib_config.h"
+
+#include <stdint.h>
 
 #if defined(_WIN32)
 #	define VSC_DEVNULL "NUL"
