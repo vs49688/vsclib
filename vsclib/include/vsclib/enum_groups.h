@@ -17,18 +17,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef _VSCLIB_I_H
-#define _VSCLIB_I_H
+#ifndef _VSCLIB_POSIXUTIL_H
+#define _VSCLIB_POSIXUTIL_H
 
-#include <errno.h>
+#include "memdef.h"
 
-#include "vsclib.h"
+struct passwd;
+struct group;
 
-extern const VscAllocator vsclib_system_allocator;
+typedef int(*VscEnumGroupsProc)(const struct group *grp, void *user);
 
-#ifndef EOPNOTSUPP
-#   error EOPNOTSUPP not defined, please fix your system.
+#if defined(__cplusplus)
+extern "C" {
 #endif
 
+int vsc_enum_groups(struct passwd *passwd, VscEnumGroupsProc proc, void *user);
+int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, const VscAllocator *a);
 
-#endif /* _VSCLIB_I_H */
+#if defined(__cplusplus)
+}
+#endif
+
+#endif /* _VSCLIB_POSIXUTIL_H */

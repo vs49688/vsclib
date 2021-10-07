@@ -58,7 +58,6 @@ add_library(vsclib STATIC
 
 		${OS_FILES}
 
-		vsclib_i.h
 		vsclib_config.h.in
 		${VSCLIB_GENERATED_INCLUDE_DIR}/include/vsclib_config.h
 		include/vsclib.h
@@ -87,6 +86,8 @@ add_library(vsclib STATIC
 
 		include/vsclib/timedef.h
 		include/vsclib/time.h
+
+		include/vsclib/enum_groups.h
 )
 
 set_target_properties(vsclib PROPERTIES

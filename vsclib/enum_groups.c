@@ -33,7 +33,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "vsclib_i.h"
+#include <vsclib/assert.h>
+#include <vsclib/mem.h>
+#include <vsclib/enum_groups.h>
 
 int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, const VscAllocator *a)
 {
