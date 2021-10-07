@@ -12,9 +12,17 @@ exceptions:
 The C standard library is fine.
 
 * Avoid using `errno` to report errors. Return a `VSC_ERROR(ESOMETHING)` value instead.
-  - An exception is the `vsc_sys_*()` functions. These are direct system wrappers meant
-    to avoid `#ifdef`s on Windows/Linux/other, and as such are allowed to use `errno`.
+  - Exceptions:
+    - The `vsc_sys_*()` functions. These are direct system wrappers meant
+      to avoid `#ifdef`s on Windows/Linux/other, and as such are allowed to use `errno`.
+    - `#ifdef`'d Platform-specific convenience functions where:
+      - `errno` is ALWAYS available on said platform, and
+      - Returning an error and makes the API significantly more cumbersome (e.g. `vsc_wstrtocstra()`
+        and `vsc_cstrtowstra()`).
+
+      This behaviour MUST be explicitly documented. Prefer returning a `VSC_ERROR` value, if possible.
   - A lot of existing code uses `errno` and is gradually being fixed.
+
 * If a function allocates memory, it should do it in a fashion compatible with linear
   allocators, i.e. like a stack (LIFO). Reallocations (`VSC_ALLOC_REALLOC`, `vsc_xrealloc`, et. al.)
   are preferred for this purpose.
