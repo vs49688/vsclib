@@ -28,58 +28,83 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <vsclib/types.h>
+#include <vsclib/error.h>
 #include <vsclib/iodef.h>
 
 int vsc_fileno(FILE *stream)
 {
+    int r;
 #if defined(_WIN32)
-    return _fileno(stream);
+    r =_fileno(stream);
 #else
-    return fileno(stream);
+    r = fileno(stream);
 #endif
+    if(r < 0)
+        return VSC_ERROR(errno);
+    return r;
 }
 
 int vsc_open(const char *pathname, int flags)
 {
+    int r;
 #if defined(_WIN32)
-    return _open(pathname, flags);
+    r = _open(pathname, flags);
 #else
-    return open(pathname, flags);
+    r = open(pathname, flags);
 #endif
+    if(r < 0)
+        return VSC_ERROR(errno);
+    return r;
 }
 
 int vsc_dup2(int oldfd, int newfd)
 {
+    int r;
 #if defined(_WIN32)
-    return _dup2(oldfd, newfd);
+    r = _dup2(oldfd, newfd);
 #else
-    return dup2(oldfd, newfd);
+    r = dup2(oldfd, newfd);
 #endif
+    if(r < 0)
+        return VSC_ERROR(errno);
+    return r;
 }
 
 int vsc_close(int fd)
 {
+    int r;
 #if defined(_WIN32)
-    return _close(fd);
+    r = _close(fd);
 #else
-    return close(fd);
+    r = close(fd);
 #endif
+    if(r < 0)
+        return VSC_ERROR(errno);
+    return r;
 }
 
 vsc_off_t vsc_ftello(FILE *stream)
 {
+    vsc_off_t r;
 #if defined(WIN32)
-    return _ftelli64(stream);
+    r = _ftelli64(stream);
 #else
-    return ftello(stream);
+    r = ftello(stream);
 #endif
+    if(r < 0)
+        return VSC_ERROR(errno);
+    return r;
 }
 
 int vsc_fseeko(FILE *stream, vsc_off_t offset, int whence)
 {
+    int r;
 #if defined(WIN32)
-    return _fseeki64(stream, offset, whence);
+    r = _fseeki64(stream, offset, whence);
 #else
-    return fseeko(stream, offset, whence);
+    r = fseeko(stream, offset, whence);
 #endif
+    if(r < 0)
+        return VSC_ERROR(errno);
+    return r;
 }
