@@ -64,9 +64,9 @@ int       vsc_freadall_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc
  * @param user       A user-provided pointer to be passed to `init_proc` and `chunk_proc`
  * @param a          The allocator to use.
  *
- * @return Upon successful completion vsc_freadalla() returns 0, or -1 if an error
- *         occurred and errno is set to indicate the error. If the failure is caused by a negative
- *         return from `init_proc` or `chunk_proc`, `errno` will be `ECANCELED`.
+ * @return Upon successful completion vsc_freadalla() returns 0, or a negative error value.
+ *         If the failure is caused by a negative return from `init_proc` or `chunk_proc`, the returned
+ *         value will be `VSC_ERROR(ECANCELED)`.
  */
 int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_proc,
                      VscFreadallChunkProc chunk_proc, void *user, const VscAllocator *a);

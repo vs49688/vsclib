@@ -17,7 +17,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <errno.h>
 
 /* From https://stackoverflow.com/a/62371749 */
 #if defined(_MSC_VER)
@@ -41,6 +40,7 @@
 #endif
 
 #include <vsclib/assert.h>
+#include <vsclib/error.h>
 #include <vsclib/mem.h>
 #include <vsclib/io.h>
 
@@ -59,15 +59,14 @@ static int get_size_ioctl(int fd, size_t *size)
     if(ioctl(fd, BLKGETSIZE64, size) < 0) {
         unsigned long s;
         if(ioctl(fd, BLKGETSIZE, &s) < 0)
-            return -1;
+            return VSC_ERROR(errno);
 
         /* NB: This isn't sector size, it's always 512. */
         *size = s * 512;
     }
     return 0;
 #else
-    errno = ENOTSUP;
-    return -1;
+    return VSC_ERROR(ENOTSUP);
 #endif
 }
 
@@ -76,31 +75,29 @@ static int get_blksize_ioctl(int fd, vsc_blksize_t *blksize)
 #if defined(__linux__)
     unsigned int _blksize;
     if(ioctl(fd, BLKIOOPT, &_blksize) < 0)
-        return -1;
+        return VSC_ERROR(errno);
 
     /* Most physical disks don't supply this. */
-    if(_blksize == 0) {
-        errno = ENOTSUP;
-        return -1;
-    }
+    if(_blksize == 0)
+        return VSC_ERROR(ENOTSUP);
 
     *blksize = (vsc_blksize_t)_blksize;
     return 0;
 #else
-    errno = ENOTSUP;
-    return -1;
+    return VSC_ERROR(ENOTSUP);
 #endif
 }
 
 /* NB: This doesn't restore the stream to its original position. */
 static int get_size_seektell(FILE *f, size_t *size)
 {
+    int r;
     vsc_off_t off;
-    if(vsc_fseeko(f, 0, SEEK_END) < 0)
-        return -1;
+    if((r = vsc_fseeko(f, 0, SEEK_END)) < 0)
+        return r;
 
     if((off = vsc_ftello(f)) < 0)
-        return -1;
+        return (int)off;
 
     *size = (size_t)off;
     return 0;
@@ -113,24 +110,23 @@ static int get_sizes(FILE *f, VscFreadallState *state)
     *state = default_state;
 
     if((fd = vsc_fileno(f)) < 0) {
-        if(errno != EBADF)
-            return -1;
+        if(fd != VSC_ERROR(EBADF))
+            return fd;
 
         /*
          * Not necessarily an error, f could be from fmemopen().
          * Try seek/tell, then fall back to streaming.
          */
-        errno = 0;
         (void)get_size_seektell(f, &state->file_size);
         return 0;
     }
 
     if(fstat(fd, &state->statbuf) < 0)
-        return -1;
+        return VSC_ERROR(errno);
 
     /* Fail-fast if we're a directory. */
     if(S_ISDIR(state->statbuf.st_mode))
-        return errno = EISDIR, -1;
+        return VSC_ERROR(EISDIR);
 
 #if !defined(_WIN32)
     state->blk_size = state->statbuf.st_blksize;
@@ -149,8 +145,6 @@ static int get_sizes(FILE *f, VscFreadallState *state)
             (void)get_size_seektell(f, &state->file_size);
 
         (void)get_blksize_ioctl(fd, &state->blk_size);
-
-        errno = 0;
     }
 #endif
     else if(!S_ISREG(state->statbuf.st_mode)) {
@@ -196,13 +190,10 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
     VscFreadallState state, user_state;
     vsc_off_t save;
     char *p;
+    int r;
 
-    if(ptr == NULL || size == NULL || f == NULL || init_proc == NULL || chunk_proc == NULL || a == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
-
-    errno = 0;
+    if(ptr == NULL || size == NULL || f == NULL || init_proc == NULL || chunk_proc == NULL || a == NULL)
+        return VSC_ERROR(EINVAL);
 
     /* Save our current position if possible. */
     if((save = vsc_ftello(f)) < 0) {
@@ -211,19 +202,17 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
          * ESPIPE: Can't seek on a pipe.
          * Anything else: something screwy
          */
-        if(errno != EBADF && errno != ESPIPE)
+        if(save != VSC_ERROR(EBADF) && save != VSC_ERROR(ESPIPE))
             return -1;
-
-        errno = 0;
     }
 
-    if(get_sizes(f, &state) < 0)
-        return -1;
+    if((r = get_sizes(f, &state)) < 0)
+        return r;
 
     if(save >= 0) {
         /* Restore our position, if any. */
-        if(vsc_fseeko(f, save, SEEK_SET) < 0)
-            return -1;
+        if((r = vsc_fseeko(f, save, SEEK_SET)) < 0)
+            return r;
 
         /* If we're already not at the start, don't allocate more than we need to. */
         if(state.file_size > 0) {
@@ -243,10 +232,8 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
 
     /* Invoke the "init" callback. The caller may want to check/tweak our discovered properties. */
     user_state = state;
-    if(init_proc(&user_state, user) < 0) {
-        errno = ECANCELED;
-        return -1;
-    }
+    if(init_proc(&user_state, user) < 0)
+        return VSC_ERROR(ECANCELED);
 
     /* Only accept changes on these fields. */
     state.file_size = user_state.file_size;
@@ -261,7 +248,7 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
 
             if((_p = vsc_xrealloc(a, p, state.file_size)) == NULL) {
                 vsc_xfree(a, p);
-                return errno = ENOMEM, -1;
+                return VSC_ERROR(ENOMEM);
             }
             p = _p;
         }
@@ -270,17 +257,13 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
 
         if(chunk_proc(&state, user) < 0) {
             vsc_xfree(a, p);
-            errno = ECANCELED;
-            return -1;
+            return VSC_ERROR(ECANCELED);
         }
     }
 
-    if(ferror(f))
-        errno = EIO;
-
-    if(errno != 0) {
+    if(ferror(f)) {
         vsc_xfree(a, p);
-        return -1;
+        return VSC_ERROR(EIO);
     }
 
     *ptr  = p;
