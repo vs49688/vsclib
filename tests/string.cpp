@@ -3,6 +3,8 @@
 #include <string_view>
 #include <memory>
 #include <vector>
+#include <iostream>
+#include <fstream>
 #include "catch.hpp"
 
 using namespace std::string_view_literals;
@@ -88,4 +90,36 @@ TEST_CASE("for_each_delim, pass-through return code", "[string]") {
 
     REQUIRE(expected == actual);
     REQUIRE(VSC_ERROR_EOF == r);
+}
+
+TEST_CASE("getdelim", "[string]") {
+    std::ofstream f;
+    f.exceptions(std::ios_base::badbit | std::ios_base::failbit | std::ios_base::eofbit);
+    f.open("getdelim-test.txt", std::ios_base::binary);
+    f << "a,b,c,d";
+    f.close();
+
+    vsc::stdio_ptr fp(fopen("getdelim-test.txt", "rb"));
+    REQUIRE(fp);
+
+    char *lineptr = nullptr;
+    size_t n = 0;
+
+    vsc_ssize_t nread;
+
+    std::vector<std::string> expected = {"a,", "b,", "c,", "d"};
+    std::vector<std::string> actual;
+    actual.reserve(expected.size());
+
+    try {
+        while((nread = vsc_getdelim(&lineptr, &n, ',', fp.get())) >= 0) {
+            actual.emplace_back(lineptr);
+        }
+    } catch(...) {
+        vsc_free(lineptr);
+        throw;
+    }
+
+    REQUIRE(expected == actual);
+    REQUIRE(nread == VSC_ERROR_EOF);
 }
