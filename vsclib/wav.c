@@ -6,10 +6,10 @@
 
 #define WAV_HEADER_BUF_SIZE 44
 
-#define FOURCC_RIFF 0x52494646
-#define FOURCC_WAVE 0x57415645
-#define FOURCC_fmt_ 0x666d7420
-#define FOURCC_data 0x64617461
+#define FOURCC_RIFF VSC_FOURCC('R', 'I', 'F', 'F')
+#define FOURCC_WAVE VSC_FOURCC('W', 'A', 'V', 'E')
+#define FOURCC_fmt_ VSC_FOURCC('f', 'm', 't', ' ')
+#define FOURCC_data VSC_FOURCC('d', 'a', 't', 'a')
 
 int vsc_wav_write(FILE *f, int16_t *data, size_t nsamples, uint32_t sample_rate, uint16_t nchannels)
 {
@@ -26,12 +26,12 @@ int vsc_wav_write(FILE *f, int16_t *data, size_t nsamples, uint32_t sample_rate,
     if(data_size > UINT32_MAX - 36)
         return VSC_ERROR(ERANGE);
 
-    vsc_write_beu32(buf  + 0, FOURCC_RIFF);
+    vsc_write_leu32(buf  + 0, FOURCC_RIFF);
     vsc_write_leu32(buf  + 4, 36 + data_size);
-    vsc_write_beu32(buf  + 8, FOURCC_WAVE);
+    vsc_write_leu32(buf  + 8, FOURCC_WAVE);
 
     /* "fmt " sub-chunk */
-    vsc_write_beu32(buf + 12, FOURCC_fmt_);
+    vsc_write_leu32(buf + 12, FOURCC_fmt_);
     vsc_write_leu32(buf + 16, 16);
     vsc_write_leu16(buf + 20, 1);                            /* format, 1 = pcm */
     vsc_write_leu16(buf + 22, nchannels);                    /* num channels    */
@@ -41,7 +41,7 @@ int vsc_wav_write(FILE *f, int16_t *data, size_t nsamples, uint32_t sample_rate,
     vsc_write_leu16(buf + 34, 16);                           /* bits per sample */
 
     /* "data" sub-chunk */
-    vsc_write_beu32(buf + 36, FOURCC_data);
+    vsc_write_leu32(buf + 36, FOURCC_data);
     vsc_write_leu32(buf + 40, data_size);
 
     if(fwrite(buf, WAV_HEADER_BUF_SIZE, 1, f) != 1)
