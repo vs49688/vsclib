@@ -28,10 +28,8 @@ int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEac
     int r;
     const char *start = begin;
 
-    if(begin > end) {
-        errno = EINVAL;
-        return -1;
-    }
+    if(begin > end)
+        return VSC_ERROR(EINVAL);
 
     for(const char *next; start != end; start = next) {
         next = memchr(start, delim, end - start);
