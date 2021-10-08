@@ -41,7 +41,7 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
 {
     /* Absolutely disgusting. */
 #if defined(_WIN32) || !defined(VSC_HAVE_GETGRENT_R)
-    return VSC_ERROR(EOPNOTSUPP);
+    return VSC_ERROR(ENOTSUP);
 #else
     size_t buflen = 2048; /* 2048 is enough for the HPC. */
     char *buf = NULL;
