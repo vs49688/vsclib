@@ -49,7 +49,7 @@ int vsc_xalloc_ex(const VscAllocator *a, void **ptr, size_t size, uint32_t flags
     ret = a->alloc(ptr, size, alignment, flags, a->user);
 
     /* If our allocator can't handle realloc'ing, fake it. */
-    if(ret == -EOPNOTSUPP && (flags & VSC_ALLOC_REALLOC)) {
+    if(ret == -ENOTSUP && (flags & VSC_ALLOC_REALLOC)) {
         void *p = *ptr;
         size_t msize = a->size(*ptr, a->user);
 

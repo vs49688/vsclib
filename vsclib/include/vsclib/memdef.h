@@ -58,7 +58,7 @@ typedef enum VscAllocFlags {
  * \param[in]    user       A user-provided pointer.
  *
  * \remark  If reallocation is not supported, and the #VSC_ALLOC_REALLOC flag is set, then
- *          this function should fail immediately and return `-EOPNOTSUPP`. There is special
+ *          this function should fail immediately and return `-ENOTSUP`. There is special
  *          handling in vsc_xalloc_ex() for this situation, which will emulate the behaviour
  *          if possible.
  * \remark  This function MUST NOT modify errno.

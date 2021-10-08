@@ -32,7 +32,7 @@
  * As POSIX/glibc/musl don't provide "aligned_realloc" capability, we
  * technically can't support it, but if the new alignment is smaller than
  * the default alignment, we can fake it (as it'd be aligned anyway because
- * everything's POT). If the alignment is larger, bail with -ENOTSUPP and
+ * everything's POT). If the alignment is larger, bail with -ENOTSUP and
  * vsc_alloc_ex() will emulate it with a malloc-copy-free. Sorry.
  */
 #include <errno.h>
@@ -106,7 +106,7 @@ static int _malloc(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
          * is suitable. Otherwise, bail and let vsc_xalloc_ex() emulate it.
          */
         if(ftr->alignment > VSC_ALIGNOF(vsc_max_align_t))
-            return -EOPNOTSUPP;
+            return -ENOTSUP;
 
         p = vsc_sys_realloc(*ptr, reqsize);
     } else {
