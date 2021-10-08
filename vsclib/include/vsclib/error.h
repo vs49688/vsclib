@@ -21,11 +21,16 @@
 #define _VSCLIB_ERROR_H
 
 #include <errno.h>
+#include "macros.h"
 
 #if EINVAL < 0
-#   define VSC_ERROR(x) (-(x))
+#   define VSC_ERROR(x) (-(x & 0xFFFF))
 #else
-#   define VSC_ERROR(x) (x)
+#   define VSC_ERROR(x)   (x & 0xFFFF)
 #endif
+
+#define VSC_MKERR(a, b, c, d) (-(int)VSC_FOURCC(a, b, c, d))
+
+#define VSC_ERROR_EOF VSC_MKERR(' ', 'E', 'O', 'F')
 
 #endif /* _VSCLIB_ERROR_H */
