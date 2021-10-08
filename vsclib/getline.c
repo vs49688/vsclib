@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <limits.h>
 #include <stdio.h>
+#include <vsclib/error.h>
 #include <vsclib/types.h>
 #include <vsclib/mem.h>
 
@@ -30,17 +31,13 @@ vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, co
     size_t new_lineptr_len;
     int c;
 
-    if (lineptr == NULL || n == NULL || stream == NULL) {
-        errno = EINVAL;
-        return -1;
-    }
+    if (lineptr == NULL || n == NULL || stream == NULL)
+        return VSC_ERROR(EINVAL);
 
     if (*lineptr == NULL) {
         *n = 128; /* init len */
-        if ((*lineptr = (char *)vsc_xalloc(a, *n)) == NULL) {
-            errno = ENOMEM;
-            return -1;
-        }
+        if ((*lineptr = vsc_xalloc(a, *n)) == NULL)
+            return VSC_ERROR(ENOMEM);
     }
 
     cur_pos = *lineptr;
@@ -48,7 +45,7 @@ vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, co
         c = getc(stream);
 
         if (ferror(stream) || (c == EOF && cur_pos == *lineptr))
-            return -1;
+            return VSC_ERROR_EOF;
 
         if (c == EOF)
             break;
@@ -56,18 +53,16 @@ vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, co
         if ((*lineptr + *n - cur_pos) < 2) {
             if (SSIZE_MAX / 2 < *n) {
 #ifdef EOVERFLOW
-                errno = EOVERFLOW;
+                return VSC_ERROR(EOVERFLOW);
 #else
-                errno = ERANGE; /* no EOVERFLOW defined */
+                return VSC_ERROR(ERANGE); /* no EOVERFLOW defined */
 #endif
-                return -1;
             }
             new_lineptr_len = *n * 2;
 
-            if ((new_lineptr = (char *)vsc_xrealloc(a, *lineptr, new_lineptr_len)) == NULL) {
-                errno = ENOMEM;
-                return -1;
-            }
+            if ((new_lineptr = vsc_xrealloc(a, *lineptr, new_lineptr_len)) == NULL)
+                return VSC_ERROR(ENOMEM);
+
             cur_pos = new_lineptr + (cur_pos - *lineptr);
             *lineptr = new_lineptr;
             *n = new_lineptr_len;
