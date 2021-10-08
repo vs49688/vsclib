@@ -52,5 +52,40 @@ TEST_CASE("for_each_delim, w/ leading delimiter", "[string]") {
     test_for_each_delim(",b,c,d,,,sdf\nfds,"sv, expected);
 }
 
+static void test_for_each_delim2(std::string_view input, const std::vector<std::string_view>& expected) {
+    std::vector<std::string_view> actual;
+    actual.reserve(expected.size());
 
+    int r = vsc_for_each_delim(input.data(), input.data() + input.size(), ',', [](const char *b, const char *e, void *user){
+        std::string_view tok(b, e - b);
+        std::vector<std::string_view> *out = reinterpret_cast<std::vector<std::string_view>*>(user);
+        out->push_back(tok);
+        return 0;
+    }, &actual);
 
+    REQUIRE(expected == actual);
+    REQUIRE(0 == r);
+}
+
+TEST_CASE("for_each_delim, pass-through return code", "[string]") {
+    std::vector<std::string_view> expected = {"a", "b"};
+
+    std::vector<std::string_view> actual;
+    actual.reserve(expected.size());
+
+    std::string_view input = "a,b,c,d"sv;
+
+    int r = vsc_for_each_delim(input.data(), input.data() + input.size(), ',', [](const char *b, const char *e, void *user) {
+        std::string_view tok(b, e - b);
+
+        if(tok == "c"sv)
+            return VSC_ERROR_EOF; /* Any error will do.*/
+
+        std::vector<std::string_view> *out = reinterpret_cast<std::vector<std::string_view>*>(user);
+        out->push_back(tok);
+        return 0;
+    }, &actual);
+
+    REQUIRE(expected == actual);
+    REQUIRE(VSC_ERROR_EOF == r);
+}
