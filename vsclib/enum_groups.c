@@ -33,6 +33,7 @@
 #include <stdlib.h>
 
 #include <vsclib/assert.h>
+#include <vsclib/error.h>
 #include <vsclib/mem.h>
 #include <vsclib/enum_groups.h>
 
@@ -40,12 +41,11 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
 {
     /* Absolutely disgusting. */
 #if defined(_WIN32) || !defined(VSC_HAVE_GETGRENT_R)
-    errno = EOPNOTSUPP;
-    return -1;
+    return VSC_ERROR(EOPNOTSUPP);
 #else
     size_t buflen = 2048; /* 2048 is enough for the HPC. */
     char *buf = NULL;
-    int ret = 0, rc = 0, olderr;
+    int ret = 0, rc = 0;
 
     vsc_assert(passwd != NULL);
     vsc_assert(proc != NULL);
@@ -53,7 +53,7 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
     errno = 0;
     setgrent();
     if(errno != 0)
-        return -1;
+        return VSC_ERROR(errno);
 
     for(struct group *g = NULL;;) {
         struct group grp;
@@ -61,7 +61,7 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
 
         if(buf == NULL || rc == ERANGE) {
             if((buf2 = vsc_xrealloc(a, buf, buflen)) == NULL) {
-                errno = ENOMEM;
+                ret = VSC_ERROR(ENOMEM);
                 break;
             }
             buf = buf2;
@@ -76,7 +76,7 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
         }
 
         if(rc != 0) {
-            errno = rc;
+            ret = VSC_ERROR(rc);
             break;
         }
 
@@ -100,13 +100,9 @@ done:
     if(buf != NULL)
         vsc_xfree(a, buf);
 
-    olderr = errno;
     endgrent();
 
-    if(ret != 0)
-        return ret;
-
-    return olderr != 0 ? -1 : 0;
+    return ret;
 #endif
 }
 
