@@ -20,7 +20,9 @@
 #ifndef _VSCLIB_STRING_H
 #define _VSCLIB_STRING_H
 
+#include <stdio.h>
 #include "types.h"
+#include "memdef.h"
 #include "stringdef.h"
 
 #if defined(__cplusplus)
