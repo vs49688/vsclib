@@ -44,8 +44,8 @@ int vsc_chdira(const char *path, const VscAllocator *a)
     wchar_t *wpath = NULL;
     int r;
 
-    if((wpath = vsci_cstrtowstra_compat(path, NULL, CP_UTF8, a)) == NULL)
-        return VSC_ERROR(errno);
+    if((r = vsc_cstrtowstra(path, CP_UTF8, &wpath, NULL, a)) < 0)
+        return r;
 
     if(!SetCurrentDirectoryW(wpath)) {
         r = vsci_map_win32err(GetLastError());
