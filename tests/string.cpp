@@ -133,8 +133,10 @@ TEST_CASE("character conversions", "[string]") {
     vsc::vsc_ptr<char> _mb;
     wchar_t *ws;
     char *mb;
+    int r;
 
-    ws = vsc_cstrtowstr("abcd", &len, CP_UTF8);
+    r = vsc_cstrtowstr("abcd", CP_UTF8, &ws, &len);
+    REQUIRE(r == 0);
     REQUIRE(ws != nullptr);
     REQUIRE(len == 5);
     _ws.reset(ws);

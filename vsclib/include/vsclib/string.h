@@ -60,8 +60,8 @@ char *vsc_strdupr(const char *start, const char *end);
 char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a);
 
 #if defined(_WIN32)
-wchar_t *vsc_cstrtowstr(const char *s, size_t *len, unsigned int cp);
-wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscAllocator *a);
+int vsc_cstrtowstr(const char *s, unsigned int cp, wchar_t **ws, size_t *len);
+int vsc_cstrtowstra(const char *s, unsigned int cp, wchar_t **ws, size_t *len, const VscAllocator *a);
 
 char *vsc_wstrtocstr(const wchar_t *ws, size_t *len, unsigned int cp);
 char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a);

@@ -44,7 +44,15 @@ int vsci_map_win32err(DWORD dwErr)
 
 wchar_t *vsci_cstrtowstra_compat(const char *s, size_t *len, unsigned int cp, const VscAllocator *a)
 {
-    return vsc_cstrtowstra(s, len, cp, a);
+    int r;
+    wchar_t *ws;
+
+    if((r = vsc_cstrtowstra(s, cp, &ws, len, a)) < 0) {
+        errno = EINVAL;
+        return NULL;
+    }
+
+    return ws;
 }
 
 char *vsci_wstrtocstra_compat(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a)
