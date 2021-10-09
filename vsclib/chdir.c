@@ -29,6 +29,10 @@
 #include <vsclib/string.h>
 #include <vsclib/mem.h>
 
+#if defined(_WIN32)
+#   include "util_win32.h"
+#endif
+
 int vsc_chdir(const char *path)
 {
     return vsc_chdira(path, &vsclib_system_allocator);
@@ -44,17 +48,7 @@ int vsc_chdira(const char *path, const VscAllocator *a)
         return VSC_ERROR(errno);
 
     if(!SetCurrentDirectoryW(wpath)) {
-        switch(GetLastError()) {
-            case ERROR_FILE_NOT_FOUND:
-            case ERROR_PATH_NOT_FOUND:
-                r = VSC_ERROR(ENOENT);
-                break;
-            case ERROR_ACCESS_DENIED:
-                r = VSC_ERROR(EACCES);
-                break;
-            default:
-                r = VSC_ERROR(EINVAL);
-        }
+        r = vsci_map_win32err(GetLastError());
         goto done;
     }
 
