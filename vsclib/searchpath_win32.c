@@ -23,42 +23,7 @@
 
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
-
-wchar_t *vsc_cstrtowstra(const char *s, size_t *len, unsigned int cp, const VscAllocator *a)
-{
-    int x;
-    size_t _len;
-    wchar_t *ws;
-
-    _len = strlen(s) + 1;
-    if(_len >= INT_MAX)
-        return errno = EOVERFLOW, NULL;
-
-    /* Get the required size. */
-    if((x = MultiByteToWideChar(cp, 0, s, (int)_len, NULL, 0)) == 0)
-        return errno = EINVAL, NULL;
-    vsc_assert(x > 0);
-
-    if((ws = vsc_xalloc(a, x * sizeof(wchar_t))) == NULL)
-        return errno = ENOMEM, NULL;
-
-    /* Now convert. */
-    if((x = MultiByteToWideChar(cp, 0, s, (int)_len, ws, x)) == 0) {
-        vsc_xfree(a, ws);
-        return errno = EINVAL, NULL;
-    }
-    vsc_assert(x > 0);
-
-    if(len)
-        *len = (size_t)x;
-
-    return ws;
-}
-
-wchar_t *vsc_cstrtowstr(const char *s, size_t *len, unsigned int cp)
-{
-    return vsc_cstrtowstra(s, len, cp, &vsclib_system_allocator);
-}
+#include <vsclib/string.h>
 
 char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a)
 {
