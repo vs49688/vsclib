@@ -18,6 +18,7 @@ if(MINGW OR WIN32)
 			searchpath_win32.c
 			allocator_win32.c
 			cstrtowstr_win32.c
+			wstrtocstr_win32.c
 			util_win32.c
 			util_win32.h
 	)

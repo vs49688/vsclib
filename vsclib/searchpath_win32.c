@@ -19,44 +19,9 @@
  */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <limits.h>
 
-#include <vsclib/assert.h>
 #include <vsclib/mem.h>
 #include <vsclib/string.h>
-
-char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a)
-{
-    int x;
-    char *s;
-    size_t _len = wcslen(ws) + 1;
-
-    if(_len >= INT_MAX)
-        return errno = EOVERFLOW, NULL;
-
-    if((x = WideCharToMultiByte(cp, 0, ws, (int)_len, NULL, 0, NULL, NULL)) == 0)
-        return errno = EINVAL, NULL;
-    vsc_assert(x > 0);
-
-    if((s = vsc_xalloc(a, x * sizeof(char))) == NULL)
-        return errno = ENOMEM, NULL;
-
-    if((x = WideCharToMultiByte(cp, 0, ws, (int)_len, s, x, NULL, NULL)) == 0) {
-        vsc_xfree(a, s);
-        return errno = EINVAL, NULL;
-    }
-    vsc_assert(x > 0);
-
-    if(len)
-        *len = (size_t)x;
-
-    return s;
-}
-
-char *vsc_wstrtocstr(const wchar_t *ws, size_t *len, unsigned int cp)
-{
-    return vsc_wstrtocstra(ws, len, cp, &vsclib_system_allocator);
-}
 
 char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
 {
