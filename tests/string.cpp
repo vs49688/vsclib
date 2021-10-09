@@ -142,7 +142,8 @@ TEST_CASE("character conversions", "[string]") {
     _ws.reset(ws);
     CHECK(wcscmp(L"abcd", ws) == 0);
 
-    mb = vsc_wstrtocstr(L"abcd", &len, CP_UTF8);
+    r = vsc_wstrtocstr(L"abcd", CP_UTF8, &mb, &len);
+    REQUIRE(r == 0);
     REQUIRE(mb != nullptr);
     REQUIRE(len == 5);
     _mb.reset(mb);

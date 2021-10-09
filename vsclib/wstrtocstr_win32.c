@@ -19,40 +19,45 @@
  */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <limits.h>
 
+#include <errno.h>
+#include <limits.h>
 #include <vsclib/assert.h>
+#include <vsclib/error.h>
 #include <vsclib/mem.h>
 
-char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a)
+#include "util_win32.h"
+
+int vsc_wstrtocstra(const wchar_t *ws, unsigned int cp, char **s, size_t *len, const VscAllocator *a)
 {
     int x;
-    char *s;
+    char *_s;
     size_t _len = wcslen(ws) + 1;
 
     if(_len >= INT_MAX)
-        return errno = EOVERFLOW, NULL;
+        return VSC_ERROR(EOVERFLOW);
 
     if((x = WideCharToMultiByte(cp, 0, ws, (int)_len, NULL, 0, NULL, NULL)) == 0)
-        return errno = EINVAL, NULL;
+        return vsci_map_win32err(GetLastError());
     vsc_assert(x > 0);
 
-    if((s = vsc_xalloc(a, x * sizeof(char))) == NULL)
-        return errno = ENOMEM, NULL;
+    if((_s = vsc_xalloc(a, x * sizeof(char))) == NULL)
+        return VSC_ERROR(ENOMEM);
 
-    if((x = WideCharToMultiByte(cp, 0, ws, (int)_len, s, x, NULL, NULL)) == 0) {
+    if((x = WideCharToMultiByte(cp, 0, ws, (int)_len, _s, x, NULL, NULL)) == 0) {
         vsc_xfree(a, s);
-        return errno = EINVAL, NULL;
+        return vsci_map_win32err(GetLastError());
     }
     vsc_assert(x > 0);
 
     if(len)
         *len = (size_t)x;
 
-    return s;
+    *s = _s;
+    return 0;
 }
 
-char *vsc_wstrtocstr(const wchar_t *ws, size_t *len, unsigned int cp)
+int vsc_wstrtocstr(const wchar_t *ws, unsigned int cp, char **s, size_t *len)
 {
-    return vsc_wstrtocstra(ws, len, cp, &vsclib_system_allocator);
+    return vsc_wstrtocstra(ws, cp, s, len, &vsclib_system_allocator);
 }

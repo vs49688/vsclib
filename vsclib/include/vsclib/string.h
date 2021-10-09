@@ -63,8 +63,8 @@ char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a);
 int vsc_cstrtowstr(const char *s, unsigned int cp, wchar_t **ws, size_t *len);
 int vsc_cstrtowstra(const char *s, unsigned int cp, wchar_t **ws, size_t *len, const VscAllocator *a);
 
-char *vsc_wstrtocstr(const wchar_t *ws, size_t *len, unsigned int cp);
-char *vsc_wstrtocstra(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a);
+int vsc_wstrtocstr(const wchar_t *ws, unsigned int cp, char **s, size_t *len);
+int vsc_wstrtocstra(const wchar_t *ws, unsigned int cp, char **s, size_t *len, const VscAllocator *a);
 #endif
 
 #if defined(__cplusplus)

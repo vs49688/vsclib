@@ -57,7 +57,15 @@ wchar_t *vsci_cstrtowstra_compat(const char *s, size_t *len, unsigned int cp, co
 
 char *vsci_wstrtocstra_compat(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a)
 {
-    return vsc_wstrtocstra(ws, len, cp, a);
+    int r;
+    char *s;
+
+    if((r = vsc_wstrtocstra(ws, cp, &s, len, a)) < 0) {
+        errno = EINVAL;
+        return NULL;
+    }
+
+    return s;
 }
 
 #endif
