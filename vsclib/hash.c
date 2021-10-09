@@ -27,10 +27,8 @@
 
 vsc_hash_t vsc_hash(const void *data, size_t size)
 {
-    if(data == NULL && size != 0) {
-        errno = EINVAL;
+    if(data == NULL && size != 0)
         return VSC_INVALID_HASH;
-    }
 
     /*
      * Use whichever one matches the machine's native word type.
