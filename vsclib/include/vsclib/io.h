@@ -82,8 +82,8 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
  */
 int vsc_fnullify(FILE *f);
 
-char *vsc_searchpath(const char *f, size_t *len);
-char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a);
+int vsc_searchpath(const char *f, char **s, size_t *len);
+int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a);
 
 int   vsc_chdir(const char *path);
 int   vsc_chdira(const char *path, const VscAllocator *a);

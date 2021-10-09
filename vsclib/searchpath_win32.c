@@ -20,38 +20,43 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+#include <vsclib/error.h>
 #include <vsclib/mem.h>
 #include <vsclib/string.h>
+#include <vsclib/io.h>
 
 #include "util_win32.h"
 
-char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
+int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
 {
     DWORD x;
     size_t _len;
+    int r;
     wchar_t *ws = NULL, *wf = NULL;
     char *of = NULL;
 
-    if((wf = vsci_cstrtowstra_compat(f, &_len, CP_UTF8, a)) == NULL)
-        return NULL; /* vsc_cstrtowstra() sets errno. */
+    if((r = vsc_cstrtowstra(f, CP_UTF8, &wf, &_len, a)) < 0)
+        return r;
 
     if((x = SearchPathW(NULL, wf, L".exe", 0, NULL, NULL)) == 0)
         goto done;
 
     if((ws = vsc_xalloc(a, (size_t)x * sizeof(wchar_t))) == NULL) {
-        errno = ENOMEM;
+        r = VSC_ERROR(ENOMEM);
         goto done;
     }
 
     if((x = SearchPathW(NULL, wf, L".exe", x, ws, NULL)) == 0)
         goto done;
 
-    if((of = vsci_wstrtocstra_compat(ws, len, CP_UTF8, a)) == NULL)
+    if((r = vsc_wstrtocstra(ws, CP_UTF8, &of, len, a)) < 0)
         goto done;
 
+    *s = of;
+    r = 0;
 done:
     if(x == 0)
-        errno = ENOENT;
+        r = vsci_map_win32err(GetLastError());
 
     if(ws != NULL)
         vsc_xfree(a, ws);
@@ -59,10 +64,10 @@ done:
     if(wf != NULL)
         vsc_xfree(a, wf);
 
-    return of;
+    return r;
 }
 
-char *vsc_searchpath(const char *f, size_t *len)
+int vsc_searchpath(const char *f, char **s, size_t *len)
 {
-    return vsc_searchpatha(f, len, &vsclib_system_allocator);
+    return vsc_searchpatha(f, s, len, &vsclib_system_allocator);
 }

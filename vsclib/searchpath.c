@@ -23,7 +23,9 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
+#include <vsclib/error.h>
 #include <vsclib/mem.h>
+#include <vsclib/io.h>
 
 static int statfile(const char *p, uid_t uid, gid_t gid)
 {
@@ -31,11 +33,11 @@ static int statfile(const char *p, uid_t uid, gid_t gid)
     memset(&statbuf, 0, sizeof(statbuf));
 
     if(stat(p, &statbuf) < 0)
-        return -1;
+        return VSC_ERROR(errno);
 
     /* EACCES The file or a script interpreter is not a regular file. */
     if(!S_ISREG(statbuf.st_mode))
-        return errno = EACCES, -1;
+        return VSC_ERROR(EACCES);
 
     /* Check permissions, least-specific to most-specific.  */
     if(statbuf.st_mode & S_IXOTH)
@@ -48,10 +50,10 @@ static int statfile(const char *p, uid_t uid, gid_t gid)
         return 0;
 
     /* EACCES Execute permission is denied for the file or a script or ELF interpreter. */
-    return errno = EACCES, -1;
+    return VSC_ERROR(EACCES);
 }
 
-char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
+int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
 {
     /* Get PATH. If empty, fall back to _CS_PATH. */
     const char *path = getenv("PATH");
@@ -66,12 +68,12 @@ char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
         size_t n;
 
         if((n = confstr(_CS_PATH, NULL, 0)) == 0)
-            return errno = EINVAL, NULL;
+            return VSC_ERROR(EINVAL);
 
         /* If _CS_PATH overflows the stack then something's wrong. */
         _path = (char*)alloca(n * sizeof(char));
         if(confstr(_CS_PATH, _path, n))
-            return errno = EINVAL, NULL;
+            return VSC_ERROR(EINVAL);
 
         path = _path;
     }
@@ -94,7 +96,7 @@ char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
     dlen += flen + 1;
 
     if((buf = vsc_xalloc(a, dlen * sizeof(char))) == NULL)
-        return errno = ENOMEM, NULL;
+        return VSC_ERROR(ENOMEM);
 
     uid = getuid();
     gid = getgid();
@@ -114,14 +116,16 @@ char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
 
         if(len)
             *len = dist + flen;
-        return buf;
+
+        *s = buf;
+        return 0;
     }
 
     vsc_xfree(a, buf);
-    return errno = ENOENT, NULL;
+    return VSC_ERROR(ENOENT);
 }
 
-char *vsc_searchpath(const char *f, size_t *len)
+int vsc_searchpath(const char *f, char **s, size_t *len)
 {
-    return vsc_searchpatha(f, len, &vsclib_system_allocator);
+    return vsc_searchpatha(f, s, len, &vsclib_system_allocator);
 }
