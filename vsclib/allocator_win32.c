@@ -32,6 +32,7 @@
 #include <stdint.h>
 #include <malloc.h>
 #include <vsclib/assert.h>
+#include <vsclib/error.h>
 #include <vsclib/mem.h>
 
 #define WIN32_LEAN_AND_MEAN
@@ -75,7 +76,7 @@ static int _malloc(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
 
     p = _aligned_offset_realloc(hdr, reqsize, alignment, sizeof(MemHeader));
     if(p == NULL)
-        return -ENOMEM;
+        return VSC_ERROR(ENOMEM);
 
     nhdr = (MemHeader*)p;
     p   += sizeof(MemHeader);
