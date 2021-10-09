@@ -32,14 +32,14 @@
 extern "C" {
 #endif
 
-FILE *vsc_fopen(const char *pathname, const char *mode);
+int vsc_fopen(const char *pathname, const char *mode, FILE **fp);
 
 /**
  * \brief fopen(), but correctly handles UTF-8 pathnames on Windows.
  *
  * Memory is allocated in a linear-compatible fashion.
  */
-FILE *vsc_fopena(const char *pathname, const char *mode, const VscAllocator *a);
+int vsc_fopena(const char *pathname, const char *mode, FILE **fp, const VscAllocator *a);
 
 int       vsc_fileno(FILE *stream);
 int       vsc_open(const char *pathname, int flags);

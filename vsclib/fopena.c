@@ -23,43 +23,51 @@
 #   include "util_win32.h"
 #endif
 
+#include <vsclib/error.h>
 #include <vsclib/io.h>
 #include <vsclib/string.h>
 #include <vsclib/mem.h>
 
-FILE *vsc_fopena(const char *pathname, const char *mode, const VscAllocator *a)
+int vsc_fopena(const char *pathname, const char *mode, FILE **fp, const VscAllocator *a)
 {
 #if defined(_WIN32)
     wchar_t *wpath = NULL, *wmode = NULL;
     FILE *f = NULL;
-    int errno_;
+    int r;
 
-    if((wpath = vsci_cstrtowstra_compat(pathname, NULL, CP_UTF8, a)) == NULL)
+    if((r = vsc_cstrtowstra(pathname, CP_UTF8, &wpath, NULL, a)) < 0)
+        return r;
+
+    if((r = vsc_cstrtowstra(mode, CP_UTF8, &wmode, NULL, a)) < 0)
         goto done;
 
-    if((wmode = vsci_cstrtowstra_compat(mode, NULL, CP_UTF8, a)) == NULL)
+    if((f = _wfopen(wpath, wmode)) == NULL) {
+        r = VSC_ERROR(errno);
         goto done;
-
-    if((f = _wfopen(wpath, wmode)) == NULL)
-        goto done;
+    }
 
 done:
-    errno_ = errno;
-
     if(wmode != NULL)
         vsc_xfree(a, wmode);
 
     if(wpath != NULL)
         vsc_xfree(a, wpath);
 
-    errno = errno_;
-    return f;
+    if(r < 0)
+        return r;
+
+    *fp = f;
+    return 0;
 #else
-    return fopen(pathname, mode);
+    FILE *f;
+    if((f = fopen(pathname, mode)) == NULL)
+        return VSC_ERROR(errno);
+    *fp = f;
+    return 0;
 #endif
 }
 
-FILE *vsc_fopen(const char *pathname, const char *mode)
+int vsc_fopen(const char *pathname, const char *mode, FILE **fp)
 {
-    return vsc_fopena(pathname, mode, &vsclib_system_allocator);
+    return vsc_fopena(pathname, mode, fp, &vsclib_system_allocator);
 }
