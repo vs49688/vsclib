@@ -23,11 +23,6 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
-#include <vsclib/memdef.h>
-
 int vsci_map_win32err(DWORD dwErr);
-
-wchar_t *vsci_cstrtowstra_compat(const char *s, size_t *len, unsigned int cp, const VscAllocator *a);
-char    *vsci_wstrtocstra_compat(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a);
 
 #endif /* _VSCLIB_UTIL_WIN32_H */
