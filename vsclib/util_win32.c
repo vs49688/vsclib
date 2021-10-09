@@ -20,6 +20,7 @@
 #ifdef _WIN32
 
 #include <vsclib/error.h>
+#include <vsclib/string.h>
 #include "util_win32.h"
 
 int vsci_map_win32err(DWORD dwErr)
@@ -39,6 +40,16 @@ int vsci_map_win32err(DWORD dwErr)
         default:
             return VSC_ERROR(EINVAL);
     }
+}
+
+wchar_t *vsci_cstrtowstra_compat(const char *s, size_t *len, unsigned int cp, const VscAllocator *a)
+{
+    return vsc_cstrtowstra(s, len, cp, a);
+}
+
+char *vsci_wstrtocstra_compat(const wchar_t *ws, size_t *len, unsigned int cp, const VscAllocator *a)
+{
+    return vsc_wstrtocstra(ws, len, cp, a);
 }
 
 #endif

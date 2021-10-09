@@ -20,6 +20,7 @@
 #if defined(WIN32)
 #	define WIN32_LEAN_AND_MEAN
 #	include <windows.h>
+#   include "util_win32.h"
 #endif
 
 #include <vsclib/io.h>
@@ -33,10 +34,10 @@ FILE *vsc_fopena(const char *pathname, const char *mode, const VscAllocator *a)
     FILE *f = NULL;
     int errno_;
 
-    if((wpath = vsc_cstrtowstra(pathname, NULL, CP_UTF8, a)) == NULL)
+    if((wpath = vsci_cstrtowstra_compat(pathname, NULL, CP_UTF8, a)) == NULL)
         goto done;
 
-    if((wmode = vsc_cstrtowstra(mode, NULL, CP_UTF8, a)) == NULL)
+    if((wmode = vsci_cstrtowstra_compat(mode, NULL, CP_UTF8, a)) == NULL)
         goto done;
 
     if((f = _wfopen(wpath, wmode)) == NULL)

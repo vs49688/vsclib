@@ -23,6 +23,8 @@
 #include <vsclib/mem.h>
 #include <vsclib/string.h>
 
+#include "util_win32.h"
+
 char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
 {
     DWORD x;
@@ -30,7 +32,7 @@ char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
     wchar_t *ws = NULL, *wf = NULL;
     char *of = NULL;
 
-    if((wf = vsc_cstrtowstra(f, &_len, CP_UTF8, a)) == NULL)
+    if((wf = vsci_cstrtowstra_compat(f, &_len, CP_UTF8, a)) == NULL)
         return NULL; /* vsc_cstrtowstra() sets errno. */
 
     if((x = SearchPathW(NULL, wf, L".exe", 0, NULL, NULL)) == 0)
@@ -44,7 +46,7 @@ char *vsc_searchpatha(const char *f, size_t *len, const VscAllocator *a)
     if((x = SearchPathW(NULL, wf, L".exe", x, ws, NULL)) == 0)
         goto done;
 
-    if((of = vsc_wstrtocstra(ws, len, CP_UTF8, a)) == NULL)
+    if((of = vsci_wstrtocstra_compat(ws, len, CP_UTF8, a)) == NULL)
         goto done;
 
 done:
