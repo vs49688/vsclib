@@ -17,6 +17,8 @@ if(MINGW OR WIN32)
 	set(OS_FILES
 			searchpath_win32.c
 			allocator_win32.c
+			util_win32.c
+			util_win32.h
 	)
 else()
 	set(OS_FILES
