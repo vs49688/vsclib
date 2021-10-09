@@ -123,3 +123,27 @@ TEST_CASE("getdelim", "[string]") {
     REQUIRE(expected == actual);
     REQUIRE(nread == VSC_ERROR_EOF);
 }
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+TEST_CASE("character conversions", "[string]") {
+    size_t len;
+    vsc::vsc_ptr<wchar_t> _ws;
+    vsc::vsc_ptr<char> _mb;
+    wchar_t *ws;
+    char *mb;
+
+    ws = vsc_cstrtowstr("abcd", &len, CP_UTF8);
+    REQUIRE(ws != nullptr);
+    REQUIRE(len == 5);
+    _ws.reset(ws);
+    CHECK(wcscmp(L"abcd", ws) == 0);
+
+    mb = vsc_wstrtocstr(L"abcd", &len, CP_UTF8);
+    REQUIRE(mb != nullptr);
+    REQUIRE(len == 5);
+    _mb.reset(mb);
+    CHECK(strcmp("abcd", mb) == 0);
+}
+#endif
