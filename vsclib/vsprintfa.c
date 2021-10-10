@@ -33,17 +33,16 @@ char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap)
     nreq = vsnprintf(NULL, 0, fmt, ap2);
     va_end(ap2);
 
-    /* Not really EINVAL, but vsnprintf doesn't provide. */
     if(nreq < 0)
-        return errno = EINVAL, NULL;
+        return NULL;
 
     ++nreq;
     if((s = vsc_xalloc(a, (size_t)nreq)) == NULL)
-        return errno = ENOMEM, NULL;
+        return NULL;
 
     if(vsnprintf(s, (size_t)nreq, fmt, ap) != nreq - 1) {
         vsc_xfree(a, s);
-        return errno = EINVAL, NULL;
+        return NULL;
     }
 
     return s;
