@@ -17,8 +17,7 @@ The C standard library is fine.
       to avoid `#ifdef`s on Windows/Linux/other, and as such are allowed to use `errno`.
     - `#ifdef`'d Platform-specific convenience functions where:
       - `errno` is ALWAYS available on said platform, and
-      - Returning an error and makes the API significantly more cumbersome (e.g. `vsc_wstrtocstra()`
-        and `vsc_cstrtowstra()`).
+      - Returning an error and makes the API significantly more cumbersome.
 
       This behaviour MUST be explicitly documented. Prefer returning a `VSC_ERROR` value, if possible.
   - A lot of existing code uses `errno` and is gradually being fixed.
