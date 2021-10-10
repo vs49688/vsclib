@@ -166,7 +166,7 @@ void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space)
     return r;
 }
 
-int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks)
+int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks, uint32_t flags)
 {
     int r;
     size_t reqsize;
@@ -174,6 +174,9 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
 
     if(blockinfo == NULL || nblocks < 1 || ptr == NULL || a == NULL)
         return VSC_ERROR(EINVAL);
+
+    /* Doesn't make sense for us... */
+    flags &= ~VSC_ALLOC_REALLOC;
 
     /* Pass 1: calculate the buffer size */
     reqsize = blockinfo[0].element_size * blockinfo[0].count;
@@ -192,7 +195,7 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
         reqsize += size;
     }
 
-    if((r = vsc_xalloc_ex(a, &block, reqsize, 0, blockinfo[0].alignment)) < 0)
+    if((r = vsc_xalloc_ex(a, &block, reqsize, flags, blockinfo[0].alignment)) < 0)
         return r;
 
     /* Pass 2: Calculate the aligned pointers */
@@ -227,7 +230,7 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
     return 0;
 }
 
-int vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks)
+int vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks, uint32_t flags)
 {
-    return vsc_block_xalloc(&vsclib_system_allocator, ptr, blockinfo, nblocks);
+    return vsc_block_xalloc(&vsclib_system_allocator, ptr, blockinfo, nblocks, flags);
 }

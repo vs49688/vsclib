@@ -241,16 +241,17 @@ void *vsc_xcalloc(const VscAllocator *a, size_t nmemb, size_t size);
  * \param ptr       An array of void* to receive the starting addresses of each block.
  * \param blockinfo An array of VscBlockAllocInfo structures describing the blocks.
  * \param nblocks   The number of blocks, i.e. the number of elements in \p ptr and \p blockinfo.
+ * \param flags     The allocation flags. See #VscAllocFlags documentation.
  *
  * \return On success, returns 0. On failure, returns a negative error value.
  */
-int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks);
+int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks, uint32_t flags);
 
 /**
  * \brief Invoke vsc_block_xalloc() with the default allocator.
  * \sa vsc_block_xalloc
  */
-int vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks);
+int vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks, uint32_t flags);
 
 /**
  * \brief Invoke the system's memory allocation procedure.
