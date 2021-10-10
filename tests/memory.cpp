@@ -104,13 +104,19 @@ TEST_CASE("align", "[memory]") {
             uint16_t z;
         };
 
-        std::array<VscBlockAllocInfo, 4> bai = {{
+        void *header;
+        void *uints;
+        void *floats;
+        void *zeroarray;
+
+        std::array<VscBlockAllocInfo, 5> bai = {{
             /* 1 dummy header */
-            {  1, sizeof(TestHeader), alignof(TestHeader) },
+            {  1, sizeof(TestHeader), alignof(TestHeader), &header    },
             /* 10 uint32_t's */
-            { 10, sizeof(uint32_t),   alignof(uint32_t)   },
+            { 10, sizeof(uint32_t),   alignof(uint32_t),   &uints     },
             /* 3 "float vector 3"'s, with a required alignment of 16 */
-            {  3, 12,                 16                   },
+            {  3, 12,                 16,                  &floats    },
+            {  0,  4,                 16,                  &zeroarray },
             {  1,  1,                 4096                 },
         }};
 
@@ -123,12 +129,24 @@ TEST_CASE("align", "[memory]") {
         if(!block)
             throw std::bad_alloc();
 
+        CHECK(header    == ptrs[0]);
+        CHECK(uints     == ptrs[1]);
+        CHECK(floats    == ptrs[2]);
+        CHECK(zeroarray == ptrs[3]);
+        CHECK(zeroarray == floats);
+
         for(size_t i = 0; i < bai.size(); ++i) {
+            const VscBlockAllocInfo *b = bai.data() + i;
             CHECK(ptrs[i] != nullptr);
+
+            /* All alignments bets are off when we're empty. */
+            if(b->count == 0 || b->element_size == 0)
+                continue;
+
             if(i > 0)
                 CHECK(ptrs[i] > ptrs[i-1]);
-            CHECK(VSC_IS_ALIGNED(ptrs[i], bai[i].alignment));
-            CHECK((uintptr_t)ptrs[i] % bai[i].alignment == 0);
+            CHECK(VSC_IS_ALIGNED(ptrs[i], b->alignment));
+            CHECK((uintptr_t)ptrs[i] % b->alignment == 0);
         }
     }
 }
