@@ -148,6 +148,12 @@ typedef struct VscBlockAllocInfo {
      *  If zero, then the default alignment of the allocator is used.
      */
     size_t alignment;
+
+    /**
+     * \brief A pointer to receive the address of the allocated block.
+     *  May be NULL if this isn't needed.
+     */
+    void **out;
 } VscBlockAllocInfo;
 
 #endif /* _VSCLIB_MEMDEF_H */

@@ -192,6 +192,9 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
 
     /* Pass 2: Calculate the aligned pointers */
     ptr[0] = block;
+    if(blockinfo[0].out != NULL)
+        *blockinfo[0].out = block;
+
     for(size_t i = 1; i < nblocks; ++i) {
         const VscBlockAllocInfo *bai = blockinfo + i;
 
@@ -201,6 +204,10 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
         size_t align = bai->alignment == 0 ? a->alignment : bai->alignment;
 
         ptr[i] = vsc_align(align, size, &p, &space);
+
+        if(bai->out != NULL)
+            *bai->out = ptr[i];
+
         if(ptr[i] == NULL) {
             /*
              * This is a bug and should never happen.
