@@ -17,7 +17,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 #include <vsclib/error.h>
@@ -101,25 +100,17 @@ void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
 
 void *vsc_malloc(size_t size)
 {
-    void *p = vsc_xalloc(&vsclib_system_allocator, size);
-    if(p != NULL)
-        errno = ENOMEM;
-
-    return p;
+    return vsc_xalloc(&vsclib_system_allocator, size);
 }
 
 void *vsc_calloc(size_t nmemb, size_t size)
 {
     void *p = NULL;
-    if(size > 0 && nmemb > SIZE_MAX / size) {
-        errno = ENOMEM; /* FIXME: Is this the right code? */
+    if(size > 0 && nmemb > SIZE_MAX / size)
         return NULL;
-    }
 
-    if(vsc_xalloc_ex(&vsclib_system_allocator, &p, size * nmemb, VSC_ALLOC_ZERO, 0) < 0) {
-        errno = ENOMEM;
+    if(vsc_xalloc_ex(&vsclib_system_allocator, &p, size * nmemb, VSC_ALLOC_ZERO, 0) < 0)
         return NULL;
-    }
 
     return p;
 }
@@ -131,20 +122,14 @@ void vsc_free(void *p)
 
 void *vsc_realloc(void *ptr, size_t size)
 {
-    void *p = vsc_xrealloc(&vsclib_system_allocator, ptr, size);
-    if(p == NULL)
-        errno = ENOMEM;
-
-    return p;
+    return vsc_xrealloc(&vsclib_system_allocator, ptr, size);
 }
 
 void *vsc_aligned_malloc(size_t size, size_t alignment)
 {
     void *p = NULL;
-    if(vsc_xalloc_ex(&vsclib_system_allocator, &p, size, 0, alignment) < 0) {
-        errno = ENOMEM;
+    if(vsc_xalloc_ex(&vsclib_system_allocator, &p, size, 0, alignment) < 0)
         return NULL;
-    }
 
     return p;
 }
