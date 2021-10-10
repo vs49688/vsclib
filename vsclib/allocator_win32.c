@@ -97,15 +97,11 @@ static int _malloc(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
 
 static void _free(void *p, void *user)
 {
-    int errno_;
-
     (void)user;
     if(p == NULL)
         return;
 
-    errno_ = errno;
     _aligned_free(mem2hdr(p));
-    errno = errno_;
 }
 
 static size_t _size(void *p, void *user)
