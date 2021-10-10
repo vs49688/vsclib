@@ -103,16 +103,21 @@ void *vsc_malloc(size_t size)
     return vsc_xalloc(&vsclib_system_allocator, size);
 }
 
-void *vsc_calloc(size_t nmemb, size_t size)
+void *vsc_xcalloc(const VscAllocator *a, size_t nmemb, size_t size)
 {
     void *p = NULL;
     if(size > 0 && nmemb > SIZE_MAX / size)
         return NULL;
 
-    if(vsc_xalloc_ex(&vsclib_system_allocator, &p, size * nmemb, VSC_ALLOC_ZERO, 0) < 0)
+    if(vsc_xalloc_ex(a, &p, size * nmemb, VSC_ALLOC_ZERO, 0) < 0)
         return NULL;
 
     return p;
+}
+
+void *vsc_calloc(size_t nmemb, size_t size)
+{
+    return vsc_xcalloc(&vsclib_system_allocator, nmemb, size);
 }
 
 void vsc_free(void *p)

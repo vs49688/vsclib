@@ -95,21 +95,12 @@ void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space);
 void *vsc_malloc(size_t size);
 
 /**
- * \brief Allocate a block of memory capable of holding \p nmemb elements of
- * \p size bytes using the system's default allocator.
- *
- * The returned pointer may be passed to vsc_free.
- *
- * \param nmemb The number of elements.
- * \param size  The size of each element.
- *
- * \return A pointer to the allocated block, or NULL if allocation failed.
+ * \brief Invoke vsc_xcalloc() with the system's default allocator.
  *
  * \remark The semantics of this are the same as calloc().
- * \remark This is the same as invoking vsc_xalloc_ex() with the #VSC_ALLOC_ZERO
- *  flag.
- * \sa calloc()
  *
+ * \sa calloc()
+ * \sa vsc_xcalloc()
  */
 void *vsc_calloc(size_t nmemb, size_t size);
 
@@ -221,6 +212,26 @@ void vsc_xfree(const VscAllocator *a, void *p);
  * \sa realloc()
  */
 void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size);
+
+/**
+ * \brief Allocate a block of memory capable of holding \p nmemb elements of
+ * \p size bytes using the system's default allocator.
+ *
+ * The returned pointer may be passed to vsc_free.
+ *
+ * \param a      A pointer to the allocator to use. May not be NULL.
+ * \param nmemb The number of elements.
+ * \param size  The size of each element.
+ *
+ * \returns On success, a pointer to the allocated block, or NULL if allocation failed.
+ *
+ * \remark The semantics of this are the same as calloc().
+ * \remark This is the same as invoking vsc_xalloc_ex() with the #VSC_ALLOC_ZERO
+ *  flag.
+ * \sa calloc()
+ *
+ */
+void *vsc_xcalloc(const VscAllocator *a, size_t nmemb, size_t size);
 
 /**
  * \brief Allocate a contiguous block of memory described by the
