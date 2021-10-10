@@ -145,6 +145,7 @@ typedef struct VscBlockAllocInfo {
     size_t element_size;
     /**
      * \brief The alignment of the first element.
+     *  If zero, then the default alignment of the allocator is used.
      */
     size_t alignment;
 } VscBlockAllocInfo;

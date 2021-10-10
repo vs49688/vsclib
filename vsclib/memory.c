@@ -177,9 +177,10 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
         void *p      = (void*)reqsize;
         size_t size  = bai->element_size * bai->count;
         size_t space = ~(size_t)0;
+        size_t align = bai->alignment == 0 ? a->alignment : bai->alignment;
         size_t pad;
 
-        vsc_align(bai->alignment, size, &p, &space);
+        vsc_align(align, size, &p, &space);
 
         pad      = ~(size_t)0 - space;
         size    += pad;
@@ -197,8 +198,9 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
         size_t size  = bai->element_size * bai->count;
         void *p      = (void*)((uintptr_t)ptr[i-1] + size);
         size_t space = reqsize - (uintptr_t)ptr[i-1];
+        size_t align = bai->alignment == 0 ? a->alignment : bai->alignment;
 
-        ptr[i] = vsc_align(bai->alignment, size, &p, &space);
+        ptr[i] = vsc_align(align, size, &p, &space);
         if(ptr[i] == NULL) {
             /*
              * This is a bug and should never happen.
