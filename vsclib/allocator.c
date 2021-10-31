@@ -80,7 +80,7 @@ static MemFooter *locate_footer(uint8_t *p)
 }
 
 
-static int _malloc(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
+static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
 {
     MemFooter *ftr = NULL, *nftr;
     uint8_t *p, *end;
@@ -143,7 +143,7 @@ static int _malloc(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
     return 0;
 }
 
-static void _free(void *p, void *user)
+static void free_(void *p, void *user)
 {
     (void)user;
     if(p == NULL)
@@ -152,7 +152,7 @@ static void _free(void *p, void *user)
     vsc_sys_aligned_free(p);
 }
 
-static size_t _size(void *p, void *user)
+static size_t size_(void *p, void *user)
 {
     (void)user;
     if(p == NULL)
@@ -162,9 +162,9 @@ static size_t _size(void *p, void *user)
 }
 
 const VscAllocator vsclib_system_allocator = {
-    .alloc     = _malloc,
-    .free      = _free,
-    .size      = _size,
+    .alloc     = malloc_,
+    .free      = free_,
+    .size      = size_,
     .alignment = VSC_ALIGNOF(vsc_max_align_t),
     .user      = NULL,
 };
