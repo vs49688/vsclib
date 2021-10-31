@@ -18,7 +18,6 @@
  * limitations under the License.
  */
 
-#include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <vsclib/mem.h>

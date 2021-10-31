@@ -18,7 +18,6 @@
  * limitations under the License.
  */
 #include <limits.h>
-#include <errno.h>
 #include <vsclib/hash.h>
 
 #define XXH_STATIC_LINKING_ONLY

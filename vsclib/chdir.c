@@ -57,8 +57,8 @@ done:
     vsc_xfree(a, wpath);
     return r;
 #else
-    int r = chdir(path);
-    if(r < 0)
+    (void)a;
+    if(chdir(path) < 0)
         return VSC_ERROR(errno);
     return 0;
 #endif

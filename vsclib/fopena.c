@@ -59,6 +59,7 @@ done:
     return 0;
 #else
     FILE *f;
+    (void)a;
     if((f = fopen(pathname, mode)) == NULL)
         return VSC_ERROR(errno);
     *fp = f;

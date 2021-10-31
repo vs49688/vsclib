@@ -25,7 +25,7 @@
 #define VSC_HASHMAP_MIN_BUCKET_AUTO_ALLOCATION 16
 
 /* This should be optimised out in Release builds. */
-static inline void _hashmap_validate(const VscHashMap *hm)
+static inline void validate(const VscHashMap *hm)
 {
     vsc_assert(hm               != NULL);
     vsc_assert(hm->size         <= hm->num_buckets);
@@ -39,7 +39,7 @@ static inline void _hashmap_validate(const VscHashMap *hm)
     vsc_assert(hm->load_min.num * hm->load_max.den <= hm->load_max.num * hm->load_max.den);
 }
 
-static inline VscHashMapBucket *_reset_bucket(VscHashMapBucket *bkt)
+static inline VscHashMapBucket *reset_bucket(VscHashMapBucket *bkt)
 {
     bkt->hash  = VSC_INVALID_HASH;
     bkt->key   = NULL;
@@ -88,10 +88,10 @@ int vsc_hashmap_init(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareP
 
 int vsc_hashmap_clear(VscHashMap *hm)
 {
-    _hashmap_validate(hm);
+    validate(hm);
     hm->size = 0;
     for(size_t i = 0; i < hm->num_buckets; ++i)
-        _reset_bucket(hm->buckets + i);
+        reset_bucket(hm->buckets + i);
 
     return 0;
 }
@@ -106,7 +106,7 @@ int vsc_hashmap_configure(VscHashMap *hm, uint16_t min_num, uint16_t min_den, ui
     if(max_num == 0 || max_den == 0 || max_num >= max_den)
         return VSC_ERROR(EINVAL);
 
-    _hashmap_validate(hm);
+    validate(hm);
 
     /*
      * Convert the fractions to the same base so we can
@@ -131,7 +131,7 @@ int vsc_hashmap_configure(VscHashMap *hm, uint16_t min_num, uint16_t min_den, ui
 
 void vsc_hashmap_reset(VscHashMap *hm)
 {
-    _hashmap_validate(hm);
+    validate(hm);
 
     vsc_xfree(hm->allocator, hm->buckets);
     hm->num_buckets = 0;
@@ -142,9 +142,9 @@ void vsc_hashmap_reset(VscHashMap *hm)
  * Circularly loop over each of the buckets, starting at index `start`.
  */
 #define LOOP_BUCKETS(hm, idxname, start) \
-    for(size_t _i = 0, idxname = (start) % hm->num_buckets; _i < hm->num_buckets; ++_i, idxname = (idxname + 1) % hm->num_buckets)
+    for(size_t _i = 0, (idxname) = (start) % (hm)->num_buckets; _i < (hm)->num_buckets; ++_i, (idxname) = ((idxname) + 1) % (hm)->num_buckets)
 
-static VscHashMapBucket *_add_or_replace_bucket(const VscHashMap *hm, VscHashMapBucket *buckets, size_t n, const VscHashMapBucket *bkt)
+static VscHashMapBucket *add_or_replace_bucket(const VscHashMap *hm, VscHashMapBucket *buckets, size_t n, const VscHashMapBucket *bkt)
 {
     if(n == 0)
         return NULL;
@@ -175,7 +175,7 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
 {
     VscHashMapBucket *bkts, *tmpbkts;
 
-    _hashmap_validate(hm);
+    validate(hm);
 
     if(nelem == 0 || nelem < hm->size)
         return VSC_ERROR(EINVAL);
@@ -196,7 +196,7 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
     hm->buckets = bkts;
 
     for(size_t i = hm->num_buckets; i < nelem; ++i)
-        _reset_bucket(hm->buckets + i);
+        reset_bucket(hm->buckets + i);
 
     hm->num_buckets = nelem;
 
@@ -210,7 +210,7 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
         return VSC_ERROR(ENOMEM);
 
     for(size_t i = 0; i < nelem; ++i)
-        _reset_bucket(tmpbkts + i);
+        reset_bucket(tmpbkts + i);
 
     /* Now redistribute everything. */
     for(size_t i = 0; i < nelem; ++i) {
@@ -218,7 +218,7 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
         if(bkt->hash == VSC_INVALID_HASH)
             continue;
 
-        bkt = _add_or_replace_bucket(hm, tmpbkts, nelem, hm->buckets + i);
+        bkt = add_or_replace_bucket(hm, tmpbkts, nelem, hm->buckets + i);
         vsc_assert(bkt != NULL);
     }
 
@@ -229,7 +229,7 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
     return 0;
 }
 
-static inline int _intceil(size_t *result, size_t num, size_t den)
+static inline int intceil(size_t *result, size_t num, size_t den)
 {
 #if 1
     *result = (num / den) + (size_t)((num % den) != 0);
@@ -243,7 +243,7 @@ static inline int _intceil(size_t *result, size_t num, size_t den)
 #endif
 }
 
-static int _maybe_resize(VscHashMap *hm)
+static int maybe_resize(VscHashMap *hm)
 {
     size_t thresh, minreq, tmp;
     int r;
@@ -255,14 +255,14 @@ static int _maybe_resize(VscHashMap *hm)
      * - resize it manually using vsc_hashmap_resize(), or
      * - use a load factor where the numerator is 1.
      */
-    if((r = _intceil(&tmp, SIZE_MAX, hm->load_max.num)) < 0)
+    if((r = intceil(&tmp, SIZE_MAX, hm->load_max.num)) < 0)
         return r;
 
     if(hm->num_buckets >= tmp)
         return VSC_ERROR(ERANGE); /* or EOVERFLOW? */
 
     /* Same as "n * load_factor" */
-    if((r = _intceil(&thresh, hm->num_buckets * hm->load_max.num, hm->load_max.den)) < 0)
+    if((r = intceil(&thresh, hm->num_buckets * hm->load_max.num, hm->load_max.den)) < 0)
         return r;
 
     /* Nothing to do */
@@ -273,7 +273,7 @@ static int _maybe_resize(VscHashMap *hm)
     if(hm->resize_policy == VSC_HASHMAP_RESIZE_NONE)
         return VSC_ERROR(EPERM);
 
-    if((r = _intceil(&tmp, SIZE_MAX, hm->load_max.den)) < 0)
+    if((r = intceil(&tmp, SIZE_MAX, hm->load_max.den)) < 0)
         return r;
 
     if(hm->size + 1 >= tmp)
@@ -283,7 +283,7 @@ static int _maybe_resize(VscHashMap *hm)
      * Determine the minimum number of buckets required to match
      * the target load factor, then double it.
      */
-    if((r = _intceil(&minreq, (hm->size + 1) * hm->load_min.den, hm->load_min.num)) < 0)
+    if((r = intceil(&minreq, (hm->size + 1) * hm->load_min.den, hm->load_min.num)) < 0)
         return r;
 
     return vsc_hashmap_resize(hm, VSC_MAX(minreq, VSC_HASHMAP_MIN_BUCKET_AUTO_ALLOCATION));
@@ -294,7 +294,7 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
     VscHashMapBucket tmpbkt;
     int r;
 
-    _hashmap_validate(hm);
+    validate(hm);
 
     tmpbkt.hash  = vsc_hashmap_hash(hm, key);
     tmpbkt.key   = key;
@@ -304,7 +304,7 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
         return VSC_ERROR(ERANGE);
 
     /* See if we need to resize. */
-    if((r = _maybe_resize(hm)) < 0) {
+    if((r = maybe_resize(hm)) < 0) {
         /*
          * Resize required, but not allowed.
          * Not an error, assume the user knows what they're doing.
@@ -313,7 +313,7 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
             return r;
     }
 
-    if(_add_or_replace_bucket(hm, hm->buckets, hm->num_buckets, &tmpbkt) == NULL)
+    if(add_or_replace_bucket(hm, hm->buckets, hm->num_buckets, &tmpbkt) == NULL)
         return VSC_ERROR(ENOSPC);
 
     ++hm->size;
@@ -325,7 +325,7 @@ void *vsc_hashmap_find_by_hash(const VscHashMap *hm, vsc_hash_t hash)
     if(hash == VSC_INVALID_HASH)
         return NULL;
 
-    _hashmap_validate(hm);
+    validate(hm);
 
     if(hm->num_buckets == 0)
         return NULL;
@@ -343,11 +343,11 @@ void *vsc_hashmap_find_by_hash(const VscHashMap *hm, vsc_hash_t hash)
     return NULL;
 }
 
-static const VscHashMapBucket *_find_bucket(const VscHashMap *hm, const void *key, size_t *outindex)
+static const VscHashMapBucket *find_bucket(const VscHashMap *hm, const void *key, size_t *outindex)
 {
     vsc_hash_t hash;
 
-    _hashmap_validate(hm);
+    validate(hm);
 
     hash = vsc_hashmap_hash(hm, key);
 
@@ -388,7 +388,7 @@ void *vsc_hashmap_find(const VscHashMap *hm, const void *key)
 {
     const VscHashMapBucket *bkt;
 
-    if((bkt = _find_bucket(hm, key, NULL)) == NULL)
+    if((bkt = find_bucket(hm, key, NULL)) == NULL)
         return NULL;
 
     return bkt->value;
@@ -400,12 +400,12 @@ void *vsc_hashmap_remove(VscHashMap *hm, const void *key)
     size_t index;
     void *val;
 
-    bkt = (VscHashMapBucket*)_find_bucket(hm, key, &index);
+    bkt = (VscHashMapBucket*)find_bucket(hm, key, &index);
     if(bkt == NULL)
         return NULL;
 
     val = bkt->value;
-    _reset_bucket(bkt);
+    reset_bucket(bkt);
 
     /* Search through the remaining buckets, to see if we can fill the gap. */
     LOOP_BUCKETS(hm, cidx, index + 1) {
@@ -420,7 +420,7 @@ void *vsc_hashmap_remove(VscHashMap *hm, const void *key)
         nidx = bkt2->hash % hm->num_buckets;
         if(nidx <= index) {
             *bkt = *bkt2;
-            _reset_bucket(bkt2);
+            reset_bucket(bkt2);
             index = cidx;
             bkt = bkt2;
         }
