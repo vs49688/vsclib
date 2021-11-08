@@ -244,6 +244,10 @@ void *vsc_xcalloc(const VscAllocator *a, size_t nmemb, size_t size);
  * \param flags     The allocation flags. See #VscAllocFlags documentation.
  *
  * \return On success, returns 0. On failure, returns a negative error value.
+ *
+ * \remark If the total size (VscBlockAllocInfo::count * VscBlockAllocInfo::element_size) of a block is
+ *   zero, it's address will be set to NULL. This is to prevent subtle bugs by causing crashes in
+ *   their place.
  */
 int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks, uint32_t flags);
 

@@ -108,6 +108,7 @@ TEST_CASE("align", "[memory]") {
         void *uints;
         void *floats;
         void *zeroarray;
+        void *bigalign;
 
         std::array<VscBlockAllocInfo, 5> bai = {{
             /* 1 dummy header */
@@ -117,7 +118,7 @@ TEST_CASE("align", "[memory]") {
             /* 3 "float vector 3"'s, with a required alignment of 16 */
             {  3, 12,                 16,                  &floats    },
             {  0,  4,                 16,                  &zeroarray },
-            {  1,  1,                 4096                 },
+            {  1,  1,                 4096,                &bigalign  },
         }};
 
         std::array<void*, bai.size()> ptrs{};
@@ -133,11 +134,14 @@ TEST_CASE("align", "[memory]") {
         CHECK(uints     == ptrs[1]);
         CHECK(floats    == ptrs[2]);
         CHECK(zeroarray == ptrs[3]);
-        CHECK(zeroarray == floats);
+        CHECK(bigalign  == ptrs[4]);
+        CHECK(zeroarray == nullptr);
 
         for(size_t i = 0; i < bai.size(); ++i) {
             const VscBlockAllocInfo *b = bai.data() + i;
-            CHECK(ptrs[i] != nullptr);
+
+            if(b->element_size * b->count != 0)
+                CHECK(ptrs[i] != nullptr);
 
             /* All alignments bets are off when we're empty. */
             if(b->count == 0 || b->element_size == 0)
@@ -149,6 +153,134 @@ TEST_CASE("align", "[memory]") {
             CHECK((uintptr_t)ptrs[i] % b->alignment == 0);
         }
     }
+}
+
+template<size_t N, size_t A>
+class TestAllocator : private VscAllocator {
+    static_assert(VSC_IS_POT(A));
+
+public:
+    TestAllocator() :
+        VscAllocator{alloc_stub, free_stub, size_stub, VSC_ALIGNOF(vsc_max_align_t), this},
+        buf_{},
+        offset_(0)
+    {
+        uintptr_t p;
+        for(p = (uintptr_t)buf_; p <= (uintptr_t)buf_ + N; p += A) {
+            if((p % A) == 0 && (p % (A << 1)) != 0)
+                break;
+        }
+
+        if(p >= (uintptr_t)buf_ + N)
+            throw std::runtime_error("alignment error");
+
+        this->offset_ = p - (uintptr_t)buf_;
+    }
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "google-explicit-constructor"
+    operator const VscAllocator*() const noexcept {
+        return this;
+    }
+#pragma clang diagnostic pop
+
+private:
+    int alloc_cb(void **ptr, size_t size, size_t alignment, VscAllocFlags flags) noexcept {
+        void *p = (void*)((uintptr_t)buf_ + this->offset_);
+        size_t space = N - this->offset_;
+
+        if(flags & VSC_ALLOC_REALLOC)
+            return VSC_ERROR(ENOTSUP);
+
+        void *pp = vsc_align(alignment, size, &p, &space);
+        if(pp == nullptr) {
+            if(flags & VSC_ALLOC_NOFAIL)
+                std::terminate();
+
+            return VSC_ERROR(EINVAL);
+        }
+
+        if(flags & VSC_ALLOC_ZERO)
+            memset(pp, 0, size);
+
+        *ptr = pp;
+        return 0;
+    }
+
+    void free_cb(void *p) noexcept {}
+
+    size_t size_cb(void *p) noexcept {
+        return N;
+    }
+
+    static int alloc_stub(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user) noexcept {
+        return reinterpret_cast<TestAllocator*>(user)->alloc_cb(ptr, size, alignment, flags);
+    }
+
+    static void free_stub(void *p, void *user) noexcept {
+        return reinterpret_cast<TestAllocator*>(user)->free_cb(p);
+    }
+
+    static size_t size_stub(void *p, void *user) noexcept {
+        return reinterpret_cast<TestAllocator*>(user)->size_cb(p);
+    }
+
+    alignas(A) uint8_t buf_[N];
+    size_t offset_;
+};
+
+/*
+ * Ensure vsc_block_xalloc() gives the closest alignments, e.g.
+ * Given 2 blocks, with (size, align):
+ *   b1 = (  64,  8)
+ *   b2 = (1024, 16)
+ * Require that b2 is at the next closest 16-byte alignment after b1.
+ *
+ * There's two cases, the allocator returns an 8, or 16-byte aligned
+ * address for b1 - this test covers both of them.
+ *
+ * if b1 is  8-byte aligned, b2 == b1 + 64 + 8
+ * if b2 is 16-byte aligned, b2 == b1 + 64
+ */
+TEST_CASE("block allocate test next closest alignment", "[memory]") {
+    TestAllocator<2048, 8> t8;
+    TestAllocator<2048, 16> t16;
+
+    VscBlockAllocInfo bai[2] = {
+        {1,   64,  8, nullptr},
+        {1, 1024, 16, nullptr},
+    };
+
+    void *ptrs8[2];
+    int r = vsc_block_xalloc(t8, ptrs8, bai, 2, 0);
+    REQUIRE(r == 0);
+
+    uintptr_t rptr8[2] = {
+        reinterpret_cast<uintptr_t>(ptrs8[0]),
+        reinterpret_cast<uintptr_t>(ptrs8[1]),
+    };
+
+    CHECK(VSC_IS_ALIGNED(ptrs8[0], 8));
+    CHECK(!VSC_IS_ALIGNED(ptrs8[0], 16)); /* Our allocator should enforce this. */
+    CHECK(VSC_IS_ALIGNED(ptrs8[1], 16));
+
+    CHECK(rptr8[1] > rptr8[0]);
+    CHECK(VSC_IS_ALIGNED(rptr8[0] + bai[0].element_size + 8, 16));
+    CHECK(rptr8[1] == rptr8[0] + bai[0].element_size + 8);
+
+    void *ptrs16[2];
+    r = vsc_block_xalloc(t16, ptrs16, bai, 2, 0);
+    REQUIRE(r == 0);
+
+    uintptr_t rptr16[2] = {
+        reinterpret_cast<uintptr_t>(ptrs16[0]),
+        reinterpret_cast<uintptr_t>(ptrs16[1]),
+    };
+    CHECK(VSC_IS_ALIGNED(ptrs16[0], 16));
+    CHECK(VSC_IS_ALIGNED(ptrs16[1], 16));
+    CHECK(rptr16[1] > rptr16[0]);
+    CHECK(VSC_IS_ALIGNED(rptr16[0] + bai[0].element_size, 16));
+    CHECK(rptr16[1] == rptr16[0] + bai[0].element_size);
 }
 
 TEST_CASE("zero", "[memory]") {

@@ -169,8 +169,9 @@ void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space)
 int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks, uint32_t flags)
 {
     int r;
-    size_t reqsize;
-    void *block = NULL;
+    size_t reqsize, initial_align;
+    void *block = NULL, *lastptr = NULL;
+    const VscBlockAllocInfo *lastblock = NULL;
 
     if(blockinfo == NULL || nblocks < 1 || ptr == NULL || a == NULL)
         return VSC_ERROR(EINVAL);
@@ -179,7 +180,15 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
     flags &= ~VSC_ALLOC_REALLOC;
 
     /* Pass 1: calculate the buffer size */
-    reqsize = blockinfo[0].element_size * blockinfo[0].count;
+    reqsize       = blockinfo[0].element_size * blockinfo[0].count;
+    initial_align = blockinfo[0].alignment == 0 ? a->alignment : blockinfo[0].alignment;
+
+    /* If we're starting aligned to both X and X^2, make us only aligned to X. */
+    if(VSC_IS_ALIGNED(reqsize, initial_align) && VSC_IS_ALIGNED(reqsize, initial_align << 1)) {
+        reqsize += initial_align;
+        vsc_assert(!VSC_IS_ALIGNED(reqsize, initial_align << 1));
+    }
+
     for(size_t i = 1; i < nblocks; ++i) {
         const VscBlockAllocInfo *bai = blockinfo + i;
         void *p      = (void*)reqsize;
@@ -199,22 +208,36 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
         return r;
 
     /* Pass 2: Calculate the aligned pointers */
-    ptr[0] = block;
+    ptr[0]    = lastptr = block;
+    lastblock = blockinfo;
     if(blockinfo[0].out != NULL)
         *blockinfo[0].out = block;
 
     for(size_t i = 1; i < nblocks; ++i) {
-        const VscBlockAllocInfo *bai = blockinfo + i;
+        const VscBlockAllocInfo *curr = blockinfo + i;
+        size_t prev_size, curr_size, space, align;
+        void *p;
 
-        size_t size  = bai->element_size * bai->count;
-        void *p      = (void*)((uintptr_t)ptr[i-1] + size);
-        size_t space = reqsize - (uintptr_t)ptr[i-1];
-        size_t align = bai->alignment == 0 ? a->alignment : bai->alignment;
+        curr_size = curr->element_size * curr->count;
 
-        ptr[i] = vsc_align(align, size, &p, &space);
+        /*
+         * Special case for empty blocks, set them NULL.
+         * Do NOT update last{ptr,block}.
+         */
+        if(curr_size == 0) {
+            if(curr->out != NULL)
+                *curr->out = NULL;
 
-        if(bai->out != NULL)
-            *bai->out = ptr[i];
+            ptr[i] = NULL;
+            continue;
+        }
+
+        prev_size = lastblock->element_size * lastblock->count;
+        p         = (void*)((uintptr_t)lastptr + prev_size);
+        space     = reqsize - ((uintptr_t)p - (uintptr_t)ptr[0]);
+        align     = curr->alignment == 0 ? a->alignment : curr->alignment;
+
+        ptr[i] = vsc_align(align, curr_size, &p, &space);
 
         if(ptr[i] == NULL) {
             /*
@@ -225,6 +248,12 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
             memset(ptr, 0, sizeof(ptr[0]) * nblocks);
             return VSC_ERROR(ENOSPC);
         }
+
+        if(curr->out != NULL)
+            *curr->out = ptr[i];
+
+        lastptr   = ptr[i];
+        lastblock = curr;
     }
 
     return 0;
