@@ -122,6 +122,7 @@ TEST_CASE("getdelim", "[string]") {
 
     REQUIRE(expected == actual);
     REQUIRE(nread == VSC_ERROR_EOF);
+    vsc_free(lineptr);
 }
 
 #ifdef _WIN32

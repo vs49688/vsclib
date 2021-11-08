@@ -29,4 +29,5 @@ TEST_CASE("searchpath", "[io]") {
     REQUIRE(r == 0);
     REQUIRE(s != nullptr);
     REQUIRE(len > 0);
+    vsc_free(s);
 }
