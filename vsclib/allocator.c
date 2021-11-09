@@ -52,26 +52,11 @@ typedef struct MemFooter {
     uint32_t sig;
 } MemFooter;
 
-static inline void *align_up(void *p, size_t alignment)
-{
-    vsc_assert(VSC_IS_POT(alignment));
-    return (void*)((size_t)((uintptr_t)p + (alignment - 1)) & -alignment);
-}
-
-static inline void *align_down(void *p, size_t alignment)
-{
-    uint8_t *a = align_up(p, alignment);
-    while(a >= (uint8_t*)p)
-        a -= alignment;
-
-    return a;
-}
-
 /* Scan backwards at each aligned address until we find it. */
 static MemFooter *locate_footer(uint8_t *p)
 {
     /* NB: Valgrind cracks the shits at this, even though the memory is usable. */
-    MemFooter *ftr = align_down(p + malloc_usable_size(p), VSC_ALIGNOF(MemFooter));
+    MemFooter *ftr = vsc_align_down(p + malloc_usable_size(p), VSC_ALIGNOF(MemFooter));
 
     while(ftr->sig != MEMHDR_SIG)
         --ftr;
@@ -94,7 +79,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
         flags &= ~VSC_ALLOC_REALLOC;
 
     /* Size of the block + footer + alignment padding. */
-    reqsize = (size_t)align_up((void*)size, VSC_ALIGNOF(MemFooter)) + VSC_ALIGNOF(MemFooter) + sizeof(MemFooter);
+    reqsize = (size_t)vsc_align_up((void*)size, VSC_ALIGNOF(MemFooter)) + VSC_ALIGNOF(MemFooter) + sizeof(MemFooter);
 
     if(flags & VSC_ALLOC_REALLOC) {
         vsc_assert(*ptr != NULL);
@@ -122,7 +107,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
     end = p + malloc_usable_size(p); /* This might be bigger than size. */
 
     /* Jump back until we find the closest aligned position to the end .*/
-    nftr = align_down(end, VSC_ALIGNOF(MemFooter));
+    nftr = vsc_align_down(end, VSC_ALIGNOF(MemFooter));
     while((uint8_t*)(nftr + 1) > end)
         --nftr;
 
