@@ -23,6 +23,7 @@
 
 #include <stddef.h>
 #include "platform.h"
+#include "assert.h"
 #include "memdef.h"
 
 #if defined(__cplusplus)
@@ -60,6 +61,34 @@ static inline int vsc_is_pot(unsigned int alignment)
 static inline int vsc_is_aligned(void *p, size_t alignment)
 {
     return VSC_IS_ALIGNED(p, alignment);
+}
+
+/**
+ * \brief Align \p p down to an \p alignment byte-boundary.
+ *
+ * \param p         The pointer to align.
+ * \param alignment The alignment. Must be power-of-two.
+ *
+ * \return \p aligned down to an \p alignment byte-boundary.
+ */
+static inline void *vsc_align_down(void *p, size_t alignment)
+{
+    vsc_assert(VSC_IS_POT(alignment));
+    return VSC_ALIGN_DOWN(p, alignment);
+}
+
+/**
+ * \brief Align \p p up to an \p alignment byte-boundary.
+ *
+ * \param p         The pointer to align.
+ * \param alignment The alignment. Must be power-of-two.
+ *
+ * \return \p aligned up to an \p alignment byte-boundary.
+ */
+static inline void *vsc_align_up(void *p, size_t alignment)
+{
+    vsc_assert(VSC_IS_POT(alignment));
+    return VSC_ALIGN_UP(p, alignment);
 }
 
 /**
