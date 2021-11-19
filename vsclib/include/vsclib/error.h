@@ -33,4 +33,10 @@
 
 #define VSC_ERROR_EOF VSC_MKERR(' ', 'E', 'O', 'F')
 
+/** \brief Stack overflow. */
+#define VSC_ERROR_STACKOFLOW VSC_MKERR(' ', 'S', 'O', 'F')
+
+/** \brief Stack underflow. */
+#define VSC_ERROR_STACKUFLOW VSC_MKERR(' ', 'S', 'U', 'F')
+
 #endif /* _VSCLIB_ERROR_H */
