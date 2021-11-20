@@ -436,6 +436,23 @@ size_t vsc_hashmap_size(const VscHashMap *hm)
     return hm->size;
 }
 
+const VscHashMapBucket *vsc_hashmap_first(const VscHashMap *hm)
+{
+    validate(hm);
+
+    /* Shortcut out. */
+    if(hm->size == 0)
+        return NULL;
+
+    for(size_t i = 0; i < hm->num_buckets; ++i) {
+        const VscHashMapBucket *bkt = hm->buckets + i;
+        if(bkt->hash != VSC_INVALID_HASH)
+            return bkt;
+    }
+
+    return NULL;
+}
+
 vsc_hash_t vsc_hashmap_default_hash(const void *k)
 {
     return (vsc_hash_t)k;
