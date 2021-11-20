@@ -428,3 +428,13 @@ void *vsc_hashmap_remove(VscHashMap *hm, const void *key)
 
     return val;
 }
+
+vsc_hash_t vsc_hashmap_default_hash(const void *k)
+{
+    return (vsc_hash_t)k;
+}
+
+int vsc_hashmap_default_compare(const void *a, const void *b)
+{
+    return a == b;
+}

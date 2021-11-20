@@ -92,6 +92,9 @@ void *vsc_hashmap_find_by_hash(const VscHashMap *hm, vsc_hash_t hash);
 void *vsc_hashmap_find(const VscHashMap *hm, const void *key);
 void *vsc_hashmap_remove(VscHashMap *hm, const void *key);
 
+vsc_hash_t vsc_hashmap_default_hash(const void *k);
+int vsc_hashmap_default_compare(const void *a, const void *b);
+
 #if defined(__cplusplus)
 }
 #endif
