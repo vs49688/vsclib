@@ -426,6 +426,7 @@ void *vsc_hashmap_remove(VscHashMap *hm, const void *key)
         }
     }
 
+    --hm->size;
     return val;
 }
 
