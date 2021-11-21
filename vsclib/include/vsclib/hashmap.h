@@ -46,8 +46,8 @@ vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key);
  */
 int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b);
 
-int vsc_hashmap_inita(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a);
-int vsc_hashmap_init(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareProc compare);
+void vsc_hashmap_inita(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a);
+void vsc_hashmap_init(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareProc compare);
 int vsc_hashmap_clear(VscHashMap *hm);
 
 /**

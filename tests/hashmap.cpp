@@ -66,8 +66,7 @@ TEST_CASE("hashmap", "[hashmap]") {
     VscHashMap hm;
     hmptr _hm(&hm);
 
-    r = vsc_hashmap_init(&hm, hashproc32, compareproc);
-    REQUIRE(0 == r);
+    vsc_hashmap_init(&hm, hashproc32, compareproc);
 
     /* Check initial state. */
     REQUIRE(0           == hm.size);
@@ -137,7 +136,7 @@ TEST_CASE("hashmap", "[hashmap]") {
 TEST_CASE("hashmap 2", "[hashmap]") {
     VscHashMap hm;
     hmptr _hm(&hm);
-    REQUIRE(vsc_hashmap_init(&hm, hashproc, compareproc) == 0);
+    vsc_hashmap_init(&hm, hashproc, compareproc);
     REQUIRE(vsc_hashmap_configure(&hm, 1, 2, 3, 4) == 0);
 
     char nkeys[1536][6];
@@ -153,7 +152,7 @@ TEST_CASE("hashmap 2", "[hashmap]") {
 TEST_CASE("hashmap disallow resize", "[hashmap]") {
     VscHashMap hm;
     hmptr _hm(&hm);
-    REQUIRE(vsc_hashmap_init(&hm, hashproc, compareproc) == 0);
+    vsc_hashmap_init(&hm, hashproc, compareproc);
     REQUIRE(vsc_hashmap_resize(&hm, 2) == 0);
 
     /* Disable auto-resizing. */
@@ -168,12 +167,10 @@ TEST_CASE("hashmap disallow resize", "[hashmap]") {
 }
 
 TEST_CASE("null keys", "[hashmap]") {
-    int r;
     VscHashMap hm;
     hmptr _hm(&hm);
 
-    r = vsc_hashmap_init(&hm, hashproc32, compareproc);
-    REQUIRE(0 == r);
+    vsc_hashmap_init(&hm, hashproc32, compareproc);
 
     CHECK(vsc_hashmap_insert(&hm, "a", (void*)"a") == 0);
     CHECK(vsc_hashmap_insert(&hm, nullptr, (void*)"NULL") == 0);
