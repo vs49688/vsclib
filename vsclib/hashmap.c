@@ -59,7 +59,7 @@ int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b)
     return hm->compare_proc(a, b) != 0;
 }
 
-void vsc_hashmap_inita(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a)
+void vsc_hashmap_inita(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a)
 {
     vsc_assert(hm != NULL);
     vsc_assert(hash != NULL);
@@ -79,7 +79,7 @@ void vsc_hashmap_inita(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompar
     hm->allocator     = a;
 }
 
-void vsc_hashmap_init(VscHashMap *hm, VscHashmapHashProc hash, VscHashMapCompareProc compare)
+void vsc_hashmap_init(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompareProc compare)
 {
     return vsc_hashmap_inita(hm, hash, compare, &vsclib_system_allocator);
 }
@@ -451,7 +451,7 @@ const VscHashMapBucket *vsc_hashmap_first(const VscHashMap *hm)
     return NULL;
 }
 
-int vsc_hashmap_enumerate(const VscHashMap *hm, VscHashmapEnumProc proc, void *user)
+int vsc_hashmap_enumerate(const VscHashMap *hm, VscHashMapEnumProc proc, void *user)
 {
     int r;
 

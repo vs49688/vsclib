@@ -31,9 +31,9 @@ typedef enum VscHashMapResizePolicy
     VSC_HASHMAP_RESIZE_NONE         = 1,
 } VscHashMapResizePolicy;
 
-typedef vsc_hash_t(*VscHashmapHashProc)(const void *key);
+typedef vsc_hash_t(*VscHashMapHashProc)(const void *key);
 typedef int       (*VscHashMapCompareProc)(const void *a, const void *b);
-typedef int       (*VscHashmapEnumProc)(const void *key, void *value, vsc_hash_t hash, void *user);
+typedef int       (*VscHashMapEnumProc)(const void *key, void *value, vsc_hash_t hash, void *user);
 
 typedef struct VscHashMapBucket
 {
@@ -53,7 +53,7 @@ typedef struct VscHashMap
     VscHashMapResizePolicy          resize_policy;
     struct { uint16_t num, den; }   load_min;
     struct { uint16_t num, den; }   load_max;
-    VscHashmapHashProc              hash_proc;
+    VscHashMapHashProc              hash_proc;
     VscHashMapCompareProc           compare_proc;
     const VscAllocator              *allocator;
 } VscHashMap;
