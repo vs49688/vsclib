@@ -453,6 +453,25 @@ const VscHashMapBucket *vsc_hashmap_first(const VscHashMap *hm)
     return NULL;
 }
 
+int vsc_hashmap_enumerate(const VscHashMap *hm, VscHashmapEnumProc proc, void *user)
+{
+    int r;
+
+    validate(hm);
+
+    for(size_t i = 0; i < hm->num_buckets; ++i) {
+        const VscHashMapBucket *bkt = hm->buckets + i;
+
+        if(bkt->hash == VSC_INVALID_HASH)
+            continue;
+
+        if((r = proc(bkt->key, bkt->value, bkt->hash, user)) != 0)
+            return r;
+    }
+
+    return 0;
+}
+
 vsc_hash_t vsc_hashmap_default_hash(const void *k)
 {
     return (vsc_hash_t)k;

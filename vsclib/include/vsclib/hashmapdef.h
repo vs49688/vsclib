@@ -33,6 +33,7 @@ typedef enum VscHashMapResizePolicy
 
 typedef vsc_hash_t(*VscHashmapHashProc)(const void *key);
 typedef int       (*VscHashMapCompareProc)(const void *a, const void *b);
+typedef int       (*VscHashmapEnumProc)(const void *key, void *value, vsc_hash_t hash, void *user);
 
 typedef struct VscHashMapBucket
 {
