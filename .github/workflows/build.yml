@@ -14,9 +14,17 @@ jobs:
       - run: ./build/tests/vsclib_tests
 
   build-windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
     steps:
       - uses: actions/checkout@v2
       - run: cmake -B build -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=MinSizeRel
       - run: cmake --build build
       - run: .\build\tests\Debug\vsclib_tests.exe
+
+  build-macos:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v2
+      - run: cmake -B build -DCMAKE_BUILD_TYPE=MinSizeRel
+      - run: cmake --build build
+      - run: ./build/tests/vsclib_tests
