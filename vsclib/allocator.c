@@ -42,7 +42,13 @@
 #include <vsclib/error.h>
 #include <vsclib/mem.h>
 #include <vsclib/types.h>
-#include <malloc.h>
+
+#if defined(__MACH__)
+#   include <malloc/malloc.h>
+#   define malloc_usable_size malloc_size
+#else
+#   include <malloc.h>
+#endif
 
 #define MEMHDR_SIG 0xFEED5EED /* Formerly Chuck's */
 
