@@ -19,7 +19,9 @@
  */
 
 #include <stdlib.h>
-#include <malloc.h>
+#if !defined(__MACH__)
+#   include <malloc.h>
+#endif
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
 
@@ -49,7 +51,24 @@ void *vsc_sys_aligned_malloc(size_t size, size_t alignment)
     vsc_assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
     return _aligned_malloc(size, alignment);
 #else
-    return aligned_alloc(alignment, size);
+    void *p;
+    /*
+     * Prefer aligned_alloc(), but this fails on macOS if the
+     * alignment is "not supported by the implementation".
+     * posix_memalign() will work provided alignment is a POT
+     * and a multiple of sizeof(void*).
+     */
+    if((p = aligned_alloc(alignment, size)) != NULL)
+        return p;
+
+    vsc_assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
+    if(alignment < sizeof(void*))
+        alignment = sizeof(void*);
+
+    if(posix_memalign(&p, alignment, size) != 0)
+        return NULL;
+
+    return p;
 #endif
 }
 
