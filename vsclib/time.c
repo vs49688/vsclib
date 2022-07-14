@@ -52,10 +52,11 @@ vsc_counter_t vsc_counter_ns(void)
         abort();
 
     return ((vsc_counter_t)ticks.QuadPart * 1000000000) / frequency.QuadPart;
-#elif _POSIX_C_SOURCE >= 199309L && defined(_POSIX_MONOTONIC_CLOCK) && _POSIX_MONOTONIC_CLOCK >= 0
+#elif (_POSIX_C_SOURCE  >= 199309L && defined(_POSIX_MONOTONIC_CLOCK) && _POSIX_MONOTONIC_CLOCK >= 0) || \
+      (__DARWIN_C_LEVEL >= 199309L && (defined(CLOCK_MONOTONIC) || defined(CLOCK_MONOTONIC_RAW)))
     struct timespec ts = { .tv_sec = 0, .tv_nsec = 0 };
 
-#if defined(__linux__) && defined(CLOCK_MONOTONIC_RAW)
+#if defined(CLOCK_MONOTONIC_RAW)
     if(clock_gettime(CLOCK_MONOTONIC_RAW, &ts) == 0)
         goto done;
 #endif
