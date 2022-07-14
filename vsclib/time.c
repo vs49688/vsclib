@@ -28,6 +28,8 @@
 #elif defined(_POSIX_C_SOURCE)
 #   include <unistd.h>
 #   include <sys/time.h>
+#elif defined(__MACH__)
+#   include <mach/mach_time.h>
 #endif
 
 vsc_counter_t vsc_counter_ns(void)
@@ -52,6 +54,14 @@ vsc_counter_t vsc_counter_ns(void)
         abort();
 
     return ((vsc_counter_t)ticks.QuadPart * 1000000000) / frequency.QuadPart;
+#elif defined(__MACH__)
+    static mach_timebase_info_data_t timebase = { .numer = 0, .denom = 0 };
+    if(timebase.numer == 0 && timebase.denom == 0) {
+        if(mach_timebase_info(&timebase) != KERN_SUCCESS)
+            abort(); // why?
+    }
+
+    return (mach_continuous_time() * timebase.numer) / timebase.denom;
 #elif (_POSIX_C_SOURCE  >= 199309L && defined(_POSIX_MONOTONIC_CLOCK) && _POSIX_MONOTONIC_CLOCK >= 0) || \
       (__DARWIN_C_LEVEL >= 199309L && (defined(CLOCK_MONOTONIC) || defined(CLOCK_MONOTONIC_RAW)))
     struct timespec ts = { .tv_sec = 0, .tv_nsec = 0 };
