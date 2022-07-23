@@ -30,6 +30,8 @@
 #   define VSC_ERROR(x)   (-(x & 0xFFFF))
 #endif
 
+#define VSC_UNERROR(err) (-(err) & 0xFFFF)
+
 #define VSC_MKERR(b, c, d) (-(int)VSC_FOURCCBE(' ', b, c, d))
 
 #define VSC_ERROR_IS_SYSTEM(err) (!(-(err) & VSC_MKERR(0, 0, 0)))
