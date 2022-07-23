@@ -88,6 +88,11 @@ int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
 int   vsc_chdir(const char *path);
 int   vsc_chdira(const char *path, const VscAllocator *a);
 
+
+int vsc_vfperror(FILE *fp, int err, const char *fmt, va_list ap);
+
+int vsc_fperror(FILE *fp, int err, const char *fmt, ...);
+
 #if (_MSC_VER >= 1400)
 static inline uint16_t vsc_swap_uint16(uint16_t x) { return _byteswap_ushort(x); }
 static inline uint32_t vsc_swap_uint32(uint32_t x) { return _byteswap_ulong(x); }

@@ -12,6 +12,8 @@ add_executable(vsclib_tests
         wav.cpp
         time.cpp
         io.cpp
+
+        strerror.c
 )
 
 target_link_libraries(vsclib_tests vsclib vscpplib)

@@ -60,6 +60,8 @@ add_library(vsclib STATIC
 
 		hashmap.c
 
+		error.c
+
 		${OS_FILES}
 
 		vsclib_config.h.in

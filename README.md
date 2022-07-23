@@ -32,7 +32,8 @@ limitations under the License.
 ## 3rd-party Licenses
 
 
-| Project | License | License URL |
-| ------- | ------- | ----------- |
-| [getline/getdelim](https://github.com/ivanrad/getline) | Public Domain | https://github.com/ivanrad/getline |
-| [xxHash](https://github.com/Cyan4973/xxHash) | BSD 2-Clause License | https://www.opensource.org/licenses/bsd-license.php |
+| Project                                                | License              | License URL                                         |
+|--------------------------------------------------------|----------------------|-----------------------------------------------------|
+| [getline/getdelim](https://github.com/ivanrad/getline) | Public Domain        | https://github.com/ivanrad/getline                  |
+| [xxHash](https://github.com/Cyan4973/xxHash)           | BSD 2-Clause License | https://www.opensource.org/licenses/bsd-license.php |
+| [musl](https://musl.libc.org/)                         | MIT                  | https://git.musl-libc.org/cgit/musl/tree/COPYRIGHT  |
