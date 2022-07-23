@@ -96,8 +96,8 @@ add_library(vsclib STATIC
 )
 
 set_target_properties(vsclib PROPERTIES
-		CMAKE_C_STANDARD 11
-		CMAKE_C_STANDARD_REQURED ON
+		C_STANDARD 11
+		C_STANDARD_REQURED ON
 )
 target_include_directories(vsclib PUBLIC
 		include
