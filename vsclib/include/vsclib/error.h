@@ -20,6 +20,7 @@
 #ifndef _VSCLIB_ERROR_H
 #define _VSCLIB_ERROR_H
 
+#include <assert.h>
 #include <errno.h>
 #include "macros.h"
 
@@ -42,12 +43,10 @@
 /** \brief Stack underflow. */
 #define VSC_ERROR_STACKUFLOW VSC_MKERR('S', 'U', 'F')
 
-#if !defined(__cplusplus)
-_Static_assert(VSC_ERROR(0xFFFF)           < 0, "VSC_ERROR() >= 0");
-_Static_assert(VSC_MKERR(0xFF, 0xFF, 0xFF) < 0, "VSC_MKERR() >= 0");
-_Static_assert(VSC_ERROR(0x1FFFF) == VSC_ERROR(0xFFFF), "VSC_ERROR(0x1FFFF) != VSC_ERROR(0xFFFF)");
-_Static_assert(VSC_ERROR_IS_SYSTEM(VSC_ERROR(0xFFFF)), "!VSC_ERROR_IS_SYSTEM(VSC_ERROR()");
-_Static_assert(!VSC_ERROR_IS_SYSTEM(VSC_MKERR(0xFF, 0xFF, 0xFF)), "VSC_ERROR_IS_SYSTEM(VSC_MKERR()");
-#endif
+static_assert(VSC_ERROR(0xFFFF)           < 0, "VSC_ERROR() >= 0");
+static_assert(VSC_MKERR(0xFF, 0xFF, 0xFF) < 0, "VSC_MKERR() >= 0");
+static_assert(VSC_ERROR(0x1FFFF) == VSC_ERROR(0xFFFF), "VSC_ERROR(0x1FFFF) != VSC_ERROR(0xFFFF)");
+static_assert(VSC_ERROR_IS_SYSTEM(VSC_ERROR(0xFFFF)), "!VSC_ERROR_IS_SYSTEM(VSC_ERROR()");
+static_assert(!VSC_ERROR_IS_SYSTEM(VSC_MKERR(0xFF, 0xFF, 0xFF)), "VSC_ERROR_IS_SYSTEM(VSC_MKERR()");
 
 #endif /* _VSCLIB_ERROR_H */
