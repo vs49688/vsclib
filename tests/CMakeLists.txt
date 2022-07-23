@@ -16,6 +16,9 @@ add_executable(vsclib_tests
 
 target_link_libraries(vsclib_tests vsclib vscpplib)
 set_target_properties(vsclib_tests PROPERTIES
+        C_STANDARD 11
+        C_STANDARD_REQUIRED ON
+
         CXX_STANDARD 17
         CXX_STANDARD_REQUIRED ON
 )
