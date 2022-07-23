@@ -63,6 +63,15 @@ static inline int vsc_is_aligned(void *p, size_t alignment)
     return VSC_IS_ALIGNED(p, alignment);
 }
 
+/*
+ * Silence "warning C4146: unary minus operator applied to unsigned type, result still unsigned".
+ * I know, we're explicitly doing this.
+ */
+#ifdef _MSC_VER
+#   pragma warning(push)
+#   pragma warning(disable: 4146)
+#endif
+
 /**
  * \brief Align \p p down to an \p alignment byte-boundary.
  *
@@ -90,6 +99,10 @@ static inline void *vsc_align_up(void *p, size_t alignment)
     vsc_assert(VSC_IS_POT(alignment));
     return VSC_ALIGN_UP(p, alignment);
 }
+
+#ifdef _MSC_VER
+#   pragma warning(pop)
+#endif
 
 /**
  * \brief Given a pointer ptr to a buffer of size space, returns a
