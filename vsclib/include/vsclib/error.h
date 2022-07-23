@@ -24,19 +24,28 @@
 #include "macros.h"
 
 #if EINVAL < 0
-#   define VSC_ERROR(x) (-(x & 0xFFFF))
+#   define VSC_ERROR(x) (-(-(x & 0xFFFF)))
 #else
-#   define VSC_ERROR(x)   (x & 0xFFFF)
+#   define VSC_ERROR(x)   (-(x & 0xFFFF))
 #endif
 
-#define VSC_MKERR(a, b, c, d) (-(int)VSC_FOURCC(a, b, c, d))
+#define VSC_MKERR(b, c, d) (-(int)VSC_FOURCCBE(' ', b, c, d))
 
-#define VSC_ERROR_EOF VSC_MKERR(' ', 'E', 'O', 'F')
+#define VSC_ERROR_IS_SYSTEM(err) (!(-(err) & VSC_MKERR(0, 0, 0)))
+
+/** \brief End of file. */
+#define VSC_ERROR_EOF VSC_MKERR('E', 'O', 'F')
 
 /** \brief Stack overflow. */
-#define VSC_ERROR_STACKOFLOW VSC_MKERR(' ', 'S', 'O', 'F')
+#define VSC_ERROR_STACKOFLOW VSC_MKERR('S', 'O', 'F')
 
 /** \brief Stack underflow. */
-#define VSC_ERROR_STACKUFLOW VSC_MKERR(' ', 'S', 'U', 'F')
+#define VSC_ERROR_STACKUFLOW VSC_MKERR('S', 'U', 'F')
+
+_Static_assert(VSC_ERROR(0xFFFF)           < 0, "VSC_ERROR() >= 0");
+_Static_assert(VSC_MKERR(0xFF, 0xFF, 0xFF) < 0, "VSC_MKERR() >= 0");
+_Static_assert(VSC_ERROR(0x1FFFF) == VSC_ERROR(0xFFFF), "VSC_ERROR(0x1FFFF) != VSC_ERROR(0xFFFF)");
+_Static_assert(VSC_ERROR_IS_SYSTEM(VSC_ERROR(0xFFFF)), "!VSC_ERROR_IS_SYSTEM(VSC_ERROR()");
+_Static_assert(!VSC_ERROR_IS_SYSTEM(VSC_MKERR(0xFF, 0xFF, 0xFF)), "VSC_ERROR_IS_SYSTEM(VSC_MKERR()");
 
 #endif /* _VSCLIB_ERROR_H */
