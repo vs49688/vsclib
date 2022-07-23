@@ -36,6 +36,9 @@
 
 #define VSC_ERROR_IS_SYSTEM(err) (!(-(err) & VSC_MKERR(0, 0, 0)))
 
+/** \brief Success. */
+#define VSC_ERROR_SUCCESS 0
+
 /** \brief End of file. */
 #define VSC_ERROR_EOF VSC_MKERR('E', 'O', 'F')
 
