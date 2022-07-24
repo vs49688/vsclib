@@ -207,9 +207,12 @@ private:
         return 0;
     }
 
-    void free_cb(void *p) noexcept {}
+    void free_cb(void *p) noexcept {
+        (void)p;
+    }
 
     size_t size_cb(void *p) noexcept {
+        (void)p;
         return N;
     }
 
