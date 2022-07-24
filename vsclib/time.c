@@ -18,19 +18,22 @@
  * limitations under the License.
  */
 
-#include <time.h>
-#include <stdlib.h>
-#include <vsclib/time.h>
-
 #if defined(_WIN32)
 #   define WIN32_LEAN_AND_MEAN
 #   include <windows.h>
-#elif defined(_POSIX_C_SOURCE)
-#   include <unistd.h>
-#   include <sys/time.h>
 #elif defined(__MACH__)
 #   include <mach/mach_time.h>
+#elif defined(__unix__) || defined(__unix)
+#   if !defined(_POSIX_C_SOURCE)
+#       define _POSIX_C_SOURCE 199309L
+#   endif
+#   include <unistd.h>
+#   include <sys/time.h>
 #endif
+
+#include <time.h>
+#include <stdlib.h>
+#include <vsclib/time.h>
 
 vsc_counter_t vsc_counter_ns(void)
 {
