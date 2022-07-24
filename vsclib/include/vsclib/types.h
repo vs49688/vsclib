@@ -28,6 +28,7 @@
 #   include <basetsd.h>
 typedef SSIZE_T   vsc_ssize_t;
 #else
+#   include <sys/types.h>
 typedef ssize_t   vsc_ssize_t;
 #endif
 
