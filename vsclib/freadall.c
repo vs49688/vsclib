@@ -45,7 +45,7 @@
 #include <vsclib/io.h>
 
 
-const static VscFreadallState default_state = {
+static const VscFreadallState default_state = {
 	.file_size  = 0,
 	.blk_size   = 4096,
 	.bytes_read = 0,

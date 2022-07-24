@@ -81,7 +81,7 @@ void vsc_hashmap_inita(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompar
 
 void vsc_hashmap_init(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompareProc compare)
 {
-    return vsc_hashmap_inita(hm, hash, compare, &vsclib_system_allocator);
+    vsc_hashmap_inita(hm, hash, compare, &vsclib_system_allocator);
 }
 
 int vsc_hashmap_clear(VscHashMap *hm)
