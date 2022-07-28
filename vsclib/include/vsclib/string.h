@@ -50,8 +50,8 @@ vsc_ssize_t vsc_getlinea(char **lineptr, size_t *n, FILE *stream, const VscAlloc
  */
 int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEachDelimProc proc, void *user);
 
-char *vsc_asprintf(const char *fmt, ...);
-char *vsc_asprintfa(const VscAllocator *a, const char *fmt, ...);
+char *vsc_asprintf(const char *fmt, ...) VSC_PRINTF_ATTRIB(1, 2);
+char *vsc_asprintfa(const VscAllocator *a, const char *fmt, ...) VSC_PRINTF_ATTRIB(2, 3);
 
 char *vsc_vasprintf(const char *fmt, va_list ap);
 char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap);

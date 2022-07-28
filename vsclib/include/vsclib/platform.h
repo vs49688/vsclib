@@ -39,6 +39,12 @@
 #   define VSC_DEBUG
 #endif
 
+#ifdef __GNUC__
+#   define VSC_PRINTF_ATTRIB(x, y) __attribute__((format(printf, x, y)))
+#else
+#   define VSC_PRINTF_ATTRIB(x, y)
+#endif
+
 #define VSC_IS_POT(a) ((a) != 0 && ((a) & ((a) - 1)) == 0)
 #define VSC_IS_ALIGNED(p, a) (((uintptr_t)(p) & ((a) - 1)) == 0)
 

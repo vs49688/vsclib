@@ -91,7 +91,7 @@ int   vsc_chdira(const char *path, const VscAllocator *a);
 
 int vsc_vfperror(FILE *fp, int err, const char *fmt, va_list ap);
 
-int vsc_fperror(FILE *fp, int err, const char *fmt, ...);
+int vsc_fperror(FILE *fp, int err, const char *fmt, ...) VSC_PRINTF_ATTRIB(3, 4);
 
 #if (_MSC_VER >= 1400)
 static inline uint16_t vsc_swap_uint16(uint16_t x) { return _byteswap_ushort(x); }
