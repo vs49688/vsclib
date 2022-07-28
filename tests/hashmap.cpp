@@ -17,6 +17,7 @@ struct hmdel {
 };
 using hmptr = std::unique_ptr<VscHashMap, hmdel>;
 
+#if 0
 static void dumpx(const VscHashMap *hm)
 {
     printf("%zu buckets:\n", hm->num_buckets);
@@ -31,6 +32,7 @@ static void dumpx(const VscHashMap *hm)
         printf("index = %zu, (%s, %s)\n", bkt->hash % hm->num_buckets, (const char *)bkt->key, (const char *)bkt->value);
     }
 }
+#endif
 
 static vsc_hash_t hashproc32(const void *key)
 {
