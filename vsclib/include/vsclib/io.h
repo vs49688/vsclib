@@ -195,18 +195,32 @@ VSCLIB_DECLARE_READWRITE_E(l, 64)
 VSCLIB_DECLARE_READWRITE_E(b, 64)
 
 /* stdio variants of vsc_{read,write} */
-#define VSCLIB_DECLARE_FREADWRITE(bits) \
+#define VSCLIB_DECLARE_FREADWRITE(bits)                                     \
     static inline size_t vsc_fwrite_uint##bits(FILE *f, uint##bits##_t val) \
-    { return fwrite(&val, sizeof(val), 1, f); } \
-    \
+    {                                                                       \
+        return fwrite(&val, sizeof(val), 1, f);                             \
+    }                                                                       \
+                                                                            \
     static inline size_t vsc_fwrite_int##bits (FILE *f,  int##bits##_t val) \
-    { return fwrite(&val, sizeof(val), 1, f); } \
-    \
-    static inline uint##bits##_t vsc_fread_uint##bits(FILE *f) \
-    { uint##bits##_t val; fread(&val, sizeof(val), 1, f); return val; } \
-    \
-    static inline int##bits##_t vsc_fread_int##bits (FILE *f) \
-    {  int##bits##_t val; fread(&val, sizeof(val), 1, f); return val; }
+    {                                                                       \
+        return fwrite(&val, sizeof(val), 1, f);                             \
+    }                                                                       \
+                                                                            \
+    static inline uint##bits##_t vsc_fread_uint##bits(FILE *f)              \
+    {                                                                       \
+        uint##bits##_t val;                                                 \
+        if(fread(&val, sizeof(val), 1, f) != 1)                             \
+            return 0;                                                       \
+        return val;                                                         \
+    }                                                                       \
+                                                                            \
+    static inline int##bits##_t vsc_fread_int##bits (FILE *f)               \
+    {                                                                       \
+        int##bits##_t val;                                                  \
+        if(fread(&val, sizeof(val), 1, f) != 1)                             \
+            return 0;                                                       \
+        return val;                                                         \
+    }
 
 #define VSCLIB_DECLARE_FREADWRITE_E(endian, bits) \
     static inline size_t vsc_fwrite_##endian##eu##bits(FILE *f, uint##bits##_t val) \
