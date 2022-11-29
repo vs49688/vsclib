@@ -21,10 +21,12 @@
 #ifndef _VSCLIB_MACROS_H
 #define _VSCLIB_MACROS_H
 
-#define VSC_FOURCC(a, b, c, d) \
-    ((((unsigned)(a) & 0xFF) <<  0) | (((unsigned)(b) & 0xFF) <<  8) | \
-     (((unsigned)(c) & 0xFF) << 16) | (((unsigned)(d) & 0xFF) << 24) )
+#define VSC_PACKU32(a, b, c, d) \
+    ((((unsigned)(a) & 0xFF) << 24) | (((unsigned)(b) & 0xFF) << 16) | \
+     (((unsigned)(c) & 0xFF) <<  8) | (((unsigned)(d) & 0xFF) <<  0))
 
-#define VSC_FOURCCBE(a, b, c, d) VSC_FOURCC(d, c, b, a)
+#define VSC_FOURCC(a, b, c, d) VSC_PACKU32(d, c, b, a)
+
+#define VSC_FOURCCBE(a, b, c, d) VSC_PACKU32(a, b, c, d)
 
 #endif /* _VSCLIB_MACROS_H */
