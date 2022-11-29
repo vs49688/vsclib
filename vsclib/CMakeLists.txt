@@ -46,6 +46,7 @@ add_library(vsclib STATIC
 		stdio.c
 		for_each.c
 		chdir.c
+		colour.c
 		enum_groups.c
 		strdupr.c
 		memory.c
@@ -95,6 +96,9 @@ add_library(vsclib STATIC
 		include/vsclib/time.h
 
 		include/vsclib/enum_groups.h
+
+		include/vsclib/colourdef.h
+		include/vsclib/colour.h
 )
 
 set_target_properties(vsclib PROPERTIES

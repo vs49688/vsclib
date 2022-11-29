@@ -46,6 +46,7 @@
 #include "vsclib/wav.h"
 #include "vsclib/hashmap.h"
 #include "vsclib/time.h"
+#include "vsclib/colour.h"
 
 #if defined(__cplusplus)
 extern "C" {
