@@ -7,6 +7,7 @@ C utility library.
 * Provide useful functionality the C standard library lacks.
 * Strive to be compatible with linear allocation strategies where possible.
 * Have no dependencies other than the C standard library.
+* Avoid or minimise use of floating-point arithmetic.
 
 ## Notes
 
