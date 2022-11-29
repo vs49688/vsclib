@@ -21,6 +21,7 @@
 #define _VSCPPLIB_HPP
 
 #include <cstdio>
+#include <iosfwd>
 #include <type_traits>
 #include <algorithm>
 #include <string_view>
@@ -33,6 +34,8 @@ namespace vsc {
 /* NB: Relying on the compiler to inline these. */
 
 using allocator_t        = VscAllocator;
+
+using Colour32           = VscColour32;
 
 const auto fopen         = ::vsc_fopen;
 const auto fopena        = ::vsc_fopena;
@@ -165,5 +168,7 @@ template<typename T>
 using vsc_ptr = std::unique_ptr<T, vsc_deleter<T>>;
 
 }
+
+bool operator==(const VscColour32& a, const VscColour32&b) noexcept;
 
 #endif /* _VSCPPLIB_HPP */
