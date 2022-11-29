@@ -62,6 +62,7 @@ add_library(vsclib STATIC
 		hashmap.c
 
 		error.c
+		fixed.c
 
 		${OS_FILES}
 
@@ -99,6 +100,10 @@ add_library(vsclib STATIC
 
 		include/vsclib/colourdef.h
 		include/vsclib/colour.h
+
+		include/vsclib/fixeddef.h
+		include/vsclib/fixed.h
+
 )
 
 set_target_properties(vsclib PROPERTIES

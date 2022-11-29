@@ -47,6 +47,7 @@
 #include "vsclib/hashmap.h"
 #include "vsclib/time.h"
 #include "vsclib/colour.h"
+#include "vsclib/fixed.h"
 
 #if defined(__cplusplus)
 extern "C" {
