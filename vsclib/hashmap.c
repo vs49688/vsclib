@@ -203,7 +203,7 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
      * needs to be done after the hm->buckets alloc to play nice to linear
      * allocators.
      */
-    tmpbkts = vsc_xalloc(hm->allocator, sizeof(VscHashMapBucket) * nelem);
+    tmpbkts = vsc_xcalloc(hm->allocator, nelem, sizeof(VscHashMapBucket));
     if(tmpbkts == NULL)
         return VSC_ERROR(ENOMEM);
 

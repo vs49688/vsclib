@@ -41,7 +41,7 @@ int vsc_wstrtocstra(const wchar_t *ws, unsigned int cp, char **s, size_t *len, c
         return vsci_map_win32err(GetLastError());
     vsc_assert(x > 0);
 
-    if((_s = vsc_xalloc(a, x * sizeof(char))) == NULL)
+    if((_s = vsc_xcalloc(a, x, sizeof(char))) == NULL)
         return VSC_ERROR(ENOMEM);
 
     if((x = WideCharToMultiByte(cp, 0, ws, (int)_len, _s, x, NULL, NULL)) == 0) {

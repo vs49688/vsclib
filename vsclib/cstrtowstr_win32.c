@@ -43,7 +43,7 @@ int vsc_cstrtowstra(const char *s, unsigned int cp, wchar_t **ws, size_t *len, c
         return vsci_map_win32err(GetLastError());
     vsc_assert(x > 0);
 
-    if((_ws = vsc_xalloc(a, x * sizeof(wchar_t))) == NULL)
+    if((_ws = vsc_xcalloc(a, x, sizeof(wchar_t))) == NULL)
         return VSC_ERROR(ENOMEM);
 
     /* Now convert. */

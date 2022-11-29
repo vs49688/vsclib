@@ -95,7 +95,7 @@ int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
     flen  = strlen(f) + 1; /* /%s */
     dlen += flen + 1;
 
-    if((buf = vsc_xalloc(a, dlen * sizeof(char))) == NULL)
+    if((buf = vsc_xcalloc(a, dlen, sizeof(char))) == NULL)
         return VSC_ERROR(ENOMEM);
 
     uid = getuid();
