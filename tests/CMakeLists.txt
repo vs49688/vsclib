@@ -12,6 +12,7 @@ add_executable(vsclib_tests
         wav.cpp
         time.cpp
         io.cpp
+        colour.cpp
 
         strerror.c
 )
