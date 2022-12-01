@@ -27,5 +27,17 @@
     packages.aarch64-linux  = mkPackages { system = "aarch64-linux";  };
     packages.x86_64-darwin  = mkPackages { system = "x86_64-darwin";  };
     packages.aarch64-darwin = mkPackages { system = "aarch64-darwin"; };
+
+    devShells.x86_64-linux.default = self.packages.x86_64-linux.default.overrideAttrs(old: {
+      hardeningDisable = [ "all" ];
+    });
+
+    devShells.x86_64-darwin.default = self.packages.x86_64-darwin.default.overrideAttrs(old: {
+      hardeningDisable = [ "all" ];
+    });
+
+    devShells.aarch64-darwin.default = self.packages.aarch64-darwin.default.overrideAttrs(old: {
+      hardeningDisable = [ "all" ];
+    });
   };
 }
