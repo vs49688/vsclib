@@ -20,8 +20,8 @@
 
 /*
  * Basic aligned allocator implementation using a header to
- * store size information. This doesn't require extra padding
- * because Windows nicely provides _aligned_offset_realloc().
+ * store size information.
+ * Takes advantage of _aligned_offset_realloc().
  *
  * The size information is required in order to implement
  * VscAllocator::size. Without it, the only way to get the size of
@@ -30,13 +30,13 @@
  * amount of storage anyway.
  */
 #include <stdint.h>
-#include <malloc.h>
+#include <string.h>
 #include <vsclib/assert.h>
+#include <vsclib/types.h>
 #include <vsclib/error.h>
 #include <vsclib/mem.h>
 
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h> /* For MEMORY_ALLOCATION_ALIGNMENT */
+#include "mingw-aligned-malloc.h"
 
 #define MEMHDR_SIG 0xFEED5EED /* Formerly Chuck's */
 
@@ -74,7 +74,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
         oldsize = hdr->size;
     }
 
-    p = _aligned_offset_realloc(hdr, reqsize, alignment, sizeof(MemHeader));
+    p = __mingw_aligned_offset_realloc(hdr, reqsize, alignment, sizeof(MemHeader));
     if(p == NULL)
         return VSC_ERROR(ENOMEM);
 
@@ -101,7 +101,7 @@ static void free_(void *p, void *user)
     if(p == NULL)
         return;
 
-    _aligned_free(mem2hdr(p));
+    __mingw_aligned_free(mem2hdr(p));
 }
 
 static size_t size_(void *p, void *user)
@@ -117,6 +117,7 @@ const VscAllocator vsclib_system_allocator = {
     .alloc     = malloc_,
     .free      = free_,
     .size      = size_,
-    .alignment = MEMORY_ALLOCATION_ALIGNMENT,
+    /* FIXME: See if I need to use MEMORY_ALLOCATION_ALIGNMENT on Windows */
+    .alignment = VSC_ALIGNOF(vsc_max_align_t),
     .user      = NULL,
 };

@@ -16,7 +16,6 @@ set(CMAKE_REQUIRED_DEFINITIONS)
 if(MINGW OR WIN32)
 	set(OS_FILES
 			searchpath_win32.c
-			allocator_win32.c
 			cstrtowstr_win32.c
 			wstrtocstr_win32.c
 			util_win32.c
@@ -25,7 +24,6 @@ if(MINGW OR WIN32)
 else()
 	set(OS_FILES
 			searchpath.c
-			allocator.c
 	)
 endif()
 
@@ -62,6 +60,10 @@ add_library(vsclib STATIC
 		hashmap.c
 
 		error.c
+
+		mingw-aligned-malloc.c
+		mingw-aligned-malloc.h
+		allocator_mingw.c
 
 		${OS_FILES}
 
