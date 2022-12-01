@@ -26,15 +26,15 @@
 extern "C" {
 #endif
 
-void *__mingw_aligned_offset_malloc(size_t size, size_t alignment, size_t offset);
+void *vsci_aligned_offset_malloc(size_t size, size_t alignment, size_t offset);
 
-void *__mingw_aligned_malloc(size_t size, size_t alignment);
+void *vsci_aligned_malloc(size_t size, size_t alignment);
 
-void __mingw_aligned_free(void *memblock);
+void vsci_aligned_free(void *memblock);
 
-void *__mingw_aligned_offset_realloc(void *memblock, size_t size, size_t alignment, size_t offset);
+void *vsci_aligned_offset_realloc(void *memblock, size_t size, size_t alignment, size_t offset);
 
-void *__mingw_aligned_realloc(void *memblock, size_t size, size_t alignment);
+void *vsci_aligned_realloc(void *memblock, size_t size, size_t alignment);
 
 
 #if defined(__cplusplus)

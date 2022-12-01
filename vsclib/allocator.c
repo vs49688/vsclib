@@ -74,7 +74,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
         oldsize = hdr->size;
     }
 
-    p = __mingw_aligned_offset_realloc(hdr, reqsize, alignment, sizeof(MemHeader));
+    p = vsci_aligned_offset_realloc(hdr, reqsize, alignment, sizeof(MemHeader));
     if(p == NULL)
         return VSC_ERROR(ENOMEM);
 
@@ -101,7 +101,7 @@ static void free_(void *p, void *user)
     if(p == NULL)
         return;
 
-    __mingw_aligned_free(mem2hdr(p));
+    vsci_aligned_free(mem2hdr(p));
 }
 
 static size_t size_(void *p, void *user)

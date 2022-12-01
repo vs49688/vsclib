@@ -4,7 +4,7 @@
  * No warranty is given; refer to the file DISCLAIMER.PD within this package.
  */
 /*
-  __mingw_aligned_malloc and friends, implemented using Microsoft's public
+  vsci_aligned_malloc and friends, implemented using Microsoft's public
   interfaces and with the help of the algorithm description provided
   by Wu Yongwei: http://sourceforge.net/mailarchive/message.php?msg_id=3847075
 
@@ -29,7 +29,7 @@
 /* Pointer must sometimes be aligned; assume sizeof(void*) is a power of two. */
 #define ORIG_PTR(p) (*(((void **) (UI(p) & (~UI(sizeof(void*) - 1)))) - 1))
 
-void *__mingw_aligned_offset_malloc(size_t size, size_t alignment, size_t offset)
+void *vsci_aligned_offset_malloc(size_t size, size_t alignment, size_t offset)
 {
     void *p0, *p;
 
@@ -54,29 +54,29 @@ void *__mingw_aligned_offset_malloc(size_t size, size_t alignment, size_t offset
     return p;
 }
 
-void *__mingw_aligned_malloc(size_t size, size_t alignment)
+void *vsci_aligned_malloc(size_t size, size_t alignment)
 {
-    return __mingw_aligned_offset_malloc(size, alignment, 0);
+    return vsci_aligned_offset_malloc(size, alignment, 0);
 }
 
-void __mingw_aligned_free(void *memblock)
+void vsci_aligned_free(void *memblock)
 {
     if(memblock)
         vsc_sys_free(ORIG_PTR (memblock));
 }
 
-void *__mingw_aligned_offset_realloc(void *memblock, size_t size,
+void *vsci_aligned_offset_realloc(void *memblock, size_t size,
                                      size_t alignment, size_t offset)
 {
     void      *p0, *p;
     ptrdiff_t shift;
 
     if(!memblock)
-        return __mingw_aligned_offset_malloc(size, alignment, offset);
+        return vsci_aligned_offset_malloc(size, alignment, offset);
     if(NOT_POWER_OF_TWO (alignment))
         goto bad;
     if(size == 0) {
-        __mingw_aligned_free(memblock);
+        vsci_aligned_free(memblock);
         return ((void *)0);
     }
     if(alignment < sizeof(void *))
@@ -106,7 +106,7 @@ bad:
     return ((void *)0);
 }
 
-void *__mingw_aligned_realloc(void *memblock, size_t size, size_t alignment)
+void *vsci_aligned_realloc(void *memblock, size_t size, size_t alignment)
 {
-    return __mingw_aligned_offset_realloc(memblock, size, alignment, 0);
+    return vsci_aligned_offset_realloc(memblock, size, alignment, 0);
 }
