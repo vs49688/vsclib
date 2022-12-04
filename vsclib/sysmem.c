@@ -87,39 +87,3 @@ void *vsc_sys_realloc(void *ptr, size_t size)
     return realloc(ptr, size);
 #endif
 }
-
-void *vsc_sys_aligned_malloc(size_t size, size_t alignment)
-{
-#if defined(_WIN32)
-    vsc_assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
-    return _aligned_malloc(size, alignment);
-#else
-    void *p;
-    /*
-     * Prefer aligned_alloc(), but this fails on macOS if the
-     * alignment is "not supported by the implementation".
-     * posix_memalign() will work provided alignment is a POT
-     * and a multiple of sizeof(void*).
-     */
-    if((p = aligned_alloc(alignment, size)) != NULL)
-        return p;
-
-    vsc_assert(VSC_IS_POT(alignment)); /* Or error with EINVAL? */
-    if(alignment < sizeof(void*))
-        alignment = sizeof(void*);
-
-    if(posix_memalign(&p, alignment, size) != 0)
-        return NULL;
-
-    return p;
-#endif
-}
-
-void vsc_sys_aligned_free(void *ptr)
-{
-#if defined(_WIN32)
-    _aligned_free(ptr);
-#else
-    free(ptr);
-#endif
-}

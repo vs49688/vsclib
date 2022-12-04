@@ -327,23 +327,6 @@ void vsc_sys_free(void *p);
  */
 void *vsc_sys_realloc(void *ptr, size_t size);
 
-/**
- * \brief Invoke the system's aligned allocation procedure.
- *
- * \remark On Windows, calls _aligned_malloc().
- * \remark On C11 systems, calls aligned_alloc().
- */
-void *vsc_sys_aligned_malloc(size_t size, size_t alignment);
-
-/**
- * \brief Invoke the systems's aligned free prodecure.
- *
- * This is capable of freeing memory allocated by vsc_sys_aligned_malloc().
- *
- * \remark On Windows, calls _aligned_free(). Otherwise, calls free().
- */
-void  vsc_sys_aligned_free(void *ptr);
-
 #if defined(__cplusplus)
 }
 #endif
