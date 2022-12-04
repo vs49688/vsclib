@@ -302,28 +302,28 @@ int vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nbloc
 /**
  * \brief Invoke the system's memory allocation procedure.
  *
- * \remark Directly calls malloc().
+ * \remark On Windows, calls HeapAlloc(). On all other systems, calls malloc().
  */
 void *vsc_sys_malloc(size_t size);
 
 /**
  * \brief Invoke the system's memory allocation+zero procedure.
  *
- * \remark Directly calls calloc().
+ * \remark On Windows, calls HeapAlloc(). On all other systems, calls calloc().
  */
 void *vsc_sys_calloc(size_t nmemb, size_t size);
 
 /**
  * \brief Invoke the system's memory release procedure.
  *
- * \remark Directly calls free().
+ * \remark On Windows, calls HeapFree(). On all other systems, calls free().
  */
 void vsc_sys_free(void *p);
 
 /**
  * \brief Invoke the system's reallocation procedure.
  *
- * \remark Directly calls realloc().
+ * \remark On Windows, calls HeapReAlloc(). On all other systems, calls realloc().
  */
 void *vsc_sys_realloc(void *ptr, size_t size);
 

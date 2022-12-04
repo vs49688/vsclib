@@ -19,7 +19,10 @@
  */
 
 #include <stdlib.h>
-#if !defined(__MACH__)
+#if defined(_WIN32)
+#   define WIN32_LEAN_AND_MEAN
+#   include <windows.h>
+#elif !defined(__MACH__)
 #   include <malloc.h>
 #endif
 #include <vsclib/assert.h>
@@ -27,22 +30,62 @@
 
 void *vsc_sys_malloc(size_t size)
 {
+#if defined(_WIN32)
+    HANDLE hHeap;
+
+    if((hHeap = GetProcessHeap()) == NULL)
+        return NULL;
+
+    return HeapAlloc(hHeap, 0, size);
+#else
     return malloc(size);
+#endif
 }
 
 void *vsc_sys_calloc(size_t nmemb, size_t size)
 {
+#if defined(_WIN32)
+    HANDLE hHeap;
+
+    if(size > 0 && nmemb > SIZE_MAX / size)
+        return NULL;
+
+    if((hHeap = GetProcessHeap()) == NULL)
+        return NULL;
+
+    return HeapAlloc(hHeap, HEAP_ZERO_MEMORY, size * nmemb);
+#else
     return calloc(nmemb, size);
+#endif
 }
 
 void vsc_sys_free(void *p)
 {
+    if(p == NULL)
+        return;
+
+#if defined(_WIN32)
+    HeapFree(GetProcessHeap(), 0, p);
+#else
     free(p);
+#endif
 }
 
 void *vsc_sys_realloc(void *ptr, size_t size)
 {
+#if defined(_WIN32)
+    HANDLE hHeap;
+
+    if((hHeap = GetProcessHeap()) == NULL)
+        return NULL;
+
+    if(ptr == NULL)
+        return HeapAlloc(hHeap, 0, size);
+
+    return HeapReAlloc(hHeap, 0, ptr, size);
+#else
     return realloc(ptr, size);
+#endif
 }
 
 void *vsc_sys_aligned_malloc(size_t size, size_t alignment)
