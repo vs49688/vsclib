@@ -41,6 +41,7 @@
 #include "vsclib/assert.h"
 #include "vsclib/mem.h"
 #include "vsclib/io.h"
+#include "vsclib/file.h"
 #include "vsclib/string.h"
 #include "vsclib/hash.h"
 #include "vsclib/wav.h"

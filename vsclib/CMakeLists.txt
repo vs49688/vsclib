@@ -72,6 +72,15 @@ add_library(vsclib STATIC
 		mingw-aligned-malloc.h
 		allocator.c
 
+		include/vsclib/filedef.h
+		include/vsclib/file.h
+		include/vsclib/file_internal.h
+
+		file.c
+
+		include/vsclib/file_stdio.h
+		file_stdio.c
+
 		${OS_FILES}
 
 		vsclib_config.h.in
