@@ -17,6 +17,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/** \file vsclib/error.h */
 #ifndef _VSCLIB_ERROR_H
 #define _VSCLIB_ERROR_H
 
