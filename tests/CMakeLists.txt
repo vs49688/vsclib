@@ -3,6 +3,7 @@ project(vsclib_tests)
 add_executable(vsclib_tests
         main.cpp
         catch.hpp
+        common.hpp
 
         string.cpp
         memory.cpp

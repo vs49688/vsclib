@@ -1,8 +1,4 @@
-#include <vsclib.h>
-#include <vscpplib.hpp>
-#include <memory>
-#include <array>
-#include "catch.hpp"
+#include "common.hpp"
 
 using vsc::vsc_ptr;
 
@@ -154,83 +150,6 @@ TEST_CASE("align", "[memory]") {
         }
     }
 }
-
-template<size_t N, size_t A>
-class TestAllocator : private VscAllocator {
-    static_assert(VSC_IS_POT(A));
-
-public:
-    TestAllocator() :
-        VscAllocator{alloc_stub, free_stub, size_stub, VSC_ALIGNOF(vsc_max_align_t), this},
-        buf_{},
-        offset_(0)
-    {
-        uintptr_t p;
-        for(p = (uintptr_t)buf_; p <= (uintptr_t)buf_ + N; p += A) {
-            if((p % A) == 0 && (p % (A << 1)) != 0)
-                break;
-        }
-
-        if(p >= (uintptr_t)buf_ + N)
-            throw std::runtime_error("alignment error");
-
-        this->offset_ = p - (uintptr_t)buf_;
-    }
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "google-explicit-constructor"
-    operator const VscAllocator*() const noexcept {
-        return this;
-    }
-#pragma clang diagnostic pop
-
-private:
-    int alloc_cb(void **ptr, size_t size, size_t alignment, VscAllocFlags flags) noexcept {
-        void *p = (void*)((uintptr_t)buf_ + this->offset_);
-        size_t space = N - this->offset_;
-
-        if(flags & VSC_ALLOC_REALLOC)
-            return VSC_ERROR(ENOTSUP);
-
-        void *pp = vsc_align(alignment, size, &p, &space);
-        if(pp == nullptr) {
-            if(flags & VSC_ALLOC_NOFAIL)
-                std::terminate();
-
-            return VSC_ERROR(EINVAL);
-        }
-
-        if(flags & VSC_ALLOC_ZERO)
-            memset(pp, 0, size);
-
-        *ptr = pp;
-        return 0;
-    }
-
-    void free_cb(void *p) noexcept {
-        (void)p;
-    }
-
-    size_t size_cb(void *p) noexcept {
-        (void)p;
-        return N;
-    }
-
-    static int alloc_stub(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user) noexcept {
-        return reinterpret_cast<TestAllocator*>(user)->alloc_cb(ptr, size, alignment, flags);
-    }
-
-    static void free_stub(void *p, void *user) noexcept {
-        return reinterpret_cast<TestAllocator*>(user)->free_cb(p);
-    }
-
-    static size_t size_stub(void *p, void *user) noexcept {
-        return reinterpret_cast<TestAllocator*>(user)->size_cb(p);
-    }
-
-    alignas(A) uint8_t buf_[N];
-    size_t offset_;
-};
 
 /*
  * Ensure vsc_block_xalloc() gives the closest alignments, e.g.
