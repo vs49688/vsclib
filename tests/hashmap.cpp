@@ -1,3 +1,4 @@
+#include <array>
 #include "common.hpp"
 
 #define CHECK_CSTRING(a, b) \
