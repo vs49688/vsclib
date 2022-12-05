@@ -198,6 +198,10 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
 
     hm->num_buckets = nelem;
 
+    /* Shortcut - no items. no problem! */
+    if(hm->size == 0)
+        return 0;
+
     /*
      * Allocate a temp bucket list (hue) to work with. Note that this
      * needs to be done after the hm->buckets alloc to play nice to linear
