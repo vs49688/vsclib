@@ -1,7 +1,4 @@
-#include <memory>
-#include <array>
-#include <vsclib.h>
-#include "catch.hpp"
+#include "common.hpp"
 
 #define CHECK_CSTRING(a, b) \
     do { \
@@ -65,10 +62,13 @@ static int compareproc(const void *a, const void *b)
 
 TEST_CASE("hashmap", "[hashmap]") {
     int r;
+    TestAllocator<512> allocator;
+
     VscHashMap hm;
     hmptr _hm(&hm);
 
-    vsc_hashmap_init(&hm, hashproc32, compareproc);
+
+    vsc_hashmap_inita(&hm, hashproc32, compareproc, allocator);
 
     /* Check initial state. */
     REQUIRE(0           == hm.size);

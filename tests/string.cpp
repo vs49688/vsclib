@@ -1,11 +1,6 @@
-#include <vsclib.h>
-#include <vscpplib.hpp>
-#include <string_view>
-#include <memory>
-#include <vector>
 #include <iostream>
 #include <fstream>
-#include "catch.hpp"
+#include "common.hpp"
 
 using namespace std::string_view_literals;
 using vsc::vsc_ptr;
@@ -13,15 +8,19 @@ using vsc::vsc_ptr;
 TEST_CASE("strdupr", "[string]") {
     std::string_view original = "****hello, world****"sv;
 
-    vsc_ptr<char> actual(vsc_strdupr(original.data() + 4, original.data() + original.size() - 4));
+    TestAllocator<64> allocator;
+
+    const char *actual = vsc_strdupra(original.data() + 4, original.data() + original.size() - 4, allocator);
     REQUIRE(actual);
-    REQUIRE(strcmp("hello, world", actual.get()) == 0);
+    REQUIRE(strcmp("hello, world", actual) == 0);
 }
 
 TEST_CASE("asprintf", "[string]") {
-    vsc_ptr<char> actual(vsc_asprintf("****%s, %s****", "hello", "world"));
+    TestAllocator<64> allocator;
+
+    const char *actual = vsc_asprintfa(allocator, "****%s, %s****", "hello", "world");
     REQUIRE(actual);
-    REQUIRE(strcmp("****hello, world****", actual.get()) == 0);
+    REQUIRE(strcmp("****hello, world****", actual) == 0);
 }
 
 static void test_for_each_delim(std::string_view input, const std::vector<std::string_view>& expected) {
