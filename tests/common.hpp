@@ -18,7 +18,11 @@ public:
         VscAllocator{alloc_stub, free_stub, size_stub, VSC_ALIGNOF(vsc_max_align_t), this},
         buf_{},
         offset_(0)
-    {}
+    {
+        /* Force us to be aligned to X, not X^2, etc. */
+        if(VSC_IS_ALIGNED(buf_, A << 1))
+            this->offset_ += A;
+    }
 
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "google-explicit-constructor"
@@ -87,7 +91,7 @@ private:
         return reinterpret_cast<TestAllocator*>(user)->size_cb(p);
     }
 
-    alignas(A) uint8_t buf_[N];
+    alignas(A) uint8_t buf_[N + A];
     size_t offset_;
     std::stack<void*, std::vector<void*>> allocations;
 };
