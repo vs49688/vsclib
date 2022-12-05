@@ -45,6 +45,13 @@ int vsc_xalloc_ex(const VscAllocator *a, void **ptr, size_t size, uint32_t flags
 
     vsc_assert(VSC_IS_POT(alignment));
 
+    /*
+     * If a new allocation, remove the VSC_ALLOC_REALLOC flag.
+     * Simplifies implementing allocators.
+     */
+    if(*ptr == NULL)
+        flags &= ~VSC_ALLOC_REALLOC;
+
     ret = a->alloc(ptr, size, alignment, flags, a->user);
 
     /* If our allocator can't handle realloc'ing, fake it. */

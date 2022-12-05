@@ -65,6 +65,8 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
     if(*ptr == NULL)
         flags &= ~VSC_ALLOC_REALLOC;
 
+    vsc_assert(((flags & VSC_ALLOC_REALLOC) && *ptr != NULL) || (flags & VSC_ALLOC_REALLOC) == 0);
+
     /* Size of the block + footer + alignment padding. */
     reqsize = sizeof(MemHeader) + size;
 
