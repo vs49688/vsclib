@@ -73,6 +73,15 @@ int vsc_wstrtocstra(const wchar_t *ws, unsigned int cp, char **s, size_t *len, c
 
 char *vsc_stpcpy(char *dst, const char *src);
 
+char *vsc_strjoin(const char *delim, ...);
+char *vsc_strjoina(const VscAllocator *a, const char *delim, ...);
+
+char *vsc_vstrjoin(const char *delim, va_list ap);
+char *vsc_vstrjoina(const VscAllocator *a, const char *delim, va_list ap);
+
+char *vsc_strnjoin(const char *delim, const char **elems, size_t nelem);
+char *vsc_strnjoina(const VscAllocator *a, const char *delim, const char **elems, size_t nelem);
+
 #if defined(__cplusplus)
 }
 #endif

@@ -1,9 +1,56 @@
 #include <iostream>
 #include <fstream>
+#include <array>
 #include "common.hpp"
 
 using namespace std::string_view_literals;
 using vsc::vsc_ptr;
+
+TEST_CASE("strjoin", "[string]") {
+    SECTION("correct_usage", "") {
+        TestAllocator<64> allocator;
+        const char *actual = vsc_strjoina(allocator, "/", "/some", "filesystem", "path", NULL);
+        REQUIRE(actual);
+        REQUIRE(strcmp("/some/filesystem/path", actual) == 0);
+    }
+
+    SECTION("null_delim", "") {
+        TestAllocator<64> allocator;
+        const char *actual = vsc_strjoina(allocator, nullptr, "/some", "filesystem", "path", NULL);
+        REQUIRE(actual == NULL);
+    }
+
+    SECTION("empty") {
+        TestAllocator<64> allocator;
+        const char *actual = vsc_strjoina(allocator, "whatever", NULL);
+        REQUIRE(actual);
+        REQUIRE(strcmp("", actual) == 0);
+    }
+}
+
+TEST_CASE("strnjoin", "[string]") {
+    SECTION("correct_usage", "") {
+        TestAllocator<64> allocator;
+        std::array<const char *, 3> elems{"/some", "filesystem", "path"};
+        const char *actual = vsc_strnjoina(allocator, "/", elems.data(), elems.size());
+        REQUIRE(actual);
+        REQUIRE(strcmp("/some/filesystem/path", actual) == 0);
+    }
+
+    SECTION("null_delim", "") {
+        TestAllocator<64> allocator;
+        std::array<const char *, 3> elems{"/some", "filesystem", "path"};
+        const char *actual = vsc_strnjoina(allocator, nullptr, elems.data(), elems.size());
+        REQUIRE(actual == NULL);
+    }
+
+    SECTION("empty", "") {
+        TestAllocator<64> allocator;
+        const char *actual = vsc_strnjoina(allocator, "whatever", nullptr, 0);
+        REQUIRE(actual);
+        REQUIRE(strcmp("", actual) == 0);
+    }
+}
 
 TEST_CASE("strdupr", "[string]") {
     std::string_view original = "****hello, world****"sv;

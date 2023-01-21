@@ -52,6 +52,7 @@ add_library(vsclib STATIC
 		strdup.c
 		strdupr.c
 		stpcpy.c
+		strjoin.c
 
 		memory.c
 		sysmem.c
