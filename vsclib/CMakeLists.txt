@@ -46,6 +46,7 @@ add_library(vsclib STATIC
 		chdir.c
 		colour.c
 		enum_groups.c
+		strdup.c
 		strdupr.c
 		memory.c
 		sysmem.c

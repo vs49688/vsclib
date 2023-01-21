@@ -57,6 +57,9 @@ char *vsc_asprintfa(const VscAllocator *a, const char *fmt, ...) VSC_PRINTF_ATTR
 char *vsc_vasprintf(const char *fmt, va_list ap);
 char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap);
 
+char *vsc_strdup(const char *s);
+char *vsc_strdupa(const char *s, const VscAllocator *a);
+
 char *vsc_strdupr(const char *start, const char *end);
 char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a);
 
