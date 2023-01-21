@@ -20,6 +20,7 @@
 #include <string.h>
 #include <vsclib/assert.h>
 #include <vsclib/error.h>
+#include <vsclib/hash.h>
 #include <vsclib/hashmap.h>
 
 #define VSC_HASHMAP_MIN_BUCKET_AUTO_ALLOCATION 16
@@ -482,4 +483,20 @@ vsc_hash_t vsc_hashmap_default_hash(const void *k)
 int vsc_hashmap_default_compare(const void *a, const void *b)
 {
     return a == b;
+}
+
+vsc_hash_t vsc_hashmap_string_hash(const void *s)
+{
+    return vsc_hash_string(s);
+}
+
+int vsc_hashmap_string_compare(const void *a, const void *b)
+{
+    if(a == b)
+        return 0;
+
+    if(a == NULL || b == NULL)
+        return 0;
+
+    return strcmp(a, b) == 0;
 }

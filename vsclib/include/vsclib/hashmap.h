@@ -101,6 +101,9 @@ int vsc_hashmap_enumerate(const VscHashMap *hm, VscHashMapEnumProc proc, void *u
 vsc_hash_t vsc_hashmap_default_hash(const void *k);
 int vsc_hashmap_default_compare(const void *a, const void *b);
 
+vsc_hash_t vsc_hashmap_string_hash(const void *s);
+int vsc_hashmap_string_compare(const void *a, const void *b);
+
 #if defined(__cplusplus)
 }
 #endif
