@@ -29,6 +29,7 @@ extern "C" {
 #endif
 
 vsc_hash_t vsc_hash(const void *data, size_t size);
+vsc_hash_t vsc_hash_string(const char *s);
 
 uint32_t vsc_crc32( const void *data, size_t size);
 uint32_t vsc_crc32c(const void *data, size_t size);

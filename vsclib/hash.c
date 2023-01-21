@@ -39,3 +39,11 @@ vsc_hash_t vsc_hash(const void *data, size_t size)
     return XXH32(data, size, 0);
 #endif
 }
+
+vsc_hash_t vsc_hash_string(const char *s)
+{
+    if(s == NULL)
+        return VSC_INVALID_HASH;
+
+    return vsc_hash(s, strlen(s));
+}
