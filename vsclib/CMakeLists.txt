@@ -54,6 +54,7 @@ add_library(vsclib STATIC
 		enum_groups.c
 		strdup.c
 		strdupr.c
+		strcpy.c
 		stpcpy.c
 		strjoin.c
 
