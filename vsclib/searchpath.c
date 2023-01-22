@@ -26,6 +26,7 @@
 #include <vsclib/error.h>
 #include <vsclib/mem.h>
 #include <vsclib/io.h>
+#include <vsclib/string.h>
 
 static int statfile(const char *p, uid_t uid, gid_t gid)
 {
@@ -109,7 +110,7 @@ int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
         size_t dist = c - o;
         strncpy(buf, o, dist);
         buf[dist] = '/';
-        strcpy(buf + dist + 1, f);
+        vsc_strcpy(buf + dist + 1, f);
 
         if((statfile(buf, uid, gid)) < 0)
             continue;
