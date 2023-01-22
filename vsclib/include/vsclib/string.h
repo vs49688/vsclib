@@ -21,6 +21,7 @@
 #define _VSCLIB_STRING_H
 
 #include <stdio.h>
+#include "platform.h"
 #include "types.h"
 #include "memdef.h"
 #include "stringdef.h"
