@@ -17,15 +17,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <string.h>
+#include <vsclib/platform.h>
+#if defined(VSC_HAVE_STPCPY) || defined(VSC_HAVE_STRCPY)
+#    include <string.h>
+#endif
 #include <vsclib/string.h>
 
 char *vsc_stpcpy(char *dst, const char *src)
 {
-#ifdef VSC_HAVE_STPCPY
+#if defined(VSC_HAVE_STPCPY)
     return stpcpy(dst, src);
-#else
-    /* This'll do for now. */
+#elif defined(VSC_HAVE_STRCPY)
     return strcpy(dst, src) + strlen(src);
+#else
+    for(; (*dst = *src); src++, dst++)
+        ;
+    return dst;
 #endif
 }

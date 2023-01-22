@@ -16,6 +16,9 @@ set(CMAKE_REQUIRED_DEFINITIONS)
 check_symbol_exists(stpcpy "string.h" HAVE_STPCPY)
 set(VSC_HAVE_STPCPY ${HAVE_STPCPY})
 
+check_symbol_exists(strcpy "string.h" HAVE_STRCPY)
+set(VSC_HAVE_STRCPY ${HAVE_STRCPY})
+
 if(MINGW OR WIN32)
 	set(OS_FILES
 			searchpath_win32.c
