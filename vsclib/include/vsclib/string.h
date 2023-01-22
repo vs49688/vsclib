@@ -71,6 +71,8 @@ int vsc_wstrtocstr(const wchar_t *ws, unsigned int cp, char **s, size_t *len);
 int vsc_wstrtocstra(const wchar_t *ws, unsigned int cp, char **s, size_t *len, const VscAllocator *a);
 #endif
 
+char *vsc_stpcpy(char *dst, const char *src);
+
 #if defined(__cplusplus)
 }
 #endif

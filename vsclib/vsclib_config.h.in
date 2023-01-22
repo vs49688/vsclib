@@ -14,4 +14,6 @@
 
 #cmakedefine VSC_HAVE_GETGRENT_R
 
+#cmakedefine VSC_HAVE_STPCPY
+
 #endif /* VSCLIB_CONFIG_H_ */

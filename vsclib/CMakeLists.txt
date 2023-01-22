@@ -11,7 +11,10 @@ set(VSC_HAVE_MAX_ALIGN_T ${HAVE_MAX_ALIGN_T})
 set(CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
 check_symbol_exists(getgrent_r "grp.h" HAVE_GETGRENT_R)
 set(VSC_HAVE_GETGRENT_R ${HAVE_GETGRENT_R})
+
 set(CMAKE_REQUIRED_DEFINITIONS)
+check_symbol_exists(stpcpy "string.h" HAVE_STPCPY)
+set(VSC_HAVE_STPCPY ${HAVE_STPCPY})
 
 if(MINGW OR WIN32)
 	set(OS_FILES
@@ -48,6 +51,8 @@ add_library(vsclib STATIC
 		enum_groups.c
 		strdup.c
 		strdupr.c
+		stpcpy.c
+
 		memory.c
 		sysmem.c
 		time.c
