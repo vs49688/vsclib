@@ -9,20 +9,20 @@ using vsc::vsc_ptr;
 TEST_CASE("strjoin", "[string]") {
     SECTION("correct_usage", "") {
         TestAllocator<64> allocator;
-        const char *actual = vsc_strjoina(allocator, "/", "/some", "filesystem", "path", NULL);
+        const char *actual = vsc_strjoina(allocator, "/", "/some", "filesystem", "path", nullptr);
         REQUIRE(actual);
         REQUIRE(strcmp("/some/filesystem/path", actual) == 0);
     }
 
     SECTION("null_delim", "") {
         TestAllocator<64> allocator;
-        const char *actual = vsc_strjoina(allocator, nullptr, "/some", "filesystem", "path", NULL);
-        REQUIRE(actual == NULL);
+        const char *actual = vsc_strjoina(allocator, nullptr, "/some", "filesystem", "path", nullptr);
+        REQUIRE(actual == nullptr);
     }
 
     SECTION("empty") {
         TestAllocator<64> allocator;
-        const char *actual = vsc_strjoina(allocator, "whatever", NULL);
+        const char *actual = vsc_strjoina(allocator, "whatever", nullptr);
         REQUIRE(actual);
         REQUIRE(strcmp("", actual) == 0);
     }
@@ -41,7 +41,7 @@ TEST_CASE("strnjoin", "[string]") {
         TestAllocator<64> allocator;
         std::array<const char *, 3> elems{"/some", "filesystem", "path"};
         const char *actual = vsc_strnjoina(allocator, nullptr, elems.data(), elems.size());
-        REQUIRE(actual == NULL);
+        REQUIRE(actual == nullptr);
     }
 
     SECTION("empty", "") {
