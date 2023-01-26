@@ -9,15 +9,12 @@ check_type_size(max_align_t MAX_ALIGN_T LANGUAGE C)
 set(VSC_HAVE_MAX_ALIGN_T ${HAVE_MAX_ALIGN_T})
 
 set(CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
-check_symbol_exists(getgrent_r "grp.h" HAVE_GETGRENT_R)
-set(VSC_HAVE_GETGRENT_R ${HAVE_GETGRENT_R})
+check_symbol_exists(getgrent_r "grp.h" VSC_HAVE_GETGRENT_R)
 
 set(CMAKE_REQUIRED_DEFINITIONS)
-check_symbol_exists(stpcpy "string.h" HAVE_STPCPY)
-set(VSC_HAVE_STPCPY ${HAVE_STPCPY})
+check_symbol_exists(stpcpy "string.h" VSC_HAVE_STPCPY)
 
-check_symbol_exists(strcpy "string.h" HAVE_STRCPY)
-set(VSC_HAVE_STRCPY ${HAVE_STRCPY})
+check_symbol_exists(strcpy "string.h" VSC_HAVE_STRCPY)
 
 if(MINGW OR WIN32)
 	set(OS_FILES
