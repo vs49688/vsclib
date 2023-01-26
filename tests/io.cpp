@@ -2,19 +2,14 @@
 #include <vscpplib.hpp>
 #include <string_view>
 #include <sstream>
-#include <cstring>
 #include "catch.hpp"
 
 TEST_CASE("fopen", "[io]") {
     int r;
-    FILE *fp;
+    FILE *fp = nullptr;
     vsc::stdio_ptr _fp;
 
-#if defined(_WIN32)
-    r = vsc_fopen("NUL", "rb", &fp);
-#else
-    r = vsc_fopen("/dev/null", "rb", &fp);
-#endif
+    r = vsc_fopen(VSC_DEVNULL, "rb", &fp);
     _fp.reset(fp);
     REQUIRE(r == 0);
 }
