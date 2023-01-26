@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - run: cmake -B build -DCMAKE_BUILD_TYPE=MinSizeRel
       - run: cmake --build build
       - run: ./build/tests/vsclib_tests
@@ -39,8 +37,6 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - run: cmake -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=MinSizeRel
       - run: cmake --build build
       - run: .\build\tests\Debug\vsclib_tests.exe
@@ -49,8 +45,6 @@ jobs:
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
       - run: cmake -B build -DCMAKE_BUILD_TYPE=MinSizeRel
       - run: cmake --build build
       - run: ./build/tests/vsclib_tests
