@@ -21,6 +21,8 @@
 #ifndef _VSCLIB_MACROS_H
 #define _VSCLIB_MACROS_H
 
+#define VSC_ASIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
 #define VSC_U8(v) ((unsigned)(v) & 0xFFu)
 
 #define VSC_PACKU32(a, b, c, d) \
