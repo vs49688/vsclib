@@ -49,6 +49,12 @@
 /** \brief Stack underflow. */
 #define VSC_ERROR_STACKUFLOW VSC_MKERR('S', 'U', 'F')
 
+/** \brief Unknown error. */
+#define VSC_ERROR_UNKNOWN VSC_MKERR('U', 'N', 'K')
+
+/** \brief This is a bug. */
+#define VSC_ERROR_BUG VSC_MKERR('B', 'U', 'G')
+
 static_assert(VSC_ERROR(0xFFFF)           < 0, "VSC_ERROR() >= 0");
 static_assert(VSC_MKERR(0xFF, 0xFF, 0xFF) < 0, "VSC_MKERR() >= 0");
 static_assert(VSC_ERROR(0x1FFFF) == VSC_ERROR(0xFFFF), "VSC_ERROR(0x1FFFF) != VSC_ERROR(0xFFFF)");
