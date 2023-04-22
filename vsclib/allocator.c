@@ -47,7 +47,7 @@ typedef struct MemHeader {
 
 static MemHeader *mem2hdr(void *p)
 {
-    MemHeader *hdr = (MemHeader*)p - 1;
+    MemHeader *hdr = (MemHeader *)p - 1;
     vsc_assert(hdr->sig == MEMHDR_SIG);
     return hdr;
 }
@@ -55,8 +55,8 @@ static MemHeader *mem2hdr(void *p)
 static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
 {
     MemHeader *hdr = NULL, *nhdr;
-    uint8_t *p;
-    size_t reqsize, oldsize = 0;
+    uint8_t   *p;
+    size_t     reqsize, oldsize = 0;
 
     (void)user;
     vsc_assert(VSC_IS_POT(alignment));
@@ -80,15 +80,15 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
     if(p == NULL)
         return VSC_ERROR(ENOMEM);
 
-    nhdr = (MemHeader*)p;
-    p   += sizeof(MemHeader);
+    nhdr = (MemHeader *)p;
+    p += sizeof(MemHeader);
 
     vsc_assert(VSC_IS_ALIGNED(p, alignment));
     vsc_assert(VSC_IS_ALIGNED(nhdr, VSC_ALIGNOF(MemHeader)));
 
-    //nhdr->size      = _aligned_msize(nhdr, alignment, sizeof(MemHeader)) - sizeof(MemHeader);
-    nhdr->size      = size; /* NB: I've never seen this differ from the above. */
-    nhdr->sig       = MEMHDR_SIG;
+    // nhdr->size      = _aligned_msize(nhdr, alignment, sizeof(MemHeader)) - sizeof(MemHeader);
+    nhdr->size = size; /* NB: I've never seen this differ from the above. */
+    nhdr->sig  = MEMHDR_SIG;
 
     if(flags & VSC_ALLOC_ZERO && nhdr->size > oldsize)
         memset(p + oldsize, 0, nhdr->size - oldsize);
@@ -116,9 +116,9 @@ static size_t size_(void *p, void *user)
 }
 
 const VscAllocator vsclib_system_allocator = {
-    .alloc     = malloc_,
-    .free      = free_,
-    .size      = size_,
+    .alloc = malloc_,
+    .free  = free_,
+    .size  = size_,
     /* FIXME: See if I need to use MEMORY_ALLOCATION_ALIGNMENT on Windows */
     .alignment = VSC_ALIGNOF(vsc_max_align_t),
     .user      = NULL,

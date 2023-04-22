@@ -20,23 +20,23 @@
 
 /* From https://stackoverflow.com/a/62371749 */
 #if defined(_MSC_VER)
-#	undef _CRT_INTERNAL_NONSTDC_NAMES
-#	define _CRT_INTERNAL_NONSTDC_NAMES 1
-#	include <sys/stat.h>
-#	if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
-#		define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
-#	endif
-#	if !defined(S_ISDIR) && defined(S_IFMT) && defined(S_IFDIR)
-#		define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
-#	endif
+#undef _CRT_INTERNAL_NONSTDC_NAMES
+#define _CRT_INTERNAL_NONSTDC_NAMES 1
+#include <sys/stat.h>
+#if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
+#define S_ISREG(m) (((m)&S_IFMT) == S_IFREG)
+#endif
+#if !defined(S_ISDIR) && defined(S_IFMT) && defined(S_IFDIR)
+#define S_ISDIR(m) (((m)&S_IFMT) == S_IFDIR)
+#endif
 #else
-#	include <sys/stat.h>
+#include <sys/stat.h>
 #endif
 
 #if defined(__linux__)
-#	include <linux/fs.h>
-#	include <sys/ioctl.h>
-#	include <sys/types.h>
+#include <linux/fs.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
 #endif
 
 #include <vsclib/assert.h>
@@ -44,12 +44,11 @@
 #include <vsclib/mem.h>
 #include <vsclib/io.h>
 
-
 static const VscFreadallState default_state = {
-	.file_size  = 0,
-	.blk_size   = 4096,
-	.bytes_read = 0,
-	.statbuf    = { 0 },
+    .file_size  = 0,
+    .blk_size   = 4096,
+    .bytes_read = 0,
+    .statbuf    = {0},
 };
 
 /* Use ioctl() to get the size of a block device. */
@@ -91,7 +90,7 @@ static int get_blksize_ioctl(int fd, vsc_blksize_t *blksize)
 /* NB: This doesn't restore the stream to its original position. */
 static int get_size_seektell(FILE *f, size_t *size)
 {
-    int r;
+    int       r;
     vsc_off_t off;
     if((r = vsc_fseeko(f, 0, SEEK_END)) < 0)
         return r;
@@ -185,12 +184,13 @@ int vsc_freadall_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_
     return vsc_freadalla_ex(ptr, size, f, init_proc, chunk_proc, user, &vsclib_system_allocator);
 }
 
-int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_proc, VscFreadallChunkProc chunk_proc, void *user, const VscAllocator *a)
+int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_proc, VscFreadallChunkProc chunk_proc,
+                     void *user, const VscAllocator *a)
 {
     VscFreadallState state, user_state;
-    vsc_off_t save;
-    char *p;
-    int r;
+    vsc_off_t        save;
+    char            *p;
+    int              r;
 
     if(ptr == NULL || size == NULL || f == NULL || init_proc == NULL || chunk_proc == NULL || a == NULL)
         return VSC_ERROR(EINVAL);
@@ -239,7 +239,7 @@ int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init
     state.file_size = user_state.file_size;
     state.blk_size  = user_state.blk_size;
 
-    for(;!feof(f) && !ferror(f);) {
+    for(; !feof(f) && !ferror(f);) {
         if(p == NULL || state.bytes_read >= state.file_size) {
             void *_p;
 

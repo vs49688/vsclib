@@ -56,7 +56,7 @@ int vsc_xalloc_ex(const VscAllocator *a, void **ptr, size_t size, uint32_t flags
 
     /* If our allocator can't handle realloc'ing, fake it. */
     if(ret == VSC_ERROR(ENOTSUP) && (flags & VSC_ALLOC_REALLOC)) {
-        void *p = *ptr;
+        void  *p     = *ptr;
         size_t msize = a->size(*ptr, a->user);
 
         /* Lucky! */
@@ -80,7 +80,6 @@ int vsc_xalloc_ex(const VscAllocator *a, void **ptr, size_t size, uint32_t flags
     vsc_assert(VSC_IS_ALIGNED(*ptr, alignment));
     return 0;
 }
-
 
 void vsc_xfree(const VscAllocator *a, void *p)
 {
@@ -151,7 +150,6 @@ void vsc_aligned_free(void *ptr)
     vsc_xfree(&vsclib_system_allocator, ptr);
 }
 
-
 /*
  * Ported from https://github.com/llvm-mirror/libcxx/blob/6952d1478ddd5a1870079d01f1a0e1eea5b09a1a/src/memory.cpp#L217
  */
@@ -159,13 +157,13 @@ void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space)
 {
     void *r = NULL;
     if(size <= *space) {
-        char *p1 = *ptr;
-        char *p2 = (char*)((size_t)(p1 + (alignment - 1)) & -alignment);
-        size_t d = (size_t)(p2 - p1);
+        char  *p1 = *ptr;
+        char  *p2 = (char *)((size_t)(p1 + (alignment - 1)) & -alignment);
+        size_t d  = (size_t)(p2 - p1);
 
         if(d <= *space - size) {
-            r       = p2;
-            *ptr    = r;
+            r    = p2;
+            *ptr = r;
             *space -= d;
         }
     }
@@ -175,9 +173,9 @@ void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space)
 
 int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks, uint32_t flags)
 {
-    int r;
-    size_t reqsize, initial_align;
-    void *block = NULL, *lastptr = NULL;
+    int                      r;
+    size_t                   reqsize, initial_align;
+    void                    *block = NULL, *lastptr = NULL;
     const VscBlockAllocInfo *lastblock = NULL;
 
     if(blockinfo == NULL || nblocks < 1 || ptr == NULL || a == NULL)
@@ -197,17 +195,17 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
     }
 
     for(size_t i = 1; i < nblocks; ++i) {
-        const VscBlockAllocInfo *bai = blockinfo + i;
-        void *p      = (void*)reqsize;
-        size_t size  = bai->element_size * bai->count;
-        size_t space = ~(size_t)0;
-        size_t align = bai->alignment == 0 ? a->alignment : bai->alignment;
-        size_t pad;
+        const VscBlockAllocInfo *bai   = blockinfo + i;
+        void                    *p     = (void *)reqsize;
+        size_t                   size  = bai->element_size * bai->count;
+        size_t                   space = ~(size_t)0;
+        size_t                   align = bai->alignment == 0 ? a->alignment : bai->alignment;
+        size_t                   pad;
 
         vsc_align(align, size, &p, &space);
 
-        pad      = ~(size_t)0 - space;
-        size    += pad;
+        pad = ~(size_t)0 - space;
+        size += pad;
         reqsize += size;
     }
 
@@ -215,15 +213,15 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
         return r;
 
     /* Pass 2: Calculate the aligned pointers */
-    ptr[0]    = lastptr = block;
-    lastblock = blockinfo;
+    ptr[0] = lastptr = block;
+    lastblock        = blockinfo;
     if(blockinfo[0].out != NULL)
         *blockinfo[0].out = block;
 
     for(size_t i = 1; i < nblocks; ++i) {
         const VscBlockAllocInfo *curr = blockinfo + i;
-        size_t prev_size, curr_size, space, align;
-        void *p;
+        size_t                   prev_size, curr_size, space, align;
+        void                    *p;
 
         curr_size = curr->element_size * curr->count;
 
@@ -240,7 +238,7 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
         }
 
         prev_size = lastblock->element_size * lastblock->count;
-        p         = (void*)((uintptr_t)lastptr + prev_size);
+        p         = (void *)((uintptr_t)lastptr + prev_size);
         space     = reqsize - ((uintptr_t)p - (uintptr_t)ptr[0]);
         align     = curr->alignment == 0 ? a->alignment : curr->alignment;
 

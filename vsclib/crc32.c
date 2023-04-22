@@ -19,6 +19,7 @@
  */
 #include <vsclib/hash.h>
 
+// clang-format off
 static const uint32_t crc32_tab[256] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba,
     0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
@@ -152,11 +153,12 @@ static const uint32_t crc32c_tab[256] = {
     0x79b737ba, 0x8bdcb4b9, 0x988c474d, 0x6ae7c44e,
     0xbe2da0a5, 0x4c4623a6, 0x5f16d052, 0xad7d5351,
 };
+// clang-format on
 
 static uint32_t crc32x(const void *buf, size_t size, const uint32_t *table)
 {
-    const uint8_t *p = buf;
-    uint32_t crc = ~0U;
+    const uint8_t *p   = buf;
+    uint32_t       crc = ~0U;
 
     while(size--)
         crc = table[(crc ^ *p++) & 0xFF] ^ (crc >> 8);

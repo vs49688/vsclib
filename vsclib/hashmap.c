@@ -28,11 +28,11 @@
 /* This should be optimised out in Release builds. */
 static inline void validate(const VscHashMap *hm)
 {
-    vsc_assert(hm               != NULL);
-    vsc_assert(hm->size         <= hm->num_buckets);
-    vsc_assert(hm->hash_proc    != NULL);
+    vsc_assert(hm != NULL);
+    vsc_assert(hm->size <= hm->num_buckets);
+    vsc_assert(hm->hash_proc != NULL);
     vsc_assert(hm->compare_proc != NULL);
-    vsc_assert(hm->allocator    != NULL);
+    vsc_assert(hm->allocator != NULL);
     vsc_assert(hm->load_min.den > 0);
     vsc_assert(hm->load_min.num < hm->load_min.den);
     vsc_assert(hm->load_max.den > 0);
@@ -67,17 +67,14 @@ void vsc_hashmap_inita(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompar
     vsc_assert(compare != NULL);
     vsc_assert(a != NULL);
 
-    hm->size          = 0,
-    hm->num_buckets   = 0,
-    hm->buckets       = NULL,
-    hm->resize_policy = VSC_HASHMAP_RESIZE_LOAD_FACTOR,
-    hm->load_min.num  = 1;
-    hm->load_min.den  = 2;
-    hm->load_max.num  = 3;
-    hm->load_max.den  = 4;
-    hm->hash_proc     = hash;
-    hm->compare_proc  = compare;
-    hm->allocator     = a;
+    hm->size = 0, hm->num_buckets = 0, hm->buckets = NULL, hm->resize_policy = VSC_HASHMAP_RESIZE_LOAD_FACTOR,
+    hm->load_min.num = 1;
+    hm->load_min.den = 2;
+    hm->load_max.num = 3;
+    hm->load_max.den = 4;
+    hm->hash_proc    = hash;
+    hm->compare_proc = compare;
+    hm->allocator    = a;
 }
 
 void vsc_hashmap_init(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompareProc compare)
@@ -134,21 +131,24 @@ void vsc_hashmap_reset(VscHashMap *hm)
 
     vsc_xfree(hm->allocator, hm->buckets);
     hm->num_buckets = 0;
-    hm->buckets = NULL;
+    hm->buckets     = NULL;
 }
 
 /*
  * Circularly loop over each of the buckets, starting at index `start`.
  */
-#define LOOP_BUCKETS(hm, idxname, start) \
-    for(size_t _i = 0, (idxname) = (start) % (hm)->num_buckets; _i < (hm)->num_buckets; ++_i, (idxname) = ((idxname) + 1) % (hm)->num_buckets)
+#define LOOP_BUCKETS(hm, idxname, start)                                                \
+    for(size_t _i = 0, (idxname) = (start) % (hm)->num_buckets; _i < (hm)->num_buckets; \
+        ++_i, (idxname)          = ((idxname) + 1) % (hm)->num_buckets)
 
-static VscHashMapBucket *add_or_replace_bucket(const VscHashMap *hm, VscHashMapBucket *buckets, size_t n, const VscHashMapBucket *bkt)
+static VscHashMapBucket *add_or_replace_bucket(const VscHashMap *hm, VscHashMapBucket *buckets, size_t n,
+                                               const VscHashMapBucket *bkt)
 {
     if(n == 0)
         return NULL;
 
-    LOOP_BUCKETS(hm, index, bkt->hash % n) {
+    LOOP_BUCKETS(hm, index, bkt->hash % n)
+    {
         VscHashMapBucket *b = buckets + index;
 
         /* Shortcut: use first empty bucket. */
@@ -228,7 +228,7 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
     memcpy(hm->buckets, tmpbkts, sizeof(VscHashMapBucket) * nelem);
     vsc_xfree(hm->allocator, tmpbkts);
 
-    //fprintf(stderr, "Resizing to %zu\n", hm->num_buckets);
+    // fprintf(stderr, "Resizing to %zu\n", hm->num_buckets);
     return 0;
 }
 
@@ -249,7 +249,7 @@ static inline int intceil(size_t *result, size_t num, size_t den)
 static int maybe_resize(VscHashMap *hm)
 {
     size_t thresh, minreq, tmp;
-    int r;
+    int    r;
 
     /*
      * Make sure the threshold calculation doesn't overflow.
@@ -295,7 +295,7 @@ static int maybe_resize(VscHashMap *hm)
 int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
 {
     VscHashMapBucket tmpbkt;
-    int r;
+    int              r;
 
     validate(hm);
 
@@ -333,7 +333,8 @@ void *vsc_hashmap_find_by_hash(const VscHashMap *hm, vsc_hash_t hash)
     if(hm->num_buckets == 0)
         return NULL;
 
-    LOOP_BUCKETS(hm, index, hash % hm->num_buckets) {
+    LOOP_BUCKETS(hm, index, hash % hm->num_buckets)
+    {
         const VscHashMapBucket *bkt = hm->buckets + index;
 
         if(bkt->hash == VSC_INVALID_HASH)
@@ -365,7 +366,8 @@ static const VscHashMapBucket *find_bucket(const VscHashMap *hm, const void *key
      *    - This is O(n), but should almost never happen if your
      *      hash function is good enough and there's enough buckets.
      */
-    LOOP_BUCKETS(hm, index, hash % hm->num_buckets) {
+    LOOP_BUCKETS(hm, index, hash % hm->num_buckets)
+    {
         const VscHashMapBucket *bkt = hm->buckets + index;
 
         /* Stop at first empty bucket, item isn't here. */
@@ -400,10 +402,10 @@ void *vsc_hashmap_find(const VscHashMap *hm, const void *key)
 void *vsc_hashmap_remove(VscHashMap *hm, const void *key)
 {
     VscHashMapBucket *bkt;
-    size_t index;
-    void *val;
+    size_t            index;
+    void             *val;
 
-    bkt = (VscHashMapBucket*)find_bucket(hm, key, &index);
+    bkt = (VscHashMapBucket *)find_bucket(hm, key, &index);
     if(bkt == NULL)
         return NULL;
 
@@ -411,8 +413,9 @@ void *vsc_hashmap_remove(VscHashMap *hm, const void *key)
     reset_bucket(bkt);
 
     /* Search through the remaining buckets, to see if we can fill the gap. */
-    LOOP_BUCKETS(hm, cidx, index + 1) {
-        size_t nidx;
+    LOOP_BUCKETS(hm, cidx, index + 1)
+    {
+        size_t            nidx;
         VscHashMapBucket *bkt2 = hm->buckets + cidx;
 
         /* Have an empty bucket, we're done here! */
@@ -425,7 +428,7 @@ void *vsc_hashmap_remove(VscHashMap *hm, const void *key)
             *bkt = *bkt2;
             reset_bucket(bkt2);
             index = cidx;
-            bkt = bkt2;
+            bkt   = bkt2;
         }
     }
 

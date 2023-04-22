@@ -18,10 +18,10 @@
  * limitations under the License.
  */
 #if defined(WIN32)
-#	define WIN32_LEAN_AND_MEAN
-#	include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #else
-#   include <unistd.h>
+#include <unistd.h>
 #endif
 
 #include <vsclib/error.h>
@@ -30,7 +30,7 @@
 #include <vsclib/mem.h>
 
 #if defined(_WIN32)
-#   include "util_win32.h"
+#include "util_win32.h"
 #endif
 
 int vsc_chdir(const char *path)
@@ -42,7 +42,7 @@ int vsc_chdira(const char *path, const VscAllocator *a)
 {
 #if defined(_WIN32)
     wchar_t *wpath = NULL;
-    int r;
+    int      r;
 
     if((r = vsc_cstrtowstra(path, CP_UTF8, &wpath, NULL, a)) < 0)
         return r;

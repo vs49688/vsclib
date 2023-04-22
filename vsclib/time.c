@@ -19,16 +19,16 @@
  */
 
 #if defined(_WIN32)
-#   define WIN32_LEAN_AND_MEAN
-#   include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #elif defined(__MACH__)
-#   include <mach/mach_time.h>
+#include <mach/mach_time.h>
 #elif defined(__unix__) || defined(__unix)
-#   if !defined(_POSIX_C_SOURCE)
-#       define _POSIX_C_SOURCE 199309L
-#   endif
-#   include <unistd.h>
-#   include <sys/time.h>
+#if !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 199309L
+#endif
+#include <unistd.h>
+#include <sys/time.h>
 #endif
 
 #include <time.h>
@@ -58,7 +58,7 @@ vsc_counter_t vsc_counter_ns(void)
 
     return ((vsc_counter_t)ticks.QuadPart * 1000000000) / frequency.QuadPart;
 #elif defined(__MACH__)
-    static mach_timebase_info_data_t timebase = { .numer = 0, .denom = 0 };
+    static mach_timebase_info_data_t timebase = {.numer = 0, .denom = 0};
     if(timebase.numer == 0 && timebase.denom == 0) {
         if(mach_timebase_info(&timebase) != KERN_SUCCESS)
             abort(); // why?
@@ -66,7 +66,7 @@ vsc_counter_t vsc_counter_ns(void)
 
     return (mach_continuous_time() * timebase.numer) / timebase.denom;
 #elif _POSIX_C_SOURCE >= 199309L && defined(_POSIX_MONOTONIC_CLOCK) && _POSIX_MONOTONIC_CLOCK >= 0
-    struct timespec ts = { .tv_sec = 0, .tv_nsec = 0 };
+    struct timespec ts = {.tv_sec = 0, .tv_nsec = 0};
 
 #if defined(__linux__) && defined(CLOCK_MONOTONIC_RAW)
     if(clock_gettime(CLOCK_MONOTONIC_RAW, &ts) == 0)

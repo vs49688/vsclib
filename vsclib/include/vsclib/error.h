@@ -26,16 +26,16 @@
 #include "macros.h"
 
 #if EINVAL < 0
-#   define VSC_ERROR(x) (-(-(x & 0xFFFF)))
+#define VSC_ERROR(x) (-(-(x & 0xFFFF)))
 #else
-#   define VSC_ERROR(x)   (-(x & 0xFFFF))
+#define VSC_ERROR(x) (-(x & 0xFFFF))
 #endif
 
-#define VSC_UNERROR(err) (-(err) & 0xFFFF)
+#define VSC_UNERROR(err)         (-(err)&0xFFFF)
 
-#define VSC_MKERR(b, c, d) (-(int)VSC_FOURCCBE(' ', b, c, d))
+#define VSC_MKERR(b, c, d)       (-(int)VSC_FOURCCBE(' ', b, c, d))
 
-#define VSC_ERROR_IS_SYSTEM(err) (!(-(err) & VSC_MKERR(0, 0, 0)))
+#define VSC_ERROR_IS_SYSTEM(err) (!(-(err)&VSC_MKERR(0, 0, 0)))
 
 /** \brief Success. */
 #define VSC_ERROR_SUCCESS 0
@@ -55,7 +55,7 @@
 /** \brief This is a bug. */
 #define VSC_ERROR_BUG VSC_MKERR('B', 'U', 'G')
 
-static_assert(VSC_ERROR(0xFFFF)           < 0, "VSC_ERROR() >= 0");
+static_assert(VSC_ERROR(0xFFFF) < 0, "VSC_ERROR() >= 0");
 static_assert(VSC_MKERR(0xFF, 0xFF, 0xFF) < 0, "VSC_MKERR() >= 0");
 static_assert(VSC_ERROR(0x1FFFF) == VSC_ERROR(0xFFFF), "VSC_ERROR(0x1FFFF) != VSC_ERROR(0xFFFF)");
 static_assert(VSC_ERROR_IS_SYSTEM(VSC_ERROR(0xFFFF)), "!VSC_ERROR_IS_SYSTEM(VSC_ERROR()");

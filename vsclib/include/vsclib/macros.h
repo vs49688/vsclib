@@ -21,15 +21,13 @@
 #ifndef _VSCLIB_MACROS_H
 #define _VSCLIB_MACROS_H
 
-#define VSC_ASIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+#define VSC_ASIZE(arr)           (sizeof(arr) / sizeof((arr)[0]))
 
-#define VSC_U8(v) ((unsigned)(v) & 0xFFu)
+#define VSC_U8(v)                ((unsigned)(v)&0xFFu)
 
-#define VSC_PACKU32(a, b, c, d) \
-    ((VSC_U8(a) << 24u) | (VSC_U8(b) << 16u) | \
-     (VSC_U8(c) <<  8u) | (VSC_U8(d) <<  0u))
+#define VSC_PACKU32(a, b, c, d)  ((VSC_U8(a) << 24u) | (VSC_U8(b) << 16u) | (VSC_U8(c) << 8u) | (VSC_U8(d) << 0u))
 
-#define VSC_FOURCC(a, b, c, d) VSC_PACKU32(d, c, b, a)
+#define VSC_FOURCC(a, b, c, d)   VSC_PACKU32(d, c, b, a)
 
 #define VSC_FOURCCBE(a, b, c, d) VSC_PACKU32(a, b, c, d)
 

@@ -33,9 +33,9 @@ static int vsc_isprint(int c)
 
 int vsc_vfperror(FILE *fp, int err, const char *fmt, va_list ap)
 {
-    char errbuf[128];
+    char        errbuf[128];
     const char *errmsg;
-    int r;
+    int         r;
 
     if(vfprintf(fp, fmt, ap) < 0)
         return VSC_ERROR(errno);
@@ -50,13 +50,23 @@ int vsc_vfperror(FILE *fp, int err, const char *fmt, va_list ap)
             return VSC_ERROR(errno);
 #endif
         errmsg = errbuf;
-    } else switch(err) {
-        case VSC_ERROR_SUCCESS:    errmsg = "Success";         break;
-        case VSC_ERROR_EOF:        errmsg = "End of file";     break;
-        case VSC_ERROR_STACKOFLOW: errmsg = "Stack overflow";  break;
-        case VSC_ERROR_STACKUFLOW: errmsg = "Stack underflow"; break;
-        default: break;
-    }
+    } else
+        switch(err) {
+            case VSC_ERROR_SUCCESS:
+                errmsg = "Success";
+                break;
+            case VSC_ERROR_EOF:
+                errmsg = "End of file";
+                break;
+            case VSC_ERROR_STACKOFLOW:
+                errmsg = "Stack overflow";
+                break;
+            case VSC_ERROR_STACKUFLOW:
+                errmsg = "Stack underflow";
+                break;
+            default:
+                break;
+        }
 
     if(errmsg != NULL) {
         r = fprintf(fp, ": %s\n", errmsg);
@@ -64,8 +74,8 @@ int vsc_vfperror(FILE *fp, int err, const char *fmt, va_list ap)
         unsigned char c[4] = {
             [0] = ((-err) >> 24) & 0xFF,
             [1] = ((-err) >> 16) & 0xFF,
-            [2] = ((-err) >>  8) & 0xFF,
-            [3] = ((-err) >>  0) & 0xFF,
+            [2] = ((-err) >> 8) & 0xFF,
+            [3] = ((-err) >> 0) & 0xFF,
         };
 
         if(!vsc_isprint(c[0]) || !vsc_isprint(c[1]) || !vsc_isprint(c[2]) || !vsc_isprint(c[3])) {
@@ -83,7 +93,7 @@ int vsc_vfperror(FILE *fp, int err, const char *fmt, va_list ap)
 
 int vsc_fperror(FILE *fp, int err, const char *fmt, ...)
 {
-    int r;
+    int     r;
     va_list ap;
     va_start(ap, fmt);
     r = vsc_vfperror(fp, err, fmt, ap);

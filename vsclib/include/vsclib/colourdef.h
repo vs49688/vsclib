@@ -25,15 +25,12 @@
 
 /* https://www.mail-archive.com/pixman@lists.freedesktop.org/msg01866.html */
 
-#define VSC_COLOUR_C5_TO_C8(c) ((((c) & 0x1Fu) * 527u + 23u) >> 6u)
-#define VSC_COLOUR_C6_TO_C8(c) ((((c) & 0x3Fu) * 259u + 33u) >> 6u)
-#define VSC_COLOUR_C1_TO_C8(c) ((((c) & 0x01u) * 255u +  0u) >> 0u)
+#define VSC_COLOUR_C5_TO_C8(c) ((((c)&0x1Fu) * 527u + 23u) >> 6u)
+#define VSC_COLOUR_C6_TO_C8(c) ((((c)&0x3Fu) * 259u + 33u) >> 6u)
+#define VSC_COLOUR_C1_TO_C8(c) ((((c)&0x01u) * 255u + 0u) >> 0u)
 
 #define VSC_COLOUR_ARGB1555(a, r, g, b) \
-    (((VSC_U8(a) >> 7u) << 15u) |  \
-     ((VSC_U8(r) >> 3u) << 10u) |  \
-     ((VSC_U8(g) >> 3u) <<  5u) |  \
-     ((VSC_U8(b) >> 3u) <<  0u))
+    (((VSC_U8(a) >> 7u) << 15u) | ((VSC_U8(r) >> 3u) << 10u) | ((VSC_U8(g) >> 3u) << 5u) | ((VSC_U8(b) >> 3u) << 0u))
 
 #define VSC_COLOUR_XRGB1555(r, g, b)    VSC_COLOUR_ARGB1555(0xFFu, r, g, b)
 
@@ -43,11 +40,10 @@
 
 #define VSC_COLOUR_RGBA8888(r, g, b, a) VSC_PACKU32(r, g, b, a)
 
-#define VSC_COLOUR_RGB565(r, g, b) \
-    (((VSC_U8(r) >> 3u) << 11u) | \
-     ((VSC_U8(g) >> 2u) <<  5u) | \
-     ((VSC_U8(b) >> 3u) <<  0u))
+#define VSC_COLOUR_RGB565(r, g, b)      (((VSC_U8(r) >> 3u) << 11u) | ((VSC_U8(g) >> 2u) << 5u) | ((VSC_U8(b) >> 3u) << 0u))
 
-typedef struct VscColour32 { uint8_t r, g, b, a; } VscColour32;
+typedef struct VscColour32 {
+    uint8_t r, g, b, a;
+} VscColour32;
 
 #endif /* _VSCLIB_COLOURDEF_H */

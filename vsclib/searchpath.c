@@ -59,20 +59,20 @@ int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
     /* Get PATH. If empty, fall back to _CS_PATH. */
     const char *path = getenv("PATH");
     const char *pend;
-    char *buf;
-    size_t dlen = 0, flen;
-    uid_t uid;
-    gid_t gid;
+    char       *buf;
+    size_t      dlen = 0, flen;
+    uid_t       uid;
+    gid_t       gid;
 
     if(path == NULL || path[0] == '\0') {
-        char *_path;
+        char  *_path;
         size_t n;
 
         if((n = confstr(_CS_PATH, NULL, 0)) == 0)
             return VSC_ERROR(EINVAL);
 
         /* If _CS_PATH overflows the stack then something's wrong. */
-        _path = (char*)alloca(n * sizeof(char));
+        _path = (char *)alloca(n * sizeof(char));
         if(confstr(_CS_PATH, _path, n))
             return VSC_ERROR(EINVAL);
 
@@ -93,7 +93,7 @@ int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
             dlen = dist;
     }
 
-    flen  = strlen(f) + 1; /* /%s */
+    flen = strlen(f) + 1; /* /%s */
     dlen += flen + 1;
 
     if((buf = vsc_xcalloc(a, dlen, sizeof(char))) == NULL)
@@ -102,8 +102,7 @@ int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
     uid = getuid();
     gid = getgid();
 
-    for(const char *o = path, *c = strchr(o, ':'); o < pend; o = c + 1, c = strchr(o, ':'))
-    {
+    for(const char *o = path, *c = strchr(o, ':'); o < pend; o = c + 1, c = strchr(o, ':')) {
         if(c == NULL)
             c = pend;
 

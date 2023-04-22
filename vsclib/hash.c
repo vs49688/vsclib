@@ -29,10 +29,10 @@ vsc_hash_t vsc_hash(const void *data, size_t size)
     if(data == NULL && size != 0)
         return VSC_INVALID_HASH;
 
-    /*
-     * Use whichever one matches the machine's native word type.
-     * See https://stackoverflow.com/a/67223865
-     */
+        /*
+         * Use whichever one matches the machine's native word type.
+         * See https://stackoverflow.com/a/67223865
+         */
 #if defined(_WIN64) || LONG_MAX == 9223372036854775807L
     return XXH3_64bits_withSeed(data, size, 0);
 #else /* LONG_MAX == 2147483647L */

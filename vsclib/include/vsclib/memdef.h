@@ -31,16 +31,16 @@ typedef enum VscAllocFlags {
     /**
      * \brief Memory should be zero'd after allocation.
      */
-    VSC_ALLOC_ZERO         = 1 << 0,
+    VSC_ALLOC_ZERO = 1 << 0,
     /**
      * \brief Allocations must not fail, abort() will be called.
      */
-    VSC_ALLOC_NOFAIL       = 1 << 1,
+    VSC_ALLOC_NOFAIL = 1 << 1,
     /**
      * \brief Memory may be expanded or moved, i.e. realloc(3) semantics.
      * This may not be supported by all allocators.
      */
-    VSC_ALLOC_REALLOC     = 1 << 2,
+    VSC_ALLOC_REALLOC = 1 << 2,
 } VscAllocFlags;
 
 /**
@@ -94,8 +94,7 @@ typedef size_t (*VscAllocatorSizeProc)(void *p, void *user);
 /**
  * \brief A vsclib allocator structure.
  */
-typedef struct
-{
+typedef struct {
     /**
      * \brief Memory allocation callback procedure.
      *
@@ -107,12 +106,12 @@ typedef struct
      * \brief Memory release callback procedure.
      * \sa VscAllocatorFreeProc
      */
-    VscAllocatorFreeProc  free;
+    VscAllocatorFreeProc free;
     /**
      * \brief Memory size callback procedure.
      * \sa VscAllocatorSizeProc
      */
-    VscAllocatorSizeProc  size;
+    VscAllocatorSizeProc size;
 
     /**
      * \brief The default alignment of blocks for this allocator.
@@ -125,7 +124,7 @@ typedef struct
      *
      * This MAY NOT be modified by the allocator.
      */
-    void  *user;
+    void *user;
 } VscAllocator;
 
 /**

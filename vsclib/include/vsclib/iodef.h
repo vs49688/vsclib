@@ -26,40 +26,40 @@
 #include <sys/stat.h>
 
 #if defined(WIN32)
-typedef __int64   vsc_off_t;
-typedef long int  vsc_blksize_t;
+typedef __int64  vsc_off_t;
+typedef long int vsc_blksize_t;
 #else
 typedef off_t     vsc_off_t;
 typedef blksize_t vsc_blksize_t;
 #endif
 
 typedef struct VscFreadallState {
-	/**
-	* @brief The size of the file, in bytes.
-	* @remark If this is 0, then the file is either an actual 0-byte
-	*                 file, or the size cannot be determined.
-	*/
-	size_t          file_size;
+    /**
+     * @brief The size of the file, in bytes.
+     * @remark If this is 0, then the file is either an actual 0-byte
+     *                 file, or the size cannot be determined.
+     */
+    size_t file_size;
 
-	/**
-	* @brief Optimal block size for filesystem I/O.
-	*
-	* @remark This is maps directly to the `st_blocksize` field of `struct stat`.
-	* @return This may be different to the `statbuf::st_blocksize` field. If this
-	*         is the case, then alternative methods were used in order to find the
-	*         block size. The value in `statbuf` is the original.
-	*/
-	vsc_blksize_t       blk_size;
+    /**
+     * @brief Optimal block size for filesystem I/O.
+     *
+     * @remark This is maps directly to the `st_blocksize` field of `struct stat`.
+     * @return This may be different to the `statbuf::st_blocksize` field. If this
+     *         is the case, then alternative methods were used in order to find the
+     *         block size. The value in `statbuf` is the original.
+     */
+    vsc_blksize_t blk_size;
 
-	/**
-	* @brief The number of bytes read so far.
-	*/
-	size_t          bytes_read;
+    /**
+     * @brief The number of bytes read so far.
+     */
+    size_t bytes_read;
 
-	/**
-	* @brief A `struct stat` of the file.
-	*/
-	struct stat statbuf;
+    /**
+     * @brief A `struct stat` of the file.
+     */
+    struct stat statbuf;
 } VscFreadallState;
 
 typedef int (*VscFreadallInitProc)(VscFreadallState *state, void *user);

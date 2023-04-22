@@ -23,9 +23,9 @@
 #include <errno.h>
 
 #if !defined(_WIN32)
-#   include <sys/types.h>
-#   include <grp.h>
-#   include <pwd.h>
+#include <sys/types.h>
+#include <grp.h>
+#include <pwd.h>
 #endif
 
 #include <stddef.h>
@@ -44,8 +44,8 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
     return VSC_ERROR(ENOTSUP);
 #else
     size_t buflen = 2048; /* 2048 is enough for the HPC. */
-    char *buf = NULL;
-    int ret = 0, rc = 0;
+    char  *buf    = NULL;
+    int    ret = 0, rc = 0;
 
     vsc_assert(passwd != NULL);
     vsc_assert(proc != NULL);
@@ -57,7 +57,7 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
 
     for(struct group *g = NULL;;) {
         struct group grp;
-        void *buf2;
+        void        *buf2;
 
         if(buf == NULL || rc == ERANGE) {
             if((buf2 = vsc_xrealloc(a, buf, buflen)) == NULL) {
@@ -86,7 +86,7 @@ int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, 
             continue;
         }
 
-        for(char * const *u = g->gr_mem; *u != NULL; ++u) {
+        for(char *const *u = g->gr_mem; *u != NULL; ++u) {
             if(strcmp(passwd->pw_name, *u) != 0)
                 continue;
 

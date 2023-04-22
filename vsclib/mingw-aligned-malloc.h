@@ -36,7 +36,6 @@ void *vsci_aligned_offset_realloc(void *memblock, size_t size, size_t alignment,
 
 void *vsci_aligned_realloc(void *memblock, size_t size, size_t alignment);
 
-
 #if defined(__cplusplus)
 }
 #endif

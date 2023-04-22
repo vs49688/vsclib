@@ -19,7 +19,7 @@
  */
 #include <vsclib/platform.h>
 #if defined(VSC_HAVE_STPCPY) || defined(VSC_HAVE_STRCPY)
-#    include <string.h>
+#include <string.h>
 #endif
 #include <vsclib/string.h>
 

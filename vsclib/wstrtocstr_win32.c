@@ -30,8 +30,8 @@
 
 int vsc_wstrtocstra(const wchar_t *ws, unsigned int cp, char **s, size_t *len, const VscAllocator *a)
 {
-    int x;
-    char *_s;
+    int    x;
+    char  *_s;
     size_t _len = wcslen(ws) + 1;
 
     if(_len >= INT_MAX)

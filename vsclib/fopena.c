@@ -18,8 +18,8 @@
  * limitations under the License.
  */
 #if defined(WIN32)
-#	define WIN32_LEAN_AND_MEAN
-#	include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #endif
 
 #include <vsclib/error.h>
@@ -31,8 +31,8 @@ int vsc_fopena(const char *pathname, const char *mode, FILE **fp, const VscAlloc
 {
 #if defined(_WIN32)
     wchar_t *wpath = NULL, *wmode = NULL;
-    FILE *f = NULL;
-    int r;
+    FILE    *f = NULL;
+    int      r;
 
     if((r = vsc_cstrtowstra(pathname, CP_UTF8, &wpath, NULL, a)) < 0)
         return r;

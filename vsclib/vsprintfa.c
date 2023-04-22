@@ -24,8 +24,8 @@
 
 char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap)
 {
-    char *s;
-    int nreq;
+    char   *s;
+    int     nreq;
     va_list ap2;
 
     va_copy(ap2, ap);
@@ -54,7 +54,7 @@ char *vsc_vasprintf(const char *fmt, va_list ap)
 
 char *vsc_asprintfa(const VscAllocator *a, const char *fmt, ...)
 {
-    char *s;
+    char   *s;
     va_list ap;
 
     va_start(ap, fmt);
@@ -65,7 +65,7 @@ char *vsc_asprintfa(const VscAllocator *a, const char *fmt, ...)
 
 char *vsc_asprintf(const char *fmt, ...)
 {
-    char *s;
+    char   *s;
     va_list ap;
 
     va_start(ap, fmt);

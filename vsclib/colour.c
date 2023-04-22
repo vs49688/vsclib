@@ -23,8 +23,8 @@ VscColour32 vsc_colour_unpack_rgb565(uint16_t pixel)
 {
     return (VscColour32){
         .r = VSC_COLOUR_C5_TO_C8((pixel & 0xF800u) >> 11u),
-        .g = VSC_COLOUR_C6_TO_C8((pixel & 0x07E0u) >>  5u),
-        .b = VSC_COLOUR_C5_TO_C8((pixel & 0x001Fu) >>  0u),
+        .g = VSC_COLOUR_C6_TO_C8((pixel & 0x07E0u) >> 5u),
+        .b = VSC_COLOUR_C5_TO_C8((pixel & 0x001Fu) >> 0u),
         .a = 0xFFu,
     };
 }
@@ -33,8 +33,8 @@ VscColour32 vsc_colour_unpack_argb1555(uint16_t pixel)
 {
     return (VscColour32){
         .r = VSC_COLOUR_C5_TO_C8((pixel & 0x7C00u) >> 10u),
-        .g = VSC_COLOUR_C5_TO_C8((pixel & 0x03E0u) >>  5u),
-        .b = VSC_COLOUR_C5_TO_C8((pixel & 0x001Fu) >>  0u),
+        .g = VSC_COLOUR_C5_TO_C8((pixel & 0x03E0u) >> 5u),
+        .b = VSC_COLOUR_C5_TO_C8((pixel & 0x001Fu) >> 0u),
         .a = VSC_COLOUR_C1_TO_C8(pixel >> 15u),
     };
 }
@@ -48,8 +48,8 @@ VscColour32 vsc_colour_unpack_argb8888(uint32_t pixel)
 {
     return (VscColour32){
         .r = (uint8_t)((pixel & 0x00FF0000u) >> 16u),
-        .g = (uint8_t)((pixel & 0x0000FF00u) >>  8u),
-        .b = (uint8_t)((pixel & 0x000000FFu) >>  0u),
+        .g = (uint8_t)((pixel & 0x0000FF00u) >> 8u),
+        .b = (uint8_t)((pixel & 0x000000FFu) >> 0u),
         .a = (uint8_t)((pixel & 0xFF000000u) >> 24u),
     };
 }

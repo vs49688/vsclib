@@ -56,7 +56,7 @@ extern "C" {
 struct passwd;
 struct group;
 
-typedef int(*VscEnumGroupsProc)(const struct group *grp, void *user);
+typedef int (*VscEnumGroupsProc)(const struct group *grp, void *user);
 
 int vsc_enum_groups(struct passwd *passwd, VscEnumGroupsProc proc, void *user);
 int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, const VscAllocator *a);

@@ -68,8 +68,8 @@ static inline int vsc_is_aligned(void *p, size_t alignment)
  * I know, we're explicitly doing this.
  */
 #ifdef _MSC_VER
-#   pragma warning(push)
-#   pragma warning(disable: 4146)
+#pragma warning(push)
+#pragma warning(disable : 4146)
 #endif
 
 /**
@@ -101,7 +101,7 @@ static inline void *vsc_align_up(void *p, size_t alignment)
 }
 
 #ifdef _MSC_VER
-#   pragma warning(pop)
+#pragma warning(pop)
 #endif
 
 /**

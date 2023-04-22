@@ -48,7 +48,7 @@ int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b);
 
 void vsc_hashmap_inita(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a);
 void vsc_hashmap_init(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompareProc compare);
-int vsc_hashmap_clear(VscHashMap *hm);
+int  vsc_hashmap_clear(VscHashMap *hm);
 
 /**
  * @brief Configure the minimum and maximum load factors of the hash map.
@@ -87,11 +87,11 @@ void vsc_hashmap_reset(VscHashMap *hm);
  *
  * @remark  This is *not* affected by the current resize policy.
  */
-int vsc_hashmap_resize(VscHashMap *hm, size_t nelem);
-int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value);
-void *vsc_hashmap_find_by_hash(const VscHashMap *hm, vsc_hash_t hash);
-void *vsc_hashmap_find(const VscHashMap *hm, const void *key);
-void *vsc_hashmap_remove(VscHashMap *hm, const void *key);
+int    vsc_hashmap_resize(VscHashMap *hm, size_t nelem);
+int    vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value);
+void  *vsc_hashmap_find_by_hash(const VscHashMap *hm, vsc_hash_t hash);
+void  *vsc_hashmap_find(const VscHashMap *hm, const void *key);
+void  *vsc_hashmap_remove(VscHashMap *hm, const void *key);
 size_t vsc_hashmap_size(const VscHashMap *hm);
 
 const VscHashMapBucket *vsc_hashmap_first(const VscHashMap *hm);
@@ -99,10 +99,10 @@ const VscHashMapBucket *vsc_hashmap_first(const VscHashMap *hm);
 int vsc_hashmap_enumerate(const VscHashMap *hm, VscHashMapEnumProc proc, void *user);
 
 vsc_hash_t vsc_hashmap_default_hash(const void *k);
-int vsc_hashmap_default_compare(const void *a, const void *b);
+int        vsc_hashmap_default_compare(const void *a, const void *b);
 
 vsc_hash_t vsc_hashmap_string_hash(const void *s);
-int vsc_hashmap_string_compare(const void *a, const void *b);
+int        vsc_hashmap_string_compare(const void *a, const void *b);
 
 #if defined(__cplusplus)
 }

@@ -25,7 +25,7 @@
 struct passwd;
 struct group;
 
-typedef int(*VscEnumGroupsProc)(const struct group *grp, void *user);
+typedef int (*VscEnumGroupsProc)(const struct group *grp, void *user);
 
 #if defined(__cplusplus)
 extern "C" {

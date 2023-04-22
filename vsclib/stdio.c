@@ -18,11 +18,11 @@
  * limitations under the License.
  */
 #if defined(WIN32)
-#	define WIN32_LEAN_AND_MEAN
-#	include <windows.h>
-#	include <io.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <io.h>
 #else
-#	include <unistd.h>
+#include <unistd.h>
 #endif
 
 #include <stdio.h>
@@ -35,7 +35,7 @@ int vsc_fileno(FILE *stream)
 {
     int r;
 #if defined(_WIN32)
-    r =_fileno(stream);
+    r = _fileno(stream);
 #else
     r = fileno(stream);
 #endif

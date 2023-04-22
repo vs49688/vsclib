@@ -25,7 +25,7 @@
 
 int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEachDelimProc proc, void *user)
 {
-    int r;
+    int         r;
     const char *start = begin;
 
     if(begin > end)
@@ -41,7 +41,6 @@ int vsc_for_each_delim(const char *begin, const char *end, char delim, VscForEac
 
         if(next != end)
             ++next;
-
     }
 
     assert(start == end);

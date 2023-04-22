@@ -30,8 +30,8 @@
 
 int vsc_cstrtowstra(const char *s, unsigned int cp, wchar_t **ws, size_t *len, const VscAllocator *a)
 {
-    int x;
-    size_t _len;
+    int      x;
+    size_t   _len;
     wchar_t *_ws;
 
     _len = strlen(s) + 1;

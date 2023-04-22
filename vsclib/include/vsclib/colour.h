@@ -38,7 +38,6 @@ uint16_t vsc_colour_pack_xrgb1555(VscColour32 c);
 uint32_t vsc_colour_pack_argb8888(VscColour32 c);
 uint32_t vsc_colour_pack_xrgb8888(VscColour32 c);
 
-
 #if defined(__cplusplus)
 }
 #endif

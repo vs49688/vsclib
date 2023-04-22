@@ -24,9 +24,9 @@
 #include "platform.h"
 
 #if defined(VSC_DEBUG)
-#   define vsc_assert(x) assert(x)
+#define vsc_assert(x) assert(x)
 #else
-#   define vsc_assert(x)
+#define vsc_assert(x)
 #endif
 
 #endif /* _VSCLIB_ASSERT_H */

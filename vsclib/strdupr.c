@@ -23,7 +23,7 @@
 
 char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a)
 {
-    char *buf;
+    char  *buf;
     size_t len;
     vsc_assert(start != NULL && end != NULL && end >= start && a != NULL);
 
@@ -35,7 +35,6 @@ char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a)
     buf[len] = '\0';
     return buf;
 }
-
 
 char *vsc_strdupr(const char *start, const char *end)
 {

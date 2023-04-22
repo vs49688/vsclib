@@ -29,18 +29,17 @@
 
 int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
 {
-    DWORD x;
-    size_t _len;
-    int r;
+    DWORD    x;
+    size_t   _len;
+    int      r;
     wchar_t *ws = NULL, *wf = NULL;
-    char *of = NULL;
+    char    *of = NULL;
 
     if((r = vsc_cstrtowstra(f, CP_UTF8, &wf, &_len, a)) < 0)
         return r;
 
     if((x = SearchPathW(NULL, wf, L".exe", 0, NULL, NULL)) == 0)
         goto done;
-
 
     if((ws = vsc_xcalloc(a, x, sizeof(wchar_t))) == NULL) {
         r = VSC_ERROR(ENOMEM);
@@ -54,7 +53,7 @@ int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
         goto done;
 
     *s = of;
-    r = 0;
+    r  = 0;
 done:
     if(x == 0)
         r = vsci_map_win32err(GetLastError());

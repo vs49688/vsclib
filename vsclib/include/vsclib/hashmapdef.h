@@ -24,38 +24,38 @@
 #include "mem.h"
 #include "hashdef.h"
 
-
-typedef enum VscHashMapResizePolicy
-{
-    VSC_HASHMAP_RESIZE_LOAD_FACTOR  = 0,
-    VSC_HASHMAP_RESIZE_NONE         = 1,
+typedef enum VscHashMapResizePolicy {
+    VSC_HASHMAP_RESIZE_LOAD_FACTOR = 0,
+    VSC_HASHMAP_RESIZE_NONE        = 1,
 } VscHashMapResizePolicy;
 
-typedef vsc_hash_t(*VscHashMapHashProc)(const void *key);
-typedef int       (*VscHashMapCompareProc)(const void *a, const void *b);
-typedef int       (*VscHashMapEnumProc)(const void *key, void *value, vsc_hash_t hash, void *user);
+typedef vsc_hash_t (*VscHashMapHashProc)(const void *key);
+typedef int (*VscHashMapCompareProc)(const void *a, const void *b);
+typedef int (*VscHashMapEnumProc)(const void *key, void *value, vsc_hash_t hash, void *user);
 
-typedef struct VscHashMapBucket
-{
+typedef struct VscHashMapBucket {
     /**
      * @brief Item hash. Is VSC_INVALID_HASH if empty.
      */
     vsc_hash_t  hash;
-    const void  *key;
-    void        *value;
+    const void *key;
+    void       *value;
 } VscHashMapBucket;
 
-typedef struct VscHashMap
-{
-    size_t                          size;
-    size_t                          num_buckets;
-    VscHashMapBucket                *buckets;
-    VscHashMapResizePolicy          resize_policy;
-    struct { uint16_t num, den; }   load_min;
-    struct { uint16_t num, den; }   load_max;
-    VscHashMapHashProc              hash_proc;
-    VscHashMapCompareProc           compare_proc;
-    const VscAllocator              *allocator;
+typedef struct VscHashMap {
+    size_t                 size;
+    size_t                 num_buckets;
+    VscHashMapBucket      *buckets;
+    VscHashMapResizePolicy resize_policy;
+    struct {
+        uint16_t num, den;
+    } load_min;
+    struct {
+        uint16_t num, den;
+    } load_max;
+    VscHashMapHashProc    hash_proc;
+    VscHashMapCompareProc compare_proc;
+    const VscAllocator   *allocator;
 } VscHashMap;
 
 #endif /* _VSCLIB_HASHMAPDEF_H */

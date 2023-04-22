@@ -20,10 +20,10 @@
 
 #include <stdlib.h>
 #if defined(_WIN32)
-#   define WIN32_LEAN_AND_MEAN
-#   include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #elif !defined(__MACH__)
-#   include <malloc.h>
+#include <malloc.h>
 #endif
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
