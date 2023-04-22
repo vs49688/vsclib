@@ -20,6 +20,7 @@
 
     mkShells = packages: builtins.mapAttrs (k: v: v.overrideAttrs(old: {
       hardeningDisable = [ "all" ];
+      nativeBuildInputs = old.nativeBuildInputs ++ v.devTools;
     })) packages;
 
   in {

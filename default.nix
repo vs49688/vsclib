@@ -1,4 +1,4 @@
-{ stdenv, cmake, version }:
+{ stdenv, cmake, version, clang-tools }:
 stdenv.mkDerivation {
   inherit version;
 
@@ -7,6 +7,10 @@ stdenv.mkDerivation {
   src = ./.;
 
   nativeBuildInputs = [ cmake ];
+
+  passthru.devTools = [
+    clang-tools
+  ];
 
   doCheck = true;
   checkPhase = ''
