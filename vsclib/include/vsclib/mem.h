@@ -275,6 +275,11 @@ void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size);
  */
 void *vsc_xcalloc(const VscAllocator *a, size_t nmemb, size_t size);
 
+void *vsc_xaligned_offset_malloc(const VscAllocator *a, size_t size, size_t alignment, size_t offset);
+void *vsc_xaligned_malloc(const VscAllocator *a, size_t size, size_t alignment);
+void  vsc_xaligned_free(const VscAllocator *a, void *memblock);
+void *vsc_xaligned_offset_realloc(const VscAllocator *a, void *memblock, size_t size, size_t alignment, size_t offset);
+
 /**
  * \brief Allocate a contiguous block of memory described by the
  * provided \p blockinfo argument.

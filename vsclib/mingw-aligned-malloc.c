@@ -15,7 +15,6 @@
 #include <errno.h>
 #include <string.h>
 #include <vsclib/mem.h>
-#include "mingw-aligned-malloc.h"
 
 #define NOT_POWER_OF_TWO(n) (((n) & ((n)-1)))
 #define UI(p)               ((uintptr_t)(p))
@@ -27,7 +26,7 @@
 /* Pointer must sometimes be aligned; assume sizeof(void*) is a power of two. */
 #define ORIG_PTR(p) (*(((void **)(UI(p) & (~UI(sizeof(void *) - 1)))) - 1))
 
-void *vsci_aligned_offset_malloc(size_t size, size_t alignment, size_t offset)
+void *vsc_xaligned_offset_malloc(const VscAllocator *a, size_t size, size_t alignment, size_t offset)
 {
     void *p0, *p;
 
@@ -44,7 +43,7 @@ void *vsci_aligned_offset_malloc(size_t size, size_t alignment, size_t offset)
        machine, since malloc is already 8-byte aligned, as long
        as we enforce alignment >= 8 ...but oh well.  */
 
-    p0 = vsc_sys_malloc(size + (alignment + sizeof(void *)));
+    p0 = vsc_xalloc(a, size + (alignment + sizeof(void *)));
     if(!p0)
         return ((void *)0);
     p           = PTR_ALIGN(p0, alignment, offset);
@@ -52,28 +51,27 @@ void *vsci_aligned_offset_malloc(size_t size, size_t alignment, size_t offset)
     return p;
 }
 
-void *vsci_aligned_malloc(size_t size, size_t alignment)
+void *vsc_xaligned_malloc(const VscAllocator *a, size_t size, size_t alignment)
 {
-    return vsci_aligned_offset_malloc(size, alignment, 0);
+    return vsc_xaligned_offset_malloc(a, size, alignment, 0);
 }
 
-void vsci_aligned_free(void *memblock)
+void vsc_xaligned_free(const VscAllocator *a, void *memblock)
 {
-    if(memblock)
-        vsc_sys_free(ORIG_PTR(memblock));
+    vsc_xfree(a, ORIG_PTR(memblock));
 }
 
-void *vsci_aligned_offset_realloc(void *memblock, size_t size, size_t alignment, size_t offset)
+void *vsc_xaligned_offset_realloc(const VscAllocator *a, void *memblock, size_t size, size_t alignment, size_t offset)
 {
     void     *p0, *p;
     ptrdiff_t shift;
 
     if(!memblock)
-        return vsci_aligned_offset_malloc(size, alignment, offset);
+        return vsc_xaligned_offset_malloc(a, size, alignment, offset);
     if(NOT_POWER_OF_TWO(alignment))
         goto bad;
     if(size == 0) {
-        vsci_aligned_free(memblock);
+        vsc_xaligned_free(a, memblock);
         return ((void *)0);
     }
     if(alignment < sizeof(void *))
@@ -85,7 +83,7 @@ void *vsci_aligned_offset_realloc(void *memblock, size_t size, size_t alignment,
         goto bad;
     shift = CP(memblock) - CP(p0);
 
-    p0 = vsc_sys_realloc(p0, size + (alignment + sizeof(void *)));
+    p0 = vsc_xrealloc(a, p0, size + (alignment + sizeof(void *)));
     if(!p0)
         return ((void *)0);
     p = PTR_ALIGN(p0, alignment, offset);
@@ -103,7 +101,7 @@ bad:
     return ((void *)0);
 }
 
-void *vsci_aligned_realloc(void *memblock, size_t size, size_t alignment)
+void *vsc_xaligned_realloc(const VscAllocator *a, void *memblock, size_t size, size_t alignment)
 {
-    return vsci_aligned_offset_realloc(memblock, size, alignment, 0);
+    return vsc_xaligned_offset_realloc(a, memblock, size, alignment, 0);
 }

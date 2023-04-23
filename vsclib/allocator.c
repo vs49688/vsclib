@@ -36,9 +36,44 @@
 #include <vsclib/error.h>
 #include <vsclib/mem.h>
 
-#include "mingw-aligned-malloc.h"
-
 #define MEMHDR_SIG 0xFEED5EED /* Formerly Chuck's */
+
+static int malloc_stage1(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
+{
+    void *p;
+
+    (void)user;
+
+    flags &= ~VSC_ALLOC_REALLOC;
+
+    vsc_assert(alignment == VSC_ALIGNOF(vsc_max_align_t));
+    vsc_assert(flags == 0);
+
+    if((p = vsc_sys_realloc(*ptr, size)) == NULL)
+        return -VSC_ERROR(ENOMEM);
+
+    *ptr = p;
+    return 0;
+}
+
+static void free_stage1(void *p, void *user)
+{
+    (void)user;
+
+    if(p != NULL)
+        vsc_sys_free(p);
+}
+
+/*
+ * Quick 'n' dirty allocator wrapping vsc_sys_*. Only implementeds enough for our purposes.
+ */
+const VscAllocator stage1 = {
+    .alloc     = malloc_stage1,
+    .free      = free_stage1,
+    .size      = NULL,
+    .alignment = VSC_ALIGNOF(vsc_max_align_t),
+    .user      = NULL,
+};
 
 typedef struct MemHeader {
     size_t   size;
@@ -76,7 +111,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
         oldsize = hdr->size;
     }
 
-    p = vsci_aligned_offset_realloc(hdr, reqsize, alignment, sizeof(MemHeader));
+    p = vsc_xaligned_offset_realloc(&stage1, hdr, reqsize, alignment, sizeof(MemHeader));
     if(p == NULL)
         return VSC_ERROR(ENOMEM);
 
@@ -103,7 +138,7 @@ static void free_(void *p, void *user)
     if(p == NULL)
         return;
 
-    vsci_aligned_free(mem2hdr(p));
+    vsc_xaligned_free(&stage1, mem2hdr(p));
 }
 
 static size_t size_(void *p, void *user)
