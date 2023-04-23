@@ -93,7 +93,6 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
     uint8_t   *p;
     size_t     reqsize, oldsize = 0;
 
-    (void)user;
     vsc_assert(VSC_IS_POT(alignment));
 
     /* Make everything easier for ourselves. */
@@ -111,7 +110,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
         oldsize = hdr->size;
     }
 
-    p = vsc_xaligned_offset_realloc(&stage1, hdr, reqsize, alignment, sizeof(MemHeader));
+    p = vsc_xaligned_offset_realloc(user, hdr, reqsize, alignment, sizeof(MemHeader));
     if(p == NULL)
         return VSC_ERROR(ENOMEM);
 
@@ -134,11 +133,10 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
 
 static void free_(void *p, void *user)
 {
-    (void)user;
     if(p == NULL)
         return;
 
-    vsc_xaligned_free(&stage1, mem2hdr(p));
+    vsc_xaligned_free(user, mem2hdr(p));
 }
 
 static size_t size_(void *p, void *user)
@@ -156,5 +154,5 @@ const VscAllocator vsclib_system_allocator = {
     .size  = size_,
     /* FIXME: See if I need to use MEMORY_ALLOCATION_ALIGNMENT on Windows */
     .alignment = VSC_ALIGNOF(vsc_max_align_t),
-    .user      = NULL,
+    .user      = (void*)&stage1,
 };
