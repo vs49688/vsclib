@@ -75,6 +75,35 @@ static void test_align_header(size_t header_size, size_t header_align, size_t da
     CHECK(VSC_IS_ALIGNED(vscinfo2.p,  data_align));
 }
 
+TEST_CASE("bigalign", "[memory]") {
+    /*
+     * Allocate a block with a large alignment requirement - should
+     * cause a gap between the header and the data.
+     */
+    vsc_ptr<uint8_t> p((uint8_t*)vsc_aligned_malloc(256, 1024));
+    CHECK(p != nullptr);
+
+    for(int i = 0; i < 256; ++i) {
+        p.get()[i] = i;
+    }
+
+    /*
+     * Now, realloc it with a larger alignment that still satisfies the original one.
+     * This should cause a larger gap between the header and data.
+     * Check the data has been moved correctly.
+     */
+    int r;
+    void *pp;
+    pp = p.get();
+    r = vsc_xalloc_ex(&vsclib_system_allocator, &pp, 256, VSC_ALLOC_REALLOC, 2048);
+    CHECK(r == 0);
+    (void)p.release();
+    p.reset((uint8_t*)pp);
+
+    for(int i = 0; i < 256; ++i) {
+        REQUIRE(p.get()[i] == i);
+    }
+}
 
 TEST_CASE("vsc_ctz", "[memory]") {
     for(size_t i = 0; i < 31; ++i)
