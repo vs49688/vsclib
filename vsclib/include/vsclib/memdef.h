@@ -25,6 +25,21 @@
 #include <stdint.h>
 
 /**
+ * \brief Structure to hold system-like allocation procedures.
+ */
+typedef struct VscSystemAllocatorProcs {
+    /**
+     * \brief Pointer to a function that implements realloc(3) semantics.
+     */
+    void *(*realloc)(void *ptr, size_t size);
+
+    /**
+     * \brief Pointer to a function that implements free(3) semantics.
+     */
+    void (*free)(void *ptr);
+} VscSystemAllocatorProcs;
+
+/**
  * \brief Memory allocation flags.
  */
 typedef enum VscAllocFlags {

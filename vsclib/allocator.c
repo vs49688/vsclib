@@ -83,10 +83,11 @@ static void *hdr2mem(MemHeader *hdr, size_t alignment)
 
 static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
 {
-    MemHeader *hdr = NULL, *nhdr;
-    uint8_t   *p;
-    size_t     reqsize, oldsize = 0;
-    uintptr_t  shift;
+    MemHeader                     *hdr = NULL, *nhdr;
+    uint8_t                       *p;
+    size_t                         reqsize, oldsize = 0;
+    uintptr_t                      shift;
+    const VscSystemAllocatorProcs *procs = user;
 
     (void)user;
     vsc_assert(VSC_IS_POT(alignment));
@@ -116,7 +117,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
         shift = (uintptr_t)(*ptr) - (uintptr_t)hdr;
     }
 
-    if((p = vsc_sys_realloc(hdr, reqsize)) == NULL)
+    if((p = procs->realloc(hdr, reqsize)) == NULL)
         return VSC_ERROR(ENOMEM);
 
     nhdr = (MemHeader *)p;
@@ -157,11 +158,12 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
 
 static void free_(void *p, void *user)
 {
-    (void)user;
+    const VscSystemAllocatorProcs *procs = user;
+
     if(p == NULL)
         return;
 
-    vsc_sys_free(mem2hdr(p));
+    procs->free(mem2hdr(p));
 }
 
 static size_t size_(void *p, void *user)
@@ -173,11 +175,36 @@ static size_t size_(void *p, void *user)
     return mem2hdr(p)->size;
 }
 
+/**
+ * \brief Create a new allocator using the provided system-like allocation functions.
+ *
+ * \param procs A pointer to the VscSystemAllocatorProcs. May not be NULL;
+ *
+ * \return A new allocator that uses the provided system-like allocation functions.
+ */
+VscAllocator vsc_allocator_new(const VscSystemAllocatorProcs *procs)
+{
+    vsc_assert(procs != NULL);
+
+    return (VscAllocator){
+        .alloc     = malloc_,
+        .free      = free_,
+        .size      = size_,
+        .alignment = VSC_ALIGNOF(vsc_max_align_t),
+        .user      = (void *)procs,
+    };
+}
+
+const VscSystemAllocatorProcs sysprocs = {
+    .realloc = vsc_sys_realloc,
+    .free    = vsc_sys_free,
+};
+
 const VscAllocator vsclib_system_allocator = {
     .alloc = malloc_,
     .free  = free_,
     .size  = size_,
     /* FIXME: See if I need to use MEMORY_ALLOCATION_ALIGNMENT on Windows */
     .alignment = VSC_ALIGNOF(vsc_max_align_t),
-    .user      = NULL,
+    .user      = (void *)&sysprocs,
 };

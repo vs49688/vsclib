@@ -312,6 +312,15 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
 int vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks, uint32_t flags);
 
 /**
+ * \brief Create a new allocator using the provided system-like allocation procedures.
+ *
+ * \param procs A pointer to the VscSystemAllocatorProcs. May not be NULL.
+ *
+ * \return A new allocator that uses the provided system-like allocation procedures.
+ */
+VscAllocator vsc_allocator_new(const VscSystemAllocatorProcs *procs);
+
+/**
  * \brief Invoke the system's memory allocation procedure.
  *
  * \remark On Windows, calls HeapAlloc(). On all other systems, calls malloc().
