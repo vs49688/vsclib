@@ -61,9 +61,6 @@ void *vsc_sys_calloc(size_t nmemb, size_t size)
 
 void vsc_sys_free(void *p)
 {
-    if(p == NULL)
-        return;
-
 #if defined(_WIN32)
     HeapFree(GetProcessHeap(), 0, p);
 #else
