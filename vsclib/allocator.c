@@ -29,7 +29,6 @@
  * which requires saving the alignment, which would use the same
  * amount of storage anyway.
  */
-#include <stdint.h>
 #include <string.h>
 #include <vsclib/assert.h>
 #include <vsclib/types.h>
