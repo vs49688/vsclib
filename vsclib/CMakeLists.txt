@@ -65,8 +65,6 @@ add_library(vsclib STATIC
 
 		error.c
 
-		mingw-aligned-malloc.c
-		mingw-aligned-malloc.h
 		allocator.c
 
 		${OS_FILES}
