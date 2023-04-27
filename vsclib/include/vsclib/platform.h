@@ -26,6 +26,7 @@
  */
 #include "vsclib_config.h"
 
+#include <limits.h>
 #include <stdint.h>
 
 #if defined(_WIN32)
@@ -53,6 +54,8 @@
 
 #define VSC_MAX(a, b)        ((a) > (b) ? (a) : (b))
 #define VSC_MIN(a, b)        ((a) < (b) ? (a) : (b))
+
+#define VSC_SIZE_T_BITSIZE   (sizeof(size_t) * CHAR_BIT)
 
 #if __STDC_VERSION__ >= 201112L
 #define VSC_ALIGNOF _Alignof
