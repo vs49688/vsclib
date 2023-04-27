@@ -76,6 +76,11 @@ static MemHeader *mem2hdr(void *p)
     return hdr;
 }
 
+static void *hdr2mem(MemHeader *hdr, size_t alignment)
+{
+    return vsc_align_up(hdr + 1, alignment);
+}
+
 static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
 {
     MemHeader *hdr = NULL, *nhdr;
@@ -115,7 +120,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
         return VSC_ERROR(ENOMEM);
 
     nhdr = (MemHeader *)p;
-    p    = vsc_align_up(nhdr + 1, alignment);
+    p    = hdr2mem(nhdr, alignment);
 
     vsc_assert(VSC_IS_ALIGNED(p, alignment));
     vsc_assert(VSC_IS_ALIGNED(nhdr, VSC_ALIGNOF(MemHeader)));
