@@ -50,7 +50,14 @@
 #define MEMHDR_SIG ((uintptr_t)0xFEED5EEDFEED5EEDu) /* Formerly Chuck's */
 
 typedef struct MemHeader {
-    size_t    size;
+    size_t size;
+    union {
+        struct {
+            size_t align_power : 8;
+            size_t reserved : VSC_SIZE_T_BITSIZE - 8;
+        };
+        size_t _pad;
+    };
     uintptr_t sig;
 } MemHeader;
 
@@ -128,8 +135,9 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
         *((void **)p - 1) = nhdr;
     }
 
-    nhdr->size = size;
-    nhdr->sig  = MEMHDR_SIG;
+    nhdr->align_power = vsc_ctz(alignment);
+    nhdr->size        = size;
+    nhdr->sig         = MEMHDR_SIG;
 
     if(flags & VSC_ALLOC_REALLOC) {
         /*
