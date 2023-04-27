@@ -24,6 +24,23 @@
 #include <vsclib/mem.h>
 #include <vsclib/types.h>
 
+uint8_t vsc_ctz(unsigned int x)
+{
+    vsc_assert(VSC_IS_POT(x));
+    vsc_assert(x != 0);
+
+#if defined(__GNUC__)
+    return __builtin_ctz(x);
+#else
+    uint8_t pwr = 0;
+    while(x > 1) {
+        ++pwr;
+        x >>= 1;
+    }
+    return pwr;
+#endif
+}
+
 void *vsc_xalloc(const VscAllocator *a, size_t size)
 {
     void *p = NULL;

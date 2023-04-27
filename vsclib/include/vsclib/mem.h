@@ -127,6 +127,18 @@ static inline void *vsc_align_up(void *p, size_t alignment)
 void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space);
 
 /**
+ * \brief Counts the number of trailing zeros.
+ *
+ * \param x The input integer. Must be a power of two and nonzero.
+ *
+ * \return The number of trailing zeros in the input integer.
+ *
+ * \remark This function uses the GCC-specific builtin `__builtin_ctz` when
+ * available, otherwise it falls back to a simple loop.
+ */
+uint8_t vsc_ctz(unsigned int x);
+
+/**
  * \brief Invoke vsc_xalloc() with the system's default allocator.
  *
  * \remark The semantics of this are the same as malloc().
