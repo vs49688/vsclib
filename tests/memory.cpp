@@ -76,6 +76,11 @@ static void test_align_header(size_t header_size, size_t header_align, size_t da
 }
 
 
+TEST_CASE("vsc_ctz", "[memory]") {
+    for(size_t i = 0; i < 31; ++i)
+        CHECK(vsc_ctz(1 << i) == i);
+}
+
 TEST_CASE("align", "[memory]") {
     void *ret, *p;
     size_t space;
