@@ -127,5 +127,5 @@ int vsc_searchpatha(const char *f, char **s, size_t *len, const VscAllocator *a)
 
 int vsc_searchpath(const char *f, char **s, size_t *len)
 {
-    return vsc_searchpatha(f, s, len, &vsclib_system_allocator);
+    return vsc_searchpatha(f, s, len, vsclib_system_allocator);
 }

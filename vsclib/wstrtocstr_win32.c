@@ -59,5 +59,5 @@ int vsc_wstrtocstra(const wchar_t *ws, unsigned int cp, char **s, size_t *len, c
 
 int vsc_wstrtocstr(const wchar_t *ws, unsigned int cp, char **s, size_t *len)
 {
-    return vsc_wstrtocstra(ws, cp, s, len, &vsclib_system_allocator);
+    return vsc_wstrtocstra(ws, cp, s, len, vsclib_system_allocator);
 }

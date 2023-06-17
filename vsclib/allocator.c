@@ -114,7 +114,7 @@ static size_t size_(void *p, void *user)
     return mem2hdr(p)->size;
 }
 
-const VscAllocator vsclib_system_allocator = {
+static const VscAllocator default_allocator = {
     .alloc = malloc_,
     .free  = free_,
     .size  = size_,
@@ -122,3 +122,5 @@ const VscAllocator vsclib_system_allocator = {
     .alignment = VSC_ALIGNOF(vsc_max_align_t),
     .user      = NULL,
 };
+
+const VscAllocator *const vsclib_system_allocator = &default_allocator;

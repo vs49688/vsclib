@@ -69,5 +69,5 @@ done:
 
 int vsc_fopen(const char *pathname, const char *mode, FILE **fp)
 {
-    return vsc_fopena(pathname, mode, fp, &vsclib_system_allocator);
+    return vsc_fopena(pathname, mode, fp, vsclib_system_allocator);
 }

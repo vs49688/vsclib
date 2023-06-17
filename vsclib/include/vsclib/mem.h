@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 
-extern const VscAllocator vsclib_system_allocator;
+extern const VscAllocator * const vsclib_system_allocator;
 
 /**
  * \brief Check if the given alignment is a valid

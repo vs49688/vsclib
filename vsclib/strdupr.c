@@ -38,5 +38,5 @@ char *vsc_strdupra(const char *start, const char *end, const VscAllocator *a)
 
 char *vsc_strdupr(const char *start, const char *end)
 {
-    return vsc_strdupra(start, end, &vsclib_system_allocator);
+    return vsc_strdupra(start, end, vsclib_system_allocator);
 }

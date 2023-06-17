@@ -62,5 +62,5 @@ int vsc_cstrtowstra(const char *s, unsigned int cp, wchar_t **ws, size_t *len, c
 
 int vsc_cstrtowstr(const char *s, unsigned int cp, wchar_t **ws, size_t *len)
 {
-    return vsc_cstrtowstra(s, cp, ws, len, &vsclib_system_allocator);
+    return vsc_cstrtowstra(s, cp, ws, len, vsclib_system_allocator);
 }

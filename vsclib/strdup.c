@@ -23,7 +23,7 @@
 
 char *vsc_strdup(const char *s)
 {
-    return vsc_strdupa(s, &vsclib_system_allocator);
+    return vsc_strdupa(s, vsclib_system_allocator);
 }
 
 char *vsc_strdupa(const char *s, const VscAllocator *a)

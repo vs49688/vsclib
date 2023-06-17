@@ -35,7 +35,7 @@
 
 int vsc_chdir(const char *path)
 {
-    return vsc_chdira(path, &vsclib_system_allocator);
+    return vsc_chdira(path, vsclib_system_allocator);
 }
 
 int vsc_chdira(const char *path, const VscAllocator *a)

@@ -123,7 +123,7 @@ void *vsc_xrealloc(const VscAllocator *a, void *ptr, size_t size)
 
 void *vsc_malloc(size_t size)
 {
-    return vsc_xalloc(&vsclib_system_allocator, size);
+    return vsc_xalloc(vsclib_system_allocator, size);
 }
 
 void *vsc_xcalloc(const VscAllocator *a, size_t nmemb, size_t size)
@@ -140,23 +140,23 @@ void *vsc_xcalloc(const VscAllocator *a, size_t nmemb, size_t size)
 
 void *vsc_calloc(size_t nmemb, size_t size)
 {
-    return vsc_xcalloc(&vsclib_system_allocator, nmemb, size);
+    return vsc_xcalloc(vsclib_system_allocator, nmemb, size);
 }
 
 void vsc_free(void *p)
 {
-    vsc_xfree(&vsclib_system_allocator, p);
+    vsc_xfree(vsclib_system_allocator, p);
 }
 
 void *vsc_realloc(void *ptr, size_t size)
 {
-    return vsc_xrealloc(&vsclib_system_allocator, ptr, size);
+    return vsc_xrealloc(vsclib_system_allocator, ptr, size);
 }
 
 void *vsc_aligned_malloc(size_t size, size_t alignment)
 {
     void *p = NULL;
-    if(vsc_xalloc_ex(&vsclib_system_allocator, &p, size, 0, alignment) < 0)
+    if(vsc_xalloc_ex(vsclib_system_allocator, &p, size, 0, alignment) < 0)
         return NULL;
 
     return p;
@@ -164,7 +164,7 @@ void *vsc_aligned_malloc(size_t size, size_t alignment)
 
 void vsc_aligned_free(void *ptr)
 {
-    vsc_xfree(&vsclib_system_allocator, ptr);
+    vsc_xfree(vsclib_system_allocator, ptr);
 }
 
 /*
@@ -283,5 +283,5 @@ int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo 
 
 int vsc_block_alloc(void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks, uint32_t flags)
 {
-    return vsc_block_xalloc(&vsclib_system_allocator, ptr, blockinfo, nblocks, flags);
+    return vsc_block_xalloc(vsclib_system_allocator, ptr, blockinfo, nblocks, flags);
 }

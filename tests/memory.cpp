@@ -75,7 +75,6 @@ static void test_align_header(size_t header_size, size_t header_align, size_t da
     CHECK(VSC_IS_ALIGNED(vscinfo2.p,  data_align));
 }
 
-
 TEST_CASE("vsc_ctz", "[memory]") {
     for(size_t i = 0; i < 31; ++i)
         CHECK(vsc_ctz(1 << i) == i);
@@ -224,7 +223,7 @@ TEST_CASE("zero", "[memory]") {
          p[i] = UINT8_MAX;
     }
 
-    int ret = vsc_xalloc_ex(&vsclib_system_allocator, (void**)&p, 2048, VSC_ALLOC_REALLOC | VSC_ALLOC_ZERO, 0);
+    int ret = vsc_xalloc_ex(vsclib_system_allocator, (void**)&p, 2048, VSC_ALLOC_REALLOC | VSC_ALLOC_ZERO, 0);
     REQUIRE(ret == 0);
     REQUIRE(p != nullptr);
     (void)_p.release();

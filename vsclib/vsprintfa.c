@@ -49,7 +49,7 @@ char *vsc_vasprintfa(const VscAllocator *a, const char *fmt, va_list ap)
 
 char *vsc_vasprintf(const char *fmt, va_list ap)
 {
-    return vsc_vasprintfa(&vsclib_system_allocator, fmt, ap);
+    return vsc_vasprintfa(vsclib_system_allocator, fmt, ap);
 }
 
 char *vsc_asprintfa(const VscAllocator *a, const char *fmt, ...)
@@ -69,7 +69,7 @@ char *vsc_asprintf(const char *fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-    s = vsc_vasprintfa(&vsclib_system_allocator, fmt, ap);
+    s = vsc_vasprintfa(vsclib_system_allocator, fmt, ap);
     va_end(ap);
     return s;
 }

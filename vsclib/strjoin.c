@@ -27,7 +27,7 @@ char *vsc_strjoin(const char *delim, ...)
     char   *r;
     va_list ap;
     va_start(ap, delim);
-    r = vsc_vstrjoina(&vsclib_system_allocator, delim, ap);
+    r = vsc_vstrjoina(vsclib_system_allocator, delim, ap);
     va_end(ap);
     return r;
 }
@@ -44,7 +44,7 @@ char *vsc_strjoina(const VscAllocator *a, const char *delim, ...)
 
 char *vsc_vstrjoin(const char *delim, va_list ap)
 {
-    return vsc_vstrjoina(&vsclib_system_allocator, delim, ap);
+    return vsc_vstrjoina(vsclib_system_allocator, delim, ap);
 }
 
 char *vsc_vstrjoina(const VscAllocator *a, const char *delim, va_list ap)
@@ -94,7 +94,7 @@ char *vsc_vstrjoina(const VscAllocator *a, const char *delim, va_list ap)
 
 char *vsc_strnjoin(const char *delim, const char **elems, size_t nelem)
 {
-    return vsc_strnjoina(&vsclib_system_allocator, delim, elems, nelem);
+    return vsc_strnjoina(vsclib_system_allocator, delim, elems, nelem);
 }
 
 char *vsc_strnjoina(const VscAllocator *a, const char *delim, const char **elems, size_t nelem)

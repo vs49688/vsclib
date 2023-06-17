@@ -176,12 +176,12 @@ int vsc_freadalla(void **ptr, size_t *size, FILE *f, const VscAllocator *a)
 
 int vsc_freadall(void **ptr, size_t *size, FILE *f)
 {
-    return vsc_freadalla(ptr, size, f, &vsclib_system_allocator);
+    return vsc_freadalla(ptr, size, f, vsclib_system_allocator);
 }
 
 int vsc_freadall_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_proc, VscFreadallChunkProc chunk_proc, void *user)
 {
-    return vsc_freadalla_ex(ptr, size, f, init_proc, chunk_proc, user, &vsclib_system_allocator);
+    return vsc_freadalla_ex(ptr, size, f, init_proc, chunk_proc, user, vsclib_system_allocator);
 }
 
 int vsc_freadalla_ex(void **ptr, size_t *size, FILE *f, VscFreadallInitProc init_proc, VscFreadallChunkProc chunk_proc,
