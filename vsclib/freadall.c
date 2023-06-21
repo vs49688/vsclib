@@ -65,6 +65,8 @@ static int get_size_ioctl(int fd, size_t *size)
     }
     return 0;
 #else
+    (void)fd;
+    (void)size;
     return VSC_ERROR(ENOTSUP);
 #endif
 }
@@ -83,6 +85,8 @@ static int get_blksize_ioctl(int fd, vsc_blksize_t *blksize)
     *blksize = (vsc_blksize_t)_blksize;
     return 0;
 #else
+    (void)fd;
+    (void)blksize;
     return VSC_ERROR(ENOTSUP);
 #endif
 }
