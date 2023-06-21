@@ -149,7 +149,7 @@ TEST_CASE("hashmap 2", "[hashmap]")
 
     char nkeys[1536][6];
     for(size_t i = 0; i < 1536; ++i) {
-        sprintf(nkeys[i], "%zu", i);
+        snprintf(nkeys[i], sizeof(nkeys[i]), "%zu", i);
         REQUIRE(vsc_hashmap_insert(&hm, nkeys[i], nkeys[i]) == 0);
     }
 
