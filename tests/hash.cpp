@@ -52,3 +52,14 @@ TEST_CASE("crc32c", "[hash]") {
     };
     CHECK(vsc_crc32c(iscsi_read, sizeof(iscsi_read)) == 0xd9963a56);
 }
+
+TEST_CASE("hash", "[hash]") {
+    CHECK(vsc_hash(nullptr, 100) == VSC_INVALID_HASH);
+    CHECK(vsc_hash_string(nullptr) == VSC_INVALID_HASH);
+
+    /* Make sure we're consistent. */
+    vsc_hash_t hash = vsc_hash_string("a");
+    for(size_t i = 0; i < 1000; ++i) {
+        CHECK(vsc_hash_string("a") == hash);
+    }
+}
