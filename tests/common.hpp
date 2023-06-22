@@ -8,16 +8,15 @@
 #include <vscpplib.hpp>
 #include "catch.hpp"
 
-template<size_t N, size_t A = VSC_ALIGNOF(vsc_max_align_t)>
-class TestAllocator : private VscAllocator {
+template <size_t N, size_t A = VSC_ALIGNOF(vsc_max_align_t)>
+class TestAllocator : private VscAllocator
+{
     static_assert(VSC_IS_POT(A));
     static_assert(N % A == 0);
 
 public:
-    TestAllocator() :
-        VscAllocator{alloc_stub, free_stub, size_stub, VSC_ALIGNOF(vsc_max_align_t), this},
-        buf_{},
-        offset_(0)
+    TestAllocator()
+        : VscAllocator{alloc_stub, free_stub, size_stub, VSC_ALIGNOF(vsc_max_align_t), this}, buf_{}, offset_(0)
     {
         /* Force us to be aligned to X, not X^2, etc. */
         if(VSC_IS_ALIGNED(buf_, A << 1))
@@ -25,18 +24,20 @@ public:
     }
 
 #pragma clang diagnostic push
-#pragma ide diagnostic ignored "google-explicit-constructor"
-    operator const VscAllocator*() const noexcept {
-        return this;
+#pragma ide diagnostic   ignored "google-explicit-constructor"
+    operator const VscAllocator *() const noexcept
+    {
+          return this;
     }
 #pragma clang diagnostic pop
 
 private:
-    int alloc_cb(void **ptr, size_t size, size_t alignment, VscAllocFlags flags) noexcept {
+    int alloc_cb(void **ptr, size_t size, size_t alignment, VscAllocFlags flags) noexcept
+    {
         if(this->offset_ >= N + size)
             return VSC_ERROR(ENOMEM);
 
-        void *p = (void*)((uintptr_t)buf_ + this->offset_);
+        void *p = (void *)((uintptr_t)buf_ + this->offset_);
 
         size_t space = N - this->offset_;
 
@@ -68,32 +69,37 @@ private:
         return 0;
     }
 
-    void free_cb(void *p) noexcept {
+    void free_cb(void *p) noexcept
+    {
         CHECK(p == this->allocations.top());
         this->allocations.pop();
         this->offset_ = (uintptr_t)p - (uintptr_t)this->buf_;
     }
 
-    size_t size_cb(void *p) noexcept {
+    size_t size_cb(void *p) noexcept
+    {
         (void)p;
         return N;
     }
 
-    static int alloc_stub(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user) noexcept {
-        return reinterpret_cast<TestAllocator*>(user)->alloc_cb(ptr, size, alignment, flags);
+    static int alloc_stub(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user) noexcept
+    {
+        return reinterpret_cast<TestAllocator *>(user)->alloc_cb(ptr, size, alignment, flags);
     }
 
-    static void free_stub(void *p, void *user) noexcept {
-        return reinterpret_cast<TestAllocator*>(user)->free_cb(p);
+    static void free_stub(void *p, void *user) noexcept
+    {
+        return reinterpret_cast<TestAllocator *>(user)->free_cb(p);
     }
 
-    static size_t size_stub(void *p, void *user) noexcept {
-        return reinterpret_cast<TestAllocator*>(user)->size_cb(p);
+    static size_t size_stub(void *p, void *user) noexcept
+    {
+        return reinterpret_cast<TestAllocator *>(user)->size_cb(p);
     }
 
     alignas(A) uint8_t buf_[N + A];
-    size_t offset_;
-    std::stack<void*, std::vector<void*>> allocations;
+    size_t                                  offset_;
+    std::stack<void *, std::vector<void *>> allocations;
 };
 
 #endif /* COMMON_HPP */

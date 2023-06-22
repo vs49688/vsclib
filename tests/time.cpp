@@ -3,7 +3,8 @@
 #include <vsclib/time.h>
 #include "catch.hpp"
 
-TEST_CASE("counter", "") {
+TEST_CASE("counter", "")
+{
     using namespace std::chrono_literals;
 
     vsc_counter_t before = vsc_counter_ns();

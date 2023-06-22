@@ -3,10 +3,10 @@
 
 using vsc::vsc_ptr;
 
-static void *test_align(std::size_t alignment, std::size_t size, void*& ptr, std::size_t& space)
+static void *test_align(std::size_t alignment, std::size_t size, void *& ptr, std::size_t& space)
 {
-    void *exp_ptr = ptr, *act_ptr = ptr;
-    void *exp_ret, *act_ret;
+    void  *exp_ptr = ptr, *act_ptr = ptr;
+    void  *exp_ret, *act_ret;
     size_t exp_space = space, act_space = space;
 
     exp_ret = std::align(alignment, size, exp_ptr, exp_space);
@@ -36,22 +36,22 @@ static void test_align_header(size_t header_size, size_t header_align, size_t da
     CHECK(VSC_IS_POT(data_align));
 
     Info stdinfo{};
-    stdinfo.p          = reinterpret_cast<void*>(header_size);
-    stdinfo.space      = ~size_t(0);
+    stdinfo.p     = reinterpret_cast<void *>(header_size);
+    stdinfo.space = ~size_t(0);
     std::align(data_align, data_size, stdinfo.p, stdinfo.space);
     stdinfo.pad        = ~size_t(0) - stdinfo.space;
     stdinfo.total_size = header_size + data_size + stdinfo.pad;
 
     Info vscinfo{};
-    vscinfo.p          = reinterpret_cast<void*>(header_size);
-    vscinfo.space      = ~size_t(0);
+    vscinfo.p     = reinterpret_cast<void *>(header_size);
+    vscinfo.space = ~size_t(0);
     vsc_align(data_align, data_size, &vscinfo.p, &vscinfo.space);
     vscinfo.pad        = ~size_t(0) - vscinfo.space;
     vscinfo.total_size = header_size + data_size + vscinfo.pad;
 
-    CHECK(stdinfo.p          == vscinfo.p);
-    CHECK(stdinfo.space      == vscinfo.space);
-    CHECK(stdinfo.pad        == vscinfo.pad);
+    CHECK(stdinfo.p == vscinfo.p);
+    CHECK(stdinfo.space == vscinfo.space);
+    CHECK(stdinfo.pad == vscinfo.pad);
     CHECK(stdinfo.total_size == vscinfo.total_size);
 
     vsc_ptr<void> block(vsc_aligned_malloc(vscinfo.total_size, header_align));
@@ -59,42 +59,44 @@ static void test_align_header(size_t header_size, size_t header_align, size_t da
         throw std::bad_alloc();
 
     Info stdinfo2{};
-    stdinfo2.p     = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(block.get()) + header_size);
+    stdinfo2.p     = reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(block.get()) + header_size);
     stdinfo2.space = vscinfo.total_size;
     std::align(data_align, data_size, stdinfo2.p, stdinfo2.space);
 
     Info vscinfo2{};
-    vscinfo2.p     = reinterpret_cast<void*>(reinterpret_cast<uintptr_t>(block.get()) + header_size);
+    vscinfo2.p     = reinterpret_cast<void *>(reinterpret_cast<uintptr_t>(block.get()) + header_size);
     vscinfo2.space = vscinfo.total_size;
     vsc_align(data_align, data_size, &vscinfo2.p, &vscinfo2.space);
 
-    CHECK(stdinfo2.p     == vscinfo2.p);
+    CHECK(stdinfo2.p == vscinfo2.p);
     CHECK(stdinfo2.space == vscinfo2.space);
 
     CHECK(VSC_IS_ALIGNED(block.get(), header_align));
-    CHECK(VSC_IS_ALIGNED(vscinfo2.p,  data_align));
+    CHECK(VSC_IS_ALIGNED(vscinfo2.p, data_align));
 }
 
-TEST_CASE("vsc_ctz", "[memory]") {
+TEST_CASE("vsc_ctz", "[memory]")
+{
     for(size_t i = 0; i < 31; ++i)
         CHECK(vsc_ctz(1 << i) == i);
 }
 
-TEST_CASE("align", "[memory]") {
-    void *ret, *p;
+TEST_CASE("align", "[memory]")
+{
+    void  *ret, *p;
     size_t space;
 
     p     = nullptr;
     space = ~size_t(0);
     ret   = test_align(16, 16, p, space);
-    CHECK(p   == nullptr);
+    CHECK(p == nullptr);
     CHECK(ret == nullptr);
 
-    p     = (void*)17;
+    p     = (void *)17;
     space = ~size_t(0);
     ret   = test_align(16, 1234, p, space);
-    CHECK(p   == (void*)17);
-    CHECK(ret == (void*)32);
+    CHECK(p == (void *)17);
+    CHECK(ret == (void *)32);
 
     /* Now try our actual use case. */
     test_align_header(4, 32, 4, 64);
@@ -111,18 +113,20 @@ TEST_CASE("align", "[memory]") {
         void *zeroarray;
         void *bigalign;
 
-        std::array<VscBlockAllocInfo, 5> bai = {{
-            /* 1 dummy header */
-            {  1, sizeof(TestHeader), alignof(TestHeader), &header    },
-            /* 10 uint32_t's */
-            { 10, sizeof(uint32_t),   alignof(uint32_t),   &uints     },
-            /* 3 "float vector 3"'s, with a required alignment of 16 */
-            {  3, 12,                 16,                  &floats    },
-            {  0,  4,                 16,                  &zeroarray },
-            {  1,  1,                 4096,                &bigalign  },
-        }};
+        std::array<VscBlockAllocInfo, 5> bai = {
+            {
+             /* 1 dummy header */
+                {1, sizeof(TestHeader), alignof(TestHeader), &header},
+             /* 10 uint32_t's */
+                {10, sizeof(uint32_t), alignof(uint32_t), &uints},
+             /* 3 "float vector 3"'s, with a required alignment of 16 */
+                {3, 12, 16, &floats},
+             {0, 4, 16, &zeroarray},
+             {1, 1, 4096, &bigalign},
+             }
+        };
 
-        std::array<void*, bai.size()> ptrs{};
+        std::array<void *, bai.size()> ptrs{};
 
         int r = vsc_block_alloc(ptrs.data(), bai.data(), bai.size(), 0);
         REQUIRE(r == 0);
@@ -131,11 +135,11 @@ TEST_CASE("align", "[memory]") {
         if(!block)
             throw std::bad_alloc();
 
-        CHECK(header    == ptrs[0]);
-        CHECK(uints     == ptrs[1]);
-        CHECK(floats    == ptrs[2]);
+        CHECK(header == ptrs[0]);
+        CHECK(uints == ptrs[1]);
+        CHECK(floats == ptrs[2]);
         CHECK(zeroarray == ptrs[3]);
-        CHECK(bigalign  == ptrs[4]);
+        CHECK(bigalign == ptrs[4]);
         CHECK(zeroarray == nullptr);
 
         for(size_t i = 0; i < bai.size(); ++i) {
@@ -149,7 +153,7 @@ TEST_CASE("align", "[memory]") {
                 continue;
 
             if(i > 0)
-                CHECK(ptrs[i] > ptrs[i-1]);
+                CHECK(ptrs[i] > ptrs[i - 1]);
             CHECK(VSC_IS_ALIGNED(ptrs[i], b->alignment));
             CHECK((uintptr_t)ptrs[i] % b->alignment == 0);
         }
@@ -169,17 +173,18 @@ TEST_CASE("align", "[memory]") {
  * if b1 is  8-byte aligned, b2 == b1 + 64 + 8
  * if b2 is 16-byte aligned, b2 == b1 + 64
  */
-TEST_CASE("block allocate test next closest alignment", "[memory]") {
-    TestAllocator<2048, 8> t8;
+TEST_CASE("block allocate test next closest alignment", "[memory]")
+{
+    TestAllocator<2048, 8>  t8;
     TestAllocator<2048, 16> t16;
 
     VscBlockAllocInfo bai[2] = {
-        {1,   64,  8, nullptr},
+        {1, 64,   8,  nullptr},
         {1, 1024, 16, nullptr},
     };
 
     void *ptrs8[2];
-    int r = vsc_block_xalloc(t8, ptrs8, bai, 2, 0);
+    int   r = vsc_block_xalloc(t8, ptrs8, bai, 2, 0);
     REQUIRE(r == 0);
 
     uintptr_t rptr8[2] = {
@@ -210,20 +215,21 @@ TEST_CASE("block allocate test next closest alignment", "[memory]") {
     CHECK(rptr16[1] == rptr16[0] + bai[0].element_size);
 }
 
-TEST_CASE("zero", "[memory]") {
-    uint8_t *p;
+TEST_CASE("zero", "[memory]")
+{
+    uint8_t         *p;
     vsc_ptr<uint8_t> _p;
 
-    p = (uint8_t*)vsc_calloc(1024, 1);
+    p = (uint8_t *)vsc_calloc(1024, 1);
     REQUIRE(p != nullptr);
     _p.reset(p);
 
     for(size_t i = 0; i < 1024; ++i) {
-         CHECK(p[i] == 0);
-         p[i] = UINT8_MAX;
+        CHECK(p[i] == 0);
+        p[i] = UINT8_MAX;
     }
 
-    int ret = vsc_xalloc_ex(vsclib_system_allocator, (void**)&p, 2048, VSC_ALLOC_REALLOC | VSC_ALLOC_ZERO, 0);
+    int ret = vsc_xalloc_ex(vsclib_system_allocator, (void **)&p, 2048, VSC_ALLOC_REALLOC | VSC_ALLOC_ZERO, 0);
     REQUIRE(ret == 0);
     REQUIRE(p != nullptr);
     (void)_p.release();
@@ -237,18 +243,19 @@ TEST_CASE("zero", "[memory]") {
     }
 }
 
-TEST_CASE("realloc", "[memory]") {
-    uint8_t *p;
+TEST_CASE("realloc", "[memory]")
+{
+    uint8_t      *p;
     vsc_ptr<void> _p;
 
-    p = (uint8_t*)vsc_malloc(10);
+    p = (uint8_t *)vsc_malloc(10);
     REQUIRE(p != nullptr);
     _p.reset(p);
 
     for(size_t i = 0; i < 10; ++i)
         p[i] = 0xFE;
 
-    uint8_t *p2 = (uint8_t*)vsc_realloc(p, 100);
+    uint8_t *p2 = (uint8_t *)vsc_realloc(p, 100);
     REQUIRE(p2 != nullptr);
     (void)_p.release();
     _p.reset(p2);

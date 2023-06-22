@@ -4,9 +4,10 @@
 #include <sstream>
 #include "catch.hpp"
 
-TEST_CASE("fopen", "[io]") {
-    int r;
-    FILE *fp = nullptr;
+TEST_CASE("fopen", "[io]")
+{
+    int            r;
+    FILE          *fp = nullptr;
     vsc::stdio_ptr _fp;
 
     r = vsc_fopen(VSC_DEVNULL, "rb", &fp);
@@ -14,9 +15,10 @@ TEST_CASE("fopen", "[io]") {
     REQUIRE(r == 0);
 }
 
-TEST_CASE("searchpath", "[io]") {
-    int r;
-    char *s;
+TEST_CASE("searchpath", "[io]")
+{
+    int    r;
+    char  *s;
     size_t len;
 
 #if defined(_WIN32)
@@ -37,10 +39,10 @@ extern "C" int vsc_test_strerror_r(int errnum, char *buf, size_t buflen);
 TEST_CASE("fperror", "[io]")
 {
     vsc::stdio_ptr _fp;
-    FILE           *fp;
+    FILE          *fp;
 
     char buf[1024] = {0};
-    fp = fmemopen(buf, sizeof(buf) - 1, "wb");
+    fp             = fmemopen(buf, sizeof(buf) - 1, "wb");
     _fp.reset(fp);
     REQUIRE(fp != nullptr);
 
@@ -58,8 +60,7 @@ TEST_CASE("fperror", "[io]")
     ss << "something 10: End of file\n"
        << "something dead: " << std::string_view(membuf) << "\n"
        << "something funny: Unknown error ' LEL'\n"
-       << "something sensitive: Unknown error 0x20feee4c\n"
-       ;
+       << "something sensitive: Unknown error 0x20feee4c\n";
     REQUIRE(std::string_view(buf) == ss.str());
 }
 

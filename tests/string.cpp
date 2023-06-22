@@ -6,53 +6,62 @@
 using namespace std::string_view_literals;
 using vsc::vsc_ptr;
 
-TEST_CASE("strjoin", "[string]") {
-    SECTION("correct_usage", "") {
+TEST_CASE("strjoin", "[string]")
+{
+    SECTION("correct_usage", "")
+    {
         TestAllocator<64> allocator;
-        const char *actual = vsc_strjoina(allocator, "/", "/some", "filesystem", "path", nullptr);
+        const char       *actual = vsc_strjoina(allocator, "/", "/some", "filesystem", "path", nullptr);
         REQUIRE(actual);
         REQUIRE(strcmp("/some/filesystem/path", actual) == 0);
     }
 
-    SECTION("null_delim", "") {
+    SECTION("null_delim", "")
+    {
         TestAllocator<64> allocator;
-        const char *actual = vsc_strjoina(allocator, nullptr, "/some", "filesystem", "path", nullptr);
+        const char       *actual = vsc_strjoina(allocator, nullptr, "/some", "filesystem", "path", nullptr);
         REQUIRE(actual == nullptr);
     }
 
-    SECTION("empty") {
+    SECTION("empty")
+    {
         TestAllocator<64> allocator;
-        const char *actual = vsc_strjoina(allocator, "whatever", nullptr);
+        const char       *actual = vsc_strjoina(allocator, "whatever", nullptr);
         REQUIRE(actual);
         REQUIRE(strcmp("", actual) == 0);
     }
 }
 
-TEST_CASE("strnjoin", "[string]") {
-    SECTION("correct_usage", "") {
-        TestAllocator<64> allocator;
+TEST_CASE("strnjoin", "[string]")
+{
+    SECTION("correct_usage", "")
+    {
+        TestAllocator<64>           allocator;
         std::array<const char *, 3> elems{"/some", "filesystem", "path"};
-        const char *actual = vsc_strnjoina(allocator, "/", elems.data(), elems.size());
+        const char                 *actual = vsc_strnjoina(allocator, "/", elems.data(), elems.size());
         REQUIRE(actual);
         REQUIRE(strcmp("/some/filesystem/path", actual) == 0);
     }
 
-    SECTION("null_delim", "") {
-        TestAllocator<64> allocator;
+    SECTION("null_delim", "")
+    {
+        TestAllocator<64>           allocator;
         std::array<const char *, 3> elems{"/some", "filesystem", "path"};
-        const char *actual = vsc_strnjoina(allocator, nullptr, elems.data(), elems.size());
+        const char                 *actual = vsc_strnjoina(allocator, nullptr, elems.data(), elems.size());
         REQUIRE(actual == nullptr);
     }
 
-    SECTION("empty", "") {
+    SECTION("empty", "")
+    {
         TestAllocator<64> allocator;
-        const char *actual = vsc_strnjoina(allocator, "whatever", nullptr, 0);
+        const char       *actual = vsc_strnjoina(allocator, "whatever", nullptr, 0);
         REQUIRE(actual);
         REQUIRE(strcmp("", actual) == 0);
     }
 }
 
-TEST_CASE("strdupr", "[string]") {
+TEST_CASE("strdupr", "[string]")
+{
     std::string_view original = "****hello, world****"sv;
 
     TestAllocator<64> allocator;
@@ -62,7 +71,8 @@ TEST_CASE("strdupr", "[string]") {
     REQUIRE(strcmp("hello, world", actual) == 0);
 }
 
-TEST_CASE("asprintf", "[string]") {
+TEST_CASE("asprintf", "[string]")
+{
     TestAllocator<64> allocator;
 
     const char *actual = vsc_asprintfa(allocator, "****%s, %s****", "hello", "world");
@@ -70,37 +80,45 @@ TEST_CASE("asprintf", "[string]") {
     REQUIRE(strcmp("****hello, world****", actual) == 0);
 }
 
-static void test_for_each_delim(std::string_view input, const std::vector<std::string_view>& expected) {
+static void test_for_each_delim(std::string_view input, const std::vector<std::string_view>& expected)
+{
     std::vector<std::string_view> actual;
     actual.reserve(expected.size());
 
-    int r = vsc_for_each_delim(input.data(), input.data() + input.size(), ',', [](const char *b, const char *e, void *user){
-        std::string_view tok(b, e - b);
-        std::vector<std::string_view> *out = reinterpret_cast<std::vector<std::string_view>*>(user);
-        out->push_back(tok);
-        return 0;
-    }, &actual);
+    int r = vsc_for_each_delim(
+        input.data(), input.data() + input.size(), ',',
+        [](const char *b, const char *e, void *user) {
+            std::string_view               tok(b, e - b);
+            std::vector<std::string_view> *out = reinterpret_cast<std::vector<std::string_view> *>(user);
+            out->push_back(tok);
+            return 0;
+        },
+        &actual);
 
     REQUIRE(expected == actual);
     REQUIRE(0 == r);
 }
 
-TEST_CASE("for_each_delim, w/o trailing delimiter", "[string]") {
+TEST_CASE("for_each_delim, w/o trailing delimiter", "[string]")
+{
     std::vector<std::string_view> expected = {"a", "b", "c", "d", "", "", "sdf\nfds", "d"};
     test_for_each_delim("a,b,c,d,,,sdf\nfds,d"sv, expected);
 }
 
-TEST_CASE("for_each_delim, w/ trailing delimiter", "[string]") {
+TEST_CASE("for_each_delim, w/ trailing delimiter", "[string]")
+{
     std::vector<std::string_view> expected = {"a", "b", "c", "d", "", "", "sdf\nfds", ""};
     test_for_each_delim("a,b,c,d,,,sdf\nfds,"sv, expected);
 }
 
-TEST_CASE("for_each_delim, w/ leading delimiter", "[string]") {
+TEST_CASE("for_each_delim, w/ leading delimiter", "[string]")
+{
     std::vector<std::string_view> expected = {"", "b", "c", "d", "", "", "sdf\nfds", ""};
     test_for_each_delim(",b,c,d,,,sdf\nfds,"sv, expected);
 }
 
-TEST_CASE("for_each_delim, pass-through return code", "[string]") {
+TEST_CASE("for_each_delim, pass-through return code", "[string]")
+{
     std::vector<std::string_view> expected = {"a", "b"};
 
     std::vector<std::string_view> actual;
@@ -108,22 +126,26 @@ TEST_CASE("for_each_delim, pass-through return code", "[string]") {
 
     std::string_view input = "a,b,c,d"sv;
 
-    int r = vsc_for_each_delim(input.data(), input.data() + input.size(), ',', [](const char *b, const char *e, void *user) {
-        std::string_view tok(b, e - b);
+    int r = vsc_for_each_delim(
+        input.data(), input.data() + input.size(), ',',
+        [](const char *b, const char *e, void *user) {
+            std::string_view tok(b, e - b);
 
-        if(tok == "c"sv)
-            return VSC_ERROR_EOF; /* Any error will do.*/
+            if(tok == "c"sv)
+                return VSC_ERROR_EOF; /* Any error will do.*/
 
-        std::vector<std::string_view> *out = reinterpret_cast<std::vector<std::string_view>*>(user);
-        out->push_back(tok);
-        return 0;
-    }, &actual);
+            std::vector<std::string_view> *out = reinterpret_cast<std::vector<std::string_view> *>(user);
+            out->push_back(tok);
+            return 0;
+        },
+        &actual);
 
     REQUIRE(expected == actual);
     REQUIRE(VSC_ERROR_EOF == r);
 }
 
-TEST_CASE("getdelim", "[string]") {
+TEST_CASE("getdelim", "[string]")
+{
     std::ofstream f;
     f.exceptions(std::ios_base::badbit | std::ios_base::failbit | std::ios_base::eofbit);
     f.open("getdelim-test.txt", std::ios_base::binary);
@@ -133,8 +155,8 @@ TEST_CASE("getdelim", "[string]") {
     vsc::stdio_ptr fp(fopen("getdelim-test.txt", "rb"));
     REQUIRE(fp);
 
-    char *lineptr = nullptr;
-    size_t n = 0;
+    char  *lineptr = nullptr;
+    size_t n       = 0;
 
     vsc_ssize_t nread;
 
@@ -159,13 +181,14 @@ TEST_CASE("getdelim", "[string]") {
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-TEST_CASE("character conversions", "[string]") {
-    size_t len;
+TEST_CASE("character conversions", "[string]")
+{
+    size_t                len;
     vsc::vsc_ptr<wchar_t> _ws;
-    vsc::vsc_ptr<char> _mb;
-    wchar_t *ws;
-    char *mb;
-    int r;
+    vsc::vsc_ptr<char>    _mb;
+    wchar_t              *ws;
+    char                 *mb;
+    int                   r;
 
     r = vsc_cstrtowstr("abcd", CP_UTF8, &ws, &len);
     REQUIRE(r == 0);

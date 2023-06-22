@@ -6,13 +6,14 @@
 
 const static char crcinput[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-TEST_CASE("crc32", "[hash]") {
+TEST_CASE("crc32", "[hash]")
+{
     CHECK(vsc_crc32(nullptr, 0) == 0);
     CHECK(vsc_crc32(crcinput, sizeof(crcinput)) == 0xcbf43926);
 }
 
-TEST_CASE("crc32c", "[hash]") {
-
+TEST_CASE("crc32c", "[hash]")
+{
     uint8_t buf[32];
 
     CHECK(vsc_crc32c(nullptr, 0) == 0);
@@ -36,6 +37,7 @@ TEST_CASE("crc32c", "[hash]") {
     CHECK(vsc_crc32c(buf, sizeof(buf)) == 0x113fdb5c);
 
     /* An iSCSI - SCSI Read (10) Command PDU */
+    // clang-format off
     const static uint8_t iscsi_read[] = {
         0x01, 0xc0, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
@@ -50,10 +52,12 @@ TEST_CASE("crc32c", "[hash]") {
         0x02, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
     };
+    // clang-format on
     CHECK(vsc_crc32c(iscsi_read, sizeof(iscsi_read)) == 0xd9963a56);
 }
 
-TEST_CASE("hash", "[hash]") {
+TEST_CASE("hash", "[hash]")
+{
     CHECK(vsc_hash(nullptr, 100) == VSC_INVALID_HASH);
     CHECK(vsc_hash_string(nullptr) == VSC_INVALID_HASH);
 

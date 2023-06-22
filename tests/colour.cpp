@@ -9,7 +9,8 @@ static std::ostream& operator<<(std::ostream& os, const VscColour32& c) noexcept
 
 TEST_CASE("colour conversions", "[colour]")
 {
-    SECTION("rgb565") {
+    SECTION("rgb565")
+    {
         CHECK(0x0000u == VSC_COLOUR_RGB565(0x00, 0x00, 0x00));
         CHECK(0xF800u == VSC_COLOUR_RGB565(0xFF, 0x00, 0x00));
         CHECK(0x07E0u == VSC_COLOUR_RGB565(0x00, 0xFF, 0x00));
@@ -29,7 +30,8 @@ TEST_CASE("colour conversions", "[colour]")
         CHECK(vsc_colour_unpack_rgb565(0xFFFFu) == vsc::Colour32{0xFF, 0xFF, 0xFF, 0xFF});
     }
 
-    SECTION("argb1555") {
+    SECTION("argb1555")
+    {
         CHECK(0x0000u == VSC_COLOUR_ARGB1555(0x00, 0x00, 0x00, 0x00));
         CHECK(0x8000u == VSC_COLOUR_ARGB1555(0xFF, 0x00, 0x00, 0x00));
         CHECK(0x7C00u == VSC_COLOUR_ARGB1555(0x00, 0xFF, 0x00, 0x00));
@@ -52,7 +54,8 @@ TEST_CASE("colour conversions", "[colour]")
         CHECK(vsc_colour_unpack_argb1555(0xFFFFu) == VscColour32{0xFF, 0xFF, 0xFF, 0xFF});
     }
 
-    SECTION("xrgb1555") {
+    SECTION("xrgb1555")
+    {
         CHECK(0x8000u == VSC_COLOUR_XRGB1555(0x00, 0x00, 0x00));
         CHECK(0xFC00u == VSC_COLOUR_XRGB1555(0xFF, 0x00, 0x00));
         CHECK(0x83E0u == VSC_COLOUR_XRGB1555(0x00, 0xFF, 0x00));
@@ -72,7 +75,8 @@ TEST_CASE("colour conversions", "[colour]")
         CHECK(vsc_colour_unpack_xrgb1555(0xFFFFu) == VscColour32{0xFF, 0xFF, 0xFF, 0xFF});
     }
 
-    SECTION("argb8888") {
+    SECTION("argb8888")
+    {
         CHECK(0x00000000u == VSC_COLOUR_ARGB8888(0x00, 0x00, 0x00, 0x00));
         CHECK(0xFF000000u == VSC_COLOUR_ARGB8888(0xFF, 0x00, 0x00, 0x00));
         CHECK(0x00FF0000u == VSC_COLOUR_ARGB8888(0x00, 0xFF, 0x00, 0x00));
@@ -95,7 +99,8 @@ TEST_CASE("colour conversions", "[colour]")
         CHECK(vsc_colour_unpack_argb8888(0xFFFFFFFFu) == VscColour32{0xFF, 0xFF, 0xFF, 0xFF});
     }
 
-    SECTION("xrgb8888") {
+    SECTION("xrgb8888")
+    {
         CHECK(0xFF000000u == VSC_COLOUR_XRGB8888(0x00, 0x00, 0x00));
         CHECK(0xFF000000u == VSC_COLOUR_XRGB8888(0x00, 0x00, 0x00));
         CHECK(0xFFFF0000u == VSC_COLOUR_XRGB8888(0xFF, 0x00, 0x00));

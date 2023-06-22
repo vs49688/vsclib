@@ -15,13 +15,14 @@ static void gen_sine_wave(int16_t *buf, size_t size, uint32_t rate, double ampli
     double d = 0;
     for(size_t i = 0; i < size; ++i) {
         /* y = A * sin(B(x + C)) + D */
-        d = fmod(d + step, twopi);
+        d      = fmod(d + step, twopi);
         buf[i] = (int16_t)(amp * sin(d));
     }
 }
 
-TEST_CASE("wav", "[wav]") {
-    int r;
+TEST_CASE("wav", "[wav]")
+{
+    int            r;
     vsc::stdio_ptr f;
 
     std::vector<int16_t> x(11025 * 5);
@@ -35,12 +36,12 @@ TEST_CASE("wav", "[wav]") {
     f.reset(fopen("middlec-5s.wav", "rb"));
     REQUIRE(f != nullptr);
 
-    void *ptr;
+    void  *ptr;
     size_t size;
     r = vsc_freadall(&ptr, &size, f.get());
     REQUIRE(r == 0);
 
-    CHECK(110294     == size);
+    CHECK(110294 == size);
     CHECK(2116742294 == vsc_crc32c(ptr, size));
     vsc_free(ptr);
 }
