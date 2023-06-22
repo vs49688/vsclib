@@ -23,7 +23,7 @@
 #include <assert.h>
 #include "platform.h"
 
-#if defined(VSC_DEBUG)
+#if VSC_DEBUG
 #define vsc_assert(x) assert(x)
 #else
 #define vsc_assert(x)

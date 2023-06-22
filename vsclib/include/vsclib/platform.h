@@ -29,15 +29,14 @@
 #include <limits.h>
 #include <stdint.h>
 
+#if !defined(VSC_DEBUG)
+#define VSC_DEBUG 0
+#endif
+
 #if defined(_WIN32)
 #define VSC_DEVNULL "NUL"
 #else
 #define VSC_DEVNULL "/dev/null"
-#endif
-
-/* CMake sets NDEBUG this in all non-debug builds, so just use that. */
-#if !defined(VSC_DEBUG) && !defined(NDEBUG)
-#define VSC_DEBUG
 #endif
 
 #ifdef __GNUC__
