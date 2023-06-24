@@ -16,4 +16,17 @@
 
 #cmakedefine VSC_HAVE_STPCPY
 
+/*
+ * Macros for sizeof() various types.
+ * Add new ones as needed.
+ */
+#cmakedefine VSC_SIZEOF_INT @VSC_SIZEOF_INT@
+
+#cmakedefine VSC_SIZEOF_LONG @VSC_SIZEOF_LONG@
+
+#cmakedefine VSC_SIZEOF_LONG_LONG @VSC_SIZEOF_LONG_LONG@
+
+#cmakedefine VSC_SIZEOF_SIZE_T @VSC_SIZEOF_SIZE_T@
+
+
 #endif /* VSCLIB_CONFIG_H_ */

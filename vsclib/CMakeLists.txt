@@ -16,6 +16,11 @@ check_symbol_exists(stpcpy "string.h" VSC_HAVE_STPCPY)
 
 check_symbol_exists(strcpy "string.h" VSC_HAVE_STRCPY)
 
+check_type_size("int" VSC_SIZEOF_INT LANGUAGE C)
+check_type_size("long" VSC_SIZEOF_LONG LANGUAGE C)
+check_type_size("long long" VSC_SIZEOF_LONG_LONG LANGUAGE C)
+check_type_size("size_t" VSC_SIZEOF_SIZE_T LANGUAGE C)
+
 if(MINGW OR WIN32)
 	set(OS_FILES
 			searchpath_win32.c
