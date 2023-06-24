@@ -22,28 +22,6 @@
 #include <vsclib/error.h>
 #include <vsclib/assert.h>
 #include <vsclib/mem.h>
-#include <vsclib/types.h>
-
-uint8_t vsc_ctz(size_t x)
-{
-    vsc_assert(VSC_IS_POT(x));
-    vsc_assert(x != 0);
-
-#if defined(__GNUC__) && VSC_SIZEOF_SIZE_T <= VSC_SIZEOF_INT
-    return __builtin_ctz((unsigned int)x);
-#elif defined(__GNUC__) && VSC_SIZEOF_SIZE_T <= VSC_SIZEOF_LONG
-    return __builtin_ctzl((unsigned long)x);
-#elif defined(__GNUC__) && VSC_SIZEOF_SIZE_T <= VSC_SIZEOF_LONG_LONG
-    return __builtin_ctzll((unsigned long long)x);
-#else
-    uint8_t pwr = 0;
-    while(x > 1) {
-        ++pwr;
-        x >>= 1;
-    }
-    return pwr;
-#endif
-}
 
 void *vsc_xalloc(const VscAllocator *a, size_t size)
 {

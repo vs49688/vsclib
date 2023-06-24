@@ -57,6 +57,8 @@ add_library(vsclib STATIC
 		strjoin.c
 
 		memory.c
+		ctz.c
+
 		sysmem.c
 		time.c
 
