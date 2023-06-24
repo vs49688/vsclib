@@ -133,10 +133,10 @@ void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space);
  *
  * \return The number of trailing zeros in the input integer.
  *
- * \remark This function uses the GCC-specific builtin `__builtin_ctz` when
- * available, otherwise it falls back to a simple loop.
+ * \remark This function uses the GCC-specific `__builtin_ctz*` family of
+ * functions when available, otherwise it falls back to a simple loop.
  */
-uint8_t vsc_ctz(unsigned int x);
+uint8_t vsc_ctz(size_t x);
 
 /**
  * \brief Invoke vsc_xalloc() with the system's default allocator.
