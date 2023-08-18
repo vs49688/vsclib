@@ -197,11 +197,11 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
     for(size_t i = hm->num_buckets; i < nelem; ++i)
         reset_bucket(hm->buckets + i);
 
-    hm->num_buckets = nelem;
-
     /* Shortcut - no items. no problem! */
-    if(hm->size == 0)
+    if(hm->size == 0) {
+        hm->num_buckets = nelem;
         return 0;
+    }
 
     /*
      * Allocate a temp bucket list (hue) to work with. Note that this
@@ -209,8 +209,20 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
      * allocators.
      */
     tmpbkts = vsc_xcalloc(hm->allocator, nelem, sizeof(VscHashMapBucket));
-    if(tmpbkts == NULL)
+    if(tmpbkts == NULL) {
+
+        /*
+         * This is a bit of a sticky situation - allocation has failed,
+         * and now we have more buckets that we can't redistribute in to.
+         * This also means it's not safe to rely on another realloc to shrink
+         * it again.
+         *
+         * Our only safe option is to waste the new memory :(
+         */
         return VSC_ERROR(ENOMEM);
+    }
+
+    hm->num_buckets = nelem;
 
     for(size_t i = 0; i < nelem; ++i)
         reset_bucket(tmpbkts + i);
