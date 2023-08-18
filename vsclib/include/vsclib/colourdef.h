@@ -23,11 +23,13 @@
 #include <stdint.h>
 #include "macros.h"
 
-/* https://www.mail-archive.com/pixman@lists.freedesktop.org/msg01866.html */
+#define VSC_COLOUR_C1(c)       ((c)&0x01u)
+#define VSC_COLOUR_C5(c)       ((c)&0x1Fu)
+#define VSC_COLOUR_C6(c)       ((c)&0x3Fu)
 
-#define VSC_COLOUR_C5_TO_C8(c) ((((c)&0x1Fu) * 527u + 23u) >> 6u)
-#define VSC_COLOUR_C6_TO_C8(c) ((((c)&0x3Fu) * 259u + 33u) >> 6u)
-#define VSC_COLOUR_C1_TO_C8(c) ((((c)&0x01u) * 255u + 0u) >> 0u)
+#define VSC_COLOUR_C1_TO_C8(c) (VSC_COLOUR_C1(c) * 255u)
+#define VSC_COLOUR_C5_TO_C8(c) ((VSC_COLOUR_C5(c) << 3) | (VSC_COLOUR_C5(c) >> 2))
+#define VSC_COLOUR_C6_TO_C8(c) ((VSC_COLOUR_C6(c) << 2) | (VSC_COLOUR_C6(c) >> 4))
 
 #define VSC_COLOUR_ARGB1555(a, r, g, b) \
     (((VSC_U8(a) >> 7u) << 15u) | ((VSC_U8(r) >> 3u) << 10u) | ((VSC_U8(g) >> 3u) << 5u) | ((VSC_U8(b) >> 3u) << 0u))
