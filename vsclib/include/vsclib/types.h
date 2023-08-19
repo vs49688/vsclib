@@ -32,7 +32,7 @@ typedef SSIZE_T vsc_ssize_t;
 typedef ssize_t vsc_ssize_t;
 #endif
 
-#if defined(VSC_HAVE_MAX_ALIGN_T)
+#if VSC_HAVE_MAX_ALIGN_T
 typedef max_align_t vsc_max_align_t;
 #else
 typedef union {

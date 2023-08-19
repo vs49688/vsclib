@@ -48,7 +48,7 @@ int vsc_wav_write(FILE *f, int16_t *data, size_t nsamples, uint32_t sample_rate,
         return VSC_ERROR(EIO);
 
         /* NB: This big-endian path is slow, inefficient, and UNTESTED. */
-#if defined(VSC_ENDIAN_BIG)
+#if VSC_ENDIAN_BIG
     for(size_t i = 0; i < nsamples * nchannels; ++i) {
         int16_t smp = vsc_native_to_be16(data[i]);
         if(fwrite(&smp, sizeof(smp), 1, f) != 1)

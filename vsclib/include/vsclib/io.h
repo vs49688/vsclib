@@ -173,7 +173,7 @@ static inline int64_t vsc_swap_int64(int64_t x)
     VSCLIB_DECLARE_XXX(native, foreign, 32)           \
     VSCLIB_DECLARE_XXX(native, foreign, 64)
 
-#if defined(VSC_ENDIAN_BIG)
+#if VSC_ENDIAN_BIG
 VSCLIB_DECLARE_IO_CONVERTERS(b, l)
 #else
 VSCLIB_DECLARE_IO_CONVERTERS(l, b)

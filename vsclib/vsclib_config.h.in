@@ -6,15 +6,15 @@
 #ifndef VSCLIB_CONFIG_H_
 #define VSCLIB_CONFIG_H_
 
-#cmakedefine VSC_ENDIAN_BIG
+#cmakedefine01 VSC_ENDIAN_BIG
 
-#cmakedefine VSC_HAVE_MAX_ALIGN_T
+#cmakedefine01 VSC_HAVE_MAX_ALIGN_T
 
-#cmakedefine VSC_HAVE_GETGRENT_R
+#cmakedefine01 VSC_HAVE_GETGRENT_R
 
-#cmakedefine VSC_HAVE_STRCPY
+#cmakedefine01 VSC_HAVE_STRCPY
 
-#cmakedefine VSC_HAVE_STPCPY
+#cmakedefine01 VSC_HAVE_STPCPY
 
 /*
  * Macros for sizeof() various types.

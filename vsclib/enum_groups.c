@@ -40,7 +40,7 @@
 int vsc_enum_groupsa(struct passwd *passwd, VscEnumGroupsProc proc, void *user, const VscAllocator *a)
 {
     /* Absolutely disgusting. */
-#if defined(_WIN32) || !defined(VSC_HAVE_GETGRENT_R)
+#if defined(_WIN32) || !VSC_HAVE_GETGRENT_R
     (void)passwd;
     (void)proc;
     (void)user;
