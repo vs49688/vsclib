@@ -154,20 +154,20 @@ void vsc_aligned_free(void *ptr)
  */
 void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space)
 {
-    void *r = NULL;
+    uintptr_t r = 0;
     if(size <= *space) {
-        char  *p1 = *ptr;
-        char  *p2 = (char *)((size_t)(p1 + (alignment - 1)) & -alignment);
-        size_t d  = (size_t)(p2 - p1);
+        uintptr_t p1 = (uintptr_t)*ptr;
+        uintptr_t p2 = (uintptr_t)((size_t)(p1 + (alignment - 1)) & -alignment);
+        size_t    d  = (size_t)(p2 - p1);
 
         if(d <= *space - size) {
             r    = p2;
-            *ptr = r;
+            *ptr = (void *)r;
             *space -= d;
         }
     }
 
-    return r;
+    return (void *)r;
 }
 
 int vsc_block_xalloc(const VscAllocator *a, void **ptr, const VscBlockAllocInfo *blockinfo, size_t nblocks, uint32_t flags)
