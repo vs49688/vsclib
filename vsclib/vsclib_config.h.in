@@ -16,6 +16,12 @@
 
 #cmakedefine01 VSC_HAVE_STPCPY
 
+#cmakedefine01 VSC_HAVE_INTRIN_H
+
+#cmakedefine01 VSC_HAVE_BITSCANFORWARD
+
+#cmakedefine01 VSC_HAVE_BITSCANFORWARD64
+
 /*
  * Macros for sizeof() various types.
  * Add new ones as needed.
@@ -28,5 +34,6 @@
 
 #cmakedefine VSC_SIZEOF_SIZE_T @VSC_SIZEOF_SIZE_T@
 
+#cmakedefine VSC_SIZEOF_INT64_T @VSC_SIZEOF_INT64_T@
 
 #endif /* VSCLIB_CONFIG_H_ */

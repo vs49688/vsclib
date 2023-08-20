@@ -2,6 +2,8 @@ project(vsclib)
 
 include(TestBigEndian)
 include(CheckSymbolExists)
+include(CheckIncludeFiles)
+include(CheckCSourceCompiles)
 
 TEST_BIG_ENDIAN(VSC_ENDIAN_BIG)
 
@@ -13,13 +15,30 @@ check_symbol_exists(getgrent_r "grp.h" VSC_HAVE_GETGRENT_R)
 
 set(CMAKE_REQUIRED_DEFINITIONS)
 check_symbol_exists(stpcpy "string.h" VSC_HAVE_STPCPY)
-
 check_symbol_exists(strcpy "string.h" VSC_HAVE_STRCPY)
+
+# MSVC Intrinsics
+if(MSVC)
+	check_include_files(intrin.h VSC_HAVE_INTRIN_H)
+
+	check_c_source_compiles("
+	#include <intrin.h>
+	#pragma intrinsic(_BitScanForward)
+	int main(void) { unsigned long l; (void)_BitScanForward(&l, 1); return 0; }
+	" VSC_HAVE_BITSCANFORWARD)
+
+	check_c_source_compiles("
+	#include <intrin.h>
+	#pragma intrinsic(_BitScanForward64)
+	int main(void) { unsigned long l; (void)_BitScanForward64(&l, 1); return 0; }
+	" VSC_HAVE_BITSCANFORWARD64)
+endif()
 
 check_type_size("int" VSC_SIZEOF_INT LANGUAGE C)
 check_type_size("long" VSC_SIZEOF_LONG LANGUAGE C)
 check_type_size("long long" VSC_SIZEOF_LONG_LONG LANGUAGE C)
 check_type_size("size_t" VSC_SIZEOF_SIZE_T LANGUAGE C)
+check_type_size("int64_t" VSC_SIZEOF_INT64_T LANGUAGE C)
 
 if(MINGW OR WIN32)
 	set(OS_FILES

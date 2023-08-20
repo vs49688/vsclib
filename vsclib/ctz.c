@@ -19,6 +19,18 @@
 */
 #include <vsclib/mem.h>
 
+#if VSC_HAVE_INTRIN_H
+#include <intrin.h>
+#endif
+
+#if VSC_HAVE_BITSCANFORWARD
+#pragma intrinsic(_BitScanForward)
+#endif
+
+#if VSC_HAVE_BITSCANFORWARD64
+#pragma intrinsic(_BitScanForward64)
+#endif
+
 uint8_t vsc_ctz(size_t x)
 {
     vsc_assert(VSC_IS_POT(x));
@@ -30,6 +42,14 @@ uint8_t vsc_ctz(size_t x)
     return __builtin_ctzl((unsigned long)x);
 #elif defined(__GNUC__) && VSC_SIZEOF_SIZE_T <= VSC_SIZEOF_LONG_LONG
     return __builtin_ctzll((unsigned long long)x);
+#elif defined(_MSC_VER) && VSC_HAVE_BITSCANFORWARD && VSC_SIZEOF_SIZE_T <= VSC_SIZEOF_LONG
+    unsigned long l;
+    (void)_BitScanForward(&l, (unsigned long)x);
+    return (uint8_t)l;
+#elif defined(_MSC_VER) && VSC_HAVE_BITSCANFORWARD64 && VSC_SIZEOF_SIZE_T <= VSC_SIZEOF_INT64_T
+    unsigned long l;
+    (void)_BitScanForward64(&l, (unsigned __int64)x);
+    return (uint8_t)l;
 #else
     uint8_t pwr = 0;
     while(x > 1) {
