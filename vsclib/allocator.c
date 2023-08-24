@@ -46,37 +46,24 @@
 #include <vsclib/types.h>
 #include <vsclib/error.h>
 #include <vsclib/mem.h>
+#include "allocator_internal.h"
 
-#define MEMHDR_SIG ((uintptr_t)0xFEED5EEDFEED5EEDu) /* Formerly Chuck's */
-
-typedef struct MemHeader {
-    size_t size;
-    union {
-        struct {
-            size_t align_power : 8;
-            size_t reserved : VSC_SIZE_T_BITSIZE - 8;
-        };
-        size_t _pad;
-    };
-    uintptr_t sig;
-} MemHeader;
-
-static MemHeader *mem2hdr(void *p)
+MemHeader *vsc__allocator_mem2hdr(void *p)
 {
     MemHeader *hdr  = NULL;
     uintptr_t *pend = (uintptr_t *)VSC_ALIGN_DOWN(p, VSC_ALIGNOF(void *));
 
-    if(pend[-1] == MEMHDR_SIG)
+    if(pend[-1] == VSC__MEMHDR_SIG)
         hdr = (MemHeader *)pend - 1;
     else
         hdr = (MemHeader *)*(pend - 1);
 
     vsc_assert(VSC_IS_ALIGNED(hdr, VSC_ALIGNOF(MemHeader)));
-    vsc_assert(hdr->sig == MEMHDR_SIG);
+    vsc_assert(hdr->sig == VSC__MEMHDR_SIG);
     return hdr;
 }
 
-static void *hdr2mem(MemHeader *hdr, size_t alignment)
+void *vsc__allocator_hdr2mem(MemHeader *hdr, size_t alignment)
 {
     return vsc_align_up(hdr + 1, alignment);
 }
@@ -106,7 +93,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
 
     if(flags & VSC_ALLOC_REALLOC) {
         vsc_assert(*ptr != NULL);
-        hdr     = mem2hdr(*ptr);
+        hdr     = vsc__allocator_mem2hdr(*ptr);
         oldsize = hdr->size;
 
         /* If is an error for the alignment to decrease. */
@@ -120,7 +107,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
         return VSC_ERROR(ENOMEM);
 
     nhdr = (MemHeader *)p;
-    p    = hdr2mem(nhdr, alignment);
+    p    = vsc__allocator_hdr2mem(nhdr, alignment);
 
     vsc_assert(VSC_IS_ALIGNED(p, alignment));
     vsc_assert(VSC_IS_ALIGNED(nhdr, VSC_ALIGNOF(MemHeader)));
@@ -138,7 +125,7 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
     nhdr->size        = size;
     nhdr->align_power = vsc_ctz(alignment);
     nhdr->reserved    = 0;
-    nhdr->sig         = MEMHDR_SIG;
+    nhdr->sig         = VSC__MEMHDR_SIG;
 
     if(flags & VSC_ALLOC_REALLOC) {
         /*
@@ -162,7 +149,7 @@ static void free_(void *p, void *user)
     if(p == NULL)
         return;
 
-    vsc_sys_free(mem2hdr(p));
+    vsc_sys_free(vsc__allocator_mem2hdr(p));
 }
 
 static size_t size_(void *p, void *user)
@@ -171,7 +158,7 @@ static size_t size_(void *p, void *user)
     if(p == NULL)
         return 0;
 
-    return mem2hdr(p)->size;
+    return vsc__allocator_mem2hdr(p)->size;
 }
 
 static const VscAllocator default_allocator = {

@@ -77,6 +77,8 @@ add_library(vsclib STATIC
 		string.c
 
 		memory.c
+		allocator_internal.h
+
 		ctz.c
 
 		sysmem.c
