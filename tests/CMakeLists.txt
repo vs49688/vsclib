@@ -15,6 +15,8 @@ add_executable(vsclib_tests
         io.cpp
         colour.cpp
 
+        uuid.cpp
+
         strerror.c
 )
 
