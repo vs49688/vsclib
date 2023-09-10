@@ -94,6 +94,10 @@ add_library(vsclib STATIC
 
 		allocator.c
 
+		uuid.c
+		include/vsclib/uuiddef.h
+		include/vsclib/uuid.h
+
 		${OS_FILES}
 
 		vsclib_config.h.in
