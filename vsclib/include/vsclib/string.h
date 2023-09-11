@@ -30,6 +30,9 @@
 extern "C" {
 #endif
 
+int vsc_isdigit(int c);
+int vsc_isxdigit(int c);
+
 vsc_ssize_t vsc_getdelim(char **lineptr, size_t *n, int delim, FILE *stream);
 vsc_ssize_t vsc_getdelima(char **lineptr, size_t *n, int delim, FILE *stream, const VscAllocator *a);
 

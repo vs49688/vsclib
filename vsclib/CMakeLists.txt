@@ -74,6 +74,7 @@ add_library(vsclib STATIC
 		strcpy.c
 		stpcpy.c
 		strjoin.c
+		string.c
 
 		memory.c
 		ctz.c
