@@ -142,7 +142,7 @@ void vsc_hashmap_reset(VscHashMap *hm)
         ++_i, (idxname)          = ((idxname) + 1) % (hm)->num_buckets)
 
 static VscHashMapBucket *add_or_replace_bucket(const VscHashMap *hm, VscHashMapBucket *buckets, size_t n,
-                                               const VscHashMapBucket *bkt)
+                                               const VscHashMapBucket *bkt, int *added)
 {
     if(n == 0)
         return NULL;
@@ -153,7 +153,8 @@ static VscHashMapBucket *add_or_replace_bucket(const VscHashMap *hm, VscHashMapB
 
         /* Shortcut: use first empty bucket. */
         if(b->hash == VSC_INVALID_HASH) {
-            *b = *bkt;
+            *added = 1;
+            *b     = *bkt;
             return b;
         }
 
@@ -162,11 +163,13 @@ static VscHashMapBucket *add_or_replace_bucket(const VscHashMap *hm, VscHashMapB
 
         /* Duplicate key, replace it. */
         if(vsc_hashmap_compare(hm, bkt->key, b->key)) {
-            *b = *bkt;
+            *added = 0;
+            *b     = *bkt;
             return b;
         }
     }
 
+    *added = 0;
     return NULL;
 }
 
@@ -229,11 +232,13 @@ int vsc_hashmap_resize(VscHashMap *hm, size_t nelem)
 
     /* Now redistribute everything. */
     for(size_t i = 0; i < nelem; ++i) {
+        int               added;
         VscHashMapBucket *bkt = hm->buckets + i;
         if(bkt->hash == VSC_INVALID_HASH)
             continue;
 
-        bkt = add_or_replace_bucket(hm, tmpbkts, nelem, hm->buckets + i);
+        added = 0;
+        bkt   = add_or_replace_bucket(hm, tmpbkts, nelem, hm->buckets + i, &added);
         vsc_assert(bkt != NULL);
     }
 
@@ -308,6 +313,7 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
 {
     VscHashMapBucket tmpbkt;
     int              r;
+    int              added;
 
     validate(hm);
 
@@ -328,10 +334,14 @@ int vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value)
             return r;
     }
 
-    if(add_or_replace_bucket(hm, hm->buckets, hm->num_buckets, &tmpbkt) == NULL)
+    added = 0;
+    if(add_or_replace_bucket(hm, hm->buckets, hm->num_buckets, &tmpbkt, &added) == NULL)
         return VSC_ERROR(ENOSPC);
 
-    ++hm->size;
+    if(added) {
+        ++hm->size;
+    }
+
     return 0;
 }
 

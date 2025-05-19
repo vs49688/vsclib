@@ -175,6 +175,22 @@ TEST_CASE("hashmap disallow resize", "[hashmap]")
     CHECK(vsc_hashmap_insert(&hm, "c", nullptr) == 0);
 }
 
+TEST_CASE("hashmap check size", "[hashmap]")
+{
+    VscHashMap hm;
+    hmptr      _hm(&hm);
+    vsc_hashmap_init(&hm, hashproc, compareproc);
+    REQUIRE(vsc_hashmap_resize(&hm, 2) == 0);
+
+    CHECK(vsc_hashmap_insert(&hm, "a", nullptr) == 0);
+    CHECK(vsc_hashmap_insert(&hm, "b", nullptr) == 0);
+    CHECK(vsc_hashmap_size(&hm) == 2);
+
+    /* Replace the value for "b", the size should be the same. */
+    CHECK(vsc_hashmap_insert(&hm, "b", (void*)1) == 0);
+    CHECK(vsc_hashmap_size(&hm) == 2);
+}
+
 TEST_CASE("null keys", "[hashmap]")
 {
     VscHashMap hm;
