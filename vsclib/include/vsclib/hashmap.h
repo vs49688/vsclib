@@ -91,6 +91,24 @@ int    vsc_hashmap_resize(VscHashMap *hm, size_t nelem);
 int    vsc_hashmap_insert(VscHashMap *hm, const void *key, void *value);
 void  *vsc_hashmap_find_by_hash(const VscHashMap *hm, vsc_hash_t hash);
 void  *vsc_hashmap_find(const VscHashMap *hm, const void *key);
+
+/**
+ * @brief Update an existing value in the hash map.
+ *
+ * Unlike vsc_hashmao_inesrt(), this is guaranteed to _only_ update an existing value,
+ * i.e. it won't attempt a rebalance.
+ *
+ * @remark This is safe to use during the vsc_hashmap_enumerate() callback.
+ *
+ * @param hm    The hash map instance. Must not be NULL.
+ * @param key   The key to update.
+ * @param value The new value.
+ *
+ * @return If the key exists, the value is set to \p value, returns 1.
+ *         If the key doesn't exist, returns 0.
+ */
+int    vsc_hashmap_update(VscHashMap *hm, const void *key, void *value);
+
 void  *vsc_hashmap_remove(VscHashMap *hm, const void *key);
 size_t vsc_hashmap_size(const VscHashMap *hm);
 

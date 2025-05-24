@@ -421,6 +421,18 @@ void *vsc_hashmap_find(const VscHashMap *hm, const void *key)
     return bkt->value;
 }
 
+int vsc_hashmap_update(VscHashMap *hm, const void *key, void *value)
+{
+    VscHashMapBucket *bkt;
+
+    /* NB: Safe const-away cast. */
+    if((bkt = (VscHashMapBucket *)find_bucket(hm, key, NULL)) == NULL)
+        return 1;
+
+    bkt->value = value;
+    return 0;
+}
+
 void *vsc_hashmap_remove(VscHashMap *hm, const void *key)
 {
     VscHashMapBucket *bkt;
