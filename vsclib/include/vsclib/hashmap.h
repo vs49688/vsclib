@@ -109,7 +109,7 @@ void  *vsc_hashmap_find(const VscHashMap *hm, const void *key);
  * @return If the key exists, the value is set to \p value, returns 1.
  *         If the key doesn't exist, returns 0.
  */
-int    vsc_hashmap_update(VscHashMap *hm, const void *key, void *value);
+int    vsc_hashmap_update(const VscHashMap *hm, const void *key, void *value);
 void  *vsc_hashmap_remove(VscHashMap *hm, const void *key);
 size_t vsc_hashmap_size(const VscHashMap *hm);
 size_t vsc_hashmap_capacity(const VscHashMap *hm);
