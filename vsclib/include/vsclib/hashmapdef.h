@@ -42,20 +42,6 @@ typedef struct VscHashMapBucket {
     void       *value;
 } VscHashMapBucket;
 
-typedef struct VscHashMap {
-    size_t                 size;
-    size_t                 num_buckets;
-    VscHashMapBucket      *buckets;
-    VscHashMapResizePolicy resize_policy;
-    struct {
-        uint16_t num, den;
-    } load_min;
-    struct {
-        uint16_t num, den;
-    } load_max;
-    VscHashMapHashProc    hash_proc;
-    VscHashMapCompareProc compare_proc;
-    const VscAllocator   *allocator;
-} VscHashMap;
+typedef struct VscHashMap VscHashMap;
 
 #endif /* _VSCLIB_HASHMAPDEF_H */

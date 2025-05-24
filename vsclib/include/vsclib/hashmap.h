@@ -46,9 +46,11 @@ vsc_hash_t vsc_hashmap_hash(const VscHashMap *hm, const void *key);
  */
 int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b);
 
-void vsc_hashmap_inita(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a);
-void vsc_hashmap_init(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompareProc compare);
-int  vsc_hashmap_clear(VscHashMap *hm);
+VscHashMap *vsc_hashmap_alloca(VscHashMapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a);
+VscHashMap *vsc_hashmap_alloc(VscHashMapHashProc hash, VscHashMapCompareProc compare);
+void        vsc_hashmap_free(VscHashMap *hm);
+
+int vsc_hashmap_clear(VscHashMap *hm);
 
 /**
  * @brief Configure the minimum and maximum load factors of the hash map.
@@ -71,7 +73,7 @@ int vsc_hashmap_configure(VscHashMap *hm, uint16_t min_num, uint16_t min_den, ui
 /**
  * @brief Reset a hash map to its default state, releasing all memory.
  *
- * It may be used as if `vsc_hashmap_init()` has just been called.
+ * It may be used as if `vsc_hashmap_alloc()` has just been called.
  *
  * @param hm The hash map instance. Must not be NULL.
  */
@@ -108,10 +110,21 @@ void  *vsc_hashmap_find(const VscHashMap *hm, const void *key);
  *         If the key doesn't exist, returns 0.
  */
 int    vsc_hashmap_update(VscHashMap *hm, const void *key, void *value);
-
 void  *vsc_hashmap_remove(VscHashMap *hm, const void *key);
 size_t vsc_hashmap_size(const VscHashMap *hm);
+size_t vsc_hashmap_capacity(const VscHashMap *hm);
 
+VscHashMapResizePolicy vsc_hashmap_resize_policy(const VscHashMap *hm);
+VscHashMapResizePolicy vsc_hashmap_set_resize_policy(VscHashMap *hm, VscHashMapResizePolicy policy);
+
+/**
+ * @brief Get a pointer to the first bucket. This may be empty.
+ *
+ * @param hm The hash map instance. Must not be NULL.
+ *
+ * @return If map is empty, i.e. if vsc_hashmap_capacity() returns 0, this will return NULL.
+ *         Otherwise, returns a pointer to the first (possibly empty), bucket.
+ */
 const VscHashMapBucket *vsc_hashmap_first(const VscHashMap *hm);
 
 int vsc_hashmap_enumerate(const VscHashMap *hm, VscHashMapEnumProc proc, void *user);

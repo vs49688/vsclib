@@ -25,6 +25,22 @@
 
 #define VSC_HASHMAP_MIN_BUCKET_AUTO_ALLOCATION 16
 
+struct VscHashMap {
+    size_t                 size;
+    size_t                 num_buckets;
+    VscHashMapBucket      *buckets;
+    VscHashMapResizePolicy resize_policy;
+    struct {
+        uint16_t num, den;
+    } load_min;
+    struct {
+        uint16_t num, den;
+    } load_max;
+    VscHashMapHashProc    hash_proc;
+    VscHashMapCompareProc compare_proc;
+    const VscAllocator   *allocator;
+};
+
 /* This should be optimised out in Release builds. */
 static inline void validate(const VscHashMap *hm)
 {
@@ -60,26 +76,45 @@ int vsc_hashmap_compare(const VscHashMap *hm, const void *a, const void *b)
     return hm->compare_proc(a, b) != 0;
 }
 
-void vsc_hashmap_inita(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a)
+VscHashMap *vsc_hashmap_alloca(VscHashMapHashProc hash, VscHashMapCompareProc compare, const VscAllocator *a)
 {
-    vsc_assert(hm != NULL);
+    VscHashMap *hm;
+
     vsc_assert(hash != NULL);
     vsc_assert(compare != NULL);
     vsc_assert(a != NULL);
 
-    hm->size = 0, hm->num_buckets = 0, hm->buckets = NULL, hm->resize_policy = VSC_HASHMAP_RESIZE_LOAD_FACTOR,
-    hm->load_min.num = 1;
-    hm->load_min.den = 2;
-    hm->load_max.num = 3;
-    hm->load_max.den = 4;
-    hm->hash_proc    = hash;
-    hm->compare_proc = compare;
-    hm->allocator    = a;
+    if((hm = vsc_xalloc(a, sizeof(VscHashMap))) == NULL)
+        return NULL;
+
+    *hm = (VscHashMap){
+        .size          = 0,
+        .num_buckets   = 0,
+        .buckets       = NULL,
+        .resize_policy = VSC_HASHMAP_RESIZE_LOAD_FACTOR,
+        .load_min.num  = 1,
+        .load_min.den  = 2,
+        .load_max.num  = 3,
+        .load_max.den  = 4,
+        .hash_proc     = hash,
+        .compare_proc  = compare,
+        .allocator     = a,
+    };
+
+    return hm;
 }
 
-void vsc_hashmap_init(VscHashMap *hm, VscHashMapHashProc hash, VscHashMapCompareProc compare)
+VscHashMap *vsc_hashmap_alloc(VscHashMapHashProc hash, VscHashMapCompareProc compare)
 {
-    vsc_hashmap_inita(hm, hash, compare, vsclib_system_allocator);
+    return vsc_hashmap_alloca(hash, compare, vsclib_system_allocator);
+}
+
+void vsc_hashmap_free(VscHashMap *hm)
+{
+    validate(hm);
+
+    vsc_hashmap_reset(hm);
+    vsc_xfree(hm->allocator, hm);
 }
 
 int vsc_hashmap_clear(VscHashMap *hm)
@@ -476,6 +511,28 @@ size_t vsc_hashmap_size(const VscHashMap *hm)
     return hm->size;
 }
 
+size_t vsc_hashmap_capacity(const VscHashMap *hm)
+{
+    validate(hm);
+    return hm->num_buckets;
+}
+
+VscHashMapResizePolicy vsc_hashmap_resize_policy(const VscHashMap *hm)
+{
+    validate(hm);
+    return hm->resize_policy;
+}
+
+VscHashMapResizePolicy vsc_hashmap_set_resize_policy(VscHashMap *hm, VscHashMapResizePolicy policy)
+{
+    VscHashMapResizePolicy old;
+    validate(hm);
+
+    old               = hm->resize_policy;
+    hm->resize_policy = policy;
+    return old;
+}
+
 const VscHashMapBucket *vsc_hashmap_first(const VscHashMap *hm)
 {
     validate(hm);
@@ -484,13 +541,7 @@ const VscHashMapBucket *vsc_hashmap_first(const VscHashMap *hm)
     if(hm->size == 0)
         return NULL;
 
-    for(size_t i = 0; i < hm->num_buckets; ++i) {
-        const VscHashMapBucket *bkt = hm->buckets + i;
-        if(bkt->hash != VSC_INVALID_HASH)
-            return bkt;
-    }
-
-    return NULL;
+    return hm->buckets;
 }
 
 int vsc_hashmap_enumerate(const VscHashMap *hm, VscHashMapEnumProc proc, void *user)
