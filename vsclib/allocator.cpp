@@ -50,22 +50,24 @@
 #include <vsclib/mem.h>
 #include "allocator_internal.h"
 
-extern "C" MemHeader *vsc__allocator_mem2hdr(void *p)
+template <typename H>
+H *vsc__allocator_mem2hdr(void *p)
 {
-    MemHeader *hdr  = nullptr;
+    H         *hdr  = nullptr;
     uintptr_t *pend = static_cast<uintptr_t *>(VSC_ALIGN_DOWN(p, VSC_ALIGNOF(void *)));
 
     if(pend[-1] == VSC__MEMHDR_SIG)
-        hdr = reinterpret_cast<MemHeader *>(pend) - 1;
+        hdr = reinterpret_cast<H *>(pend) - 1;
     else
-        hdr = reinterpret_cast<MemHeader *>(*(pend - 1));
+        hdr = reinterpret_cast<H *>(*(pend - 1));
 
-    vsc_assert(VSC_IS_ALIGNED(hdr, VSC_ALIGNOF(MemHeader)));
+    vsc_assert(VSC_IS_ALIGNED(hdr, VSC_ALIGNOF(H)));
     vsc_assert(hdr->sig == VSC__MEMHDR_SIG);
     return hdr;
 }
 
-extern "C" void *vsc__allocator_hdr2mem(MemHeader *hdr, size_t alignment)
+template <typename H>
+void *vsc__allocator_hdr2mem(H *hdr, size_t alignment)
 {
     return vsc_align_up(hdr + 1, alignment);
 }
@@ -77,12 +79,13 @@ static VscAllocFlags operator&(VscAllocFlags a, int b)
                                       static_cast<std::underlying_type_t<VscAllocFlags>>(b));
 }
 
+template <typename H>
 static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flags, void *user)
 {
-    MemHeader *hdr = nullptr, *nhdr;
-    uint8_t   *p;
-    size_t     reqsize, oldsize = 0;
-    uintptr_t  shift = 0;
+    H        *hdr = nullptr, *nhdr;
+    uint8_t  *p;
+    size_t    reqsize, oldsize = 0;
+    uintptr_t shift = 0;
 
     (void)user;
     vsc_assert(VSC_IS_POT(alignment));
@@ -98,11 +101,11 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
     vsc_assert(((flags & VSC_ALLOC_REALLOC) && *ptr != nullptr) || (flags & VSC_ALLOC_REALLOC) == 0);
 
     /* Size of the header + block. */
-    reqsize = sizeof(MemHeader) + size + alignment;
+    reqsize = sizeof(H) + size + alignment;
 
     if(flags & VSC_ALLOC_REALLOC) {
         vsc_assert(*ptr != nullptr);
-        hdr     = vsc__allocator_mem2hdr(*ptr);
+        hdr     = vsc__allocator_mem2hdr<H>(*ptr);
         oldsize = hdr->size;
 
         /* If is an error for the alignment to decrease. */
@@ -115,11 +118,11 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
     if((p = static_cast<uint8_t *>(vsc_sys_realloc(hdr, reqsize))) == nullptr)
         return VSC_ERROR(ENOMEM);
 
-    nhdr = reinterpret_cast<MemHeader *>(p);
+    nhdr = reinterpret_cast<H *>(p);
     p    = static_cast<uint8_t *>(vsc__allocator_hdr2mem(nhdr, alignment));
 
     vsc_assert(VSC_IS_ALIGNED(p, alignment));
-    vsc_assert(VSC_IS_ALIGNED(nhdr, VSC_ALIGNOF(MemHeader)));
+    vsc_assert(VSC_IS_ALIGNED(nhdr, VSC_ALIGNOF(H)));
 
     /*
      * For large alignments, store a pointer to the header immediately
@@ -152,28 +155,30 @@ static int malloc_(void **ptr, size_t size, size_t alignment, VscAllocFlags flag
     return 0;
 }
 
+template <typename H>
 static void free_(void *p, void *user)
 {
     (void)user;
     if(p == nullptr)
         return;
 
-    vsc_sys_free(vsc__allocator_mem2hdr(p));
+    vsc_sys_free(vsc__allocator_mem2hdr<H>(p));
 }
 
+template <typename H>
 static size_t size_(void *p, void *user)
 {
     (void)user;
     if(p == nullptr)
         return 0;
 
-    return vsc__allocator_mem2hdr(p)->size;
+    return vsc__allocator_mem2hdr<H>(p)->size;
 }
 
 static constexpr VscAllocator default_allocator = {
-    .alloc = malloc_,
-    .free  = free_,
-    .size  = size_,
+    .alloc = malloc_<MemHeader>,
+    .free  = free_<MemHeader>,
+    .size  = size_<MemHeader>,
     /* FIXME: See if I need to use MEMORY_ALLOCATION_ALIGNMENT on Windows */
     .alignment = VSC_ALIGNOF(vsc_max_align_t),
     .user      = nullptr,
