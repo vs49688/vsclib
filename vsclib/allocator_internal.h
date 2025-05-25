@@ -25,6 +25,7 @@
 
 #define VSC__MEMHDR_SIG ((uintptr_t)0xFEED5EEDFEED5EEDu) /* Formerly Chuck's */
 
+extern "C" {
 typedef struct MemHeader {
     size_t size;
     union {
@@ -39,5 +40,6 @@ typedef struct MemHeader {
 
 MemHeader *vsc__allocator_mem2hdr(void *p);
 void      *vsc__allocator_hdr2mem(MemHeader *hdr, size_t alignment);
+}
 
 #endif /* _VSCLIB_ALLOCATOR_INTERNAL_H */

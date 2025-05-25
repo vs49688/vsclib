@@ -94,7 +94,7 @@ add_library(vsclib STATIC
 
 		error.c
 
-		allocator.c
+		allocator.cpp
 
 		uuid.c
 		include/vsclib/uuiddef.h
@@ -137,6 +137,12 @@ add_library(vsclib STATIC
 		include/vsclib/colourdef.h
 		include/vsclib/colour.h
 )
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+	set_source_files_properties(allocator.cpp PROPERTIES
+			COMPILE_OPTIONS "-fno-exceptions;-fno-rtti"
+	)
+endif()
 
 set_target_properties(vsclib PROPERTIES
 		C_STANDARD 11
