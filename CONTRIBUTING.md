@@ -25,3 +25,10 @@ The C standard library is fine.
 * If a function allocates memory, it should do it in a fashion compatible with linear
   allocators, i.e. like a stack (LIFO). Reallocations (`VSC_ALLOC_REALLOC`, `vsc_xrealloc`, et. al.)
   are preferred for this purpose.
+
+* C++ _may_ be used internally, but _only_ for language features if they provide significant code simplification for a
+  task at hand (e.g. using templates to avoid a nasty macro).
+    - It must _not_ be exposed via the API.
+    - No STL (except `<type_traits>`), exceptions, or RTTI are permitted.
+    - Try to keep it at C++17.
+    - QoL C++ things may go in `vscpplib`.
