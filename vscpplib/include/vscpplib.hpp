@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <string_view>
 #include <memory>
+#include <utility>
 
 #include <vsclib.h>
 
@@ -166,6 +167,36 @@ struct vsc_deleter {
 };
 template <typename T>
 using vsc_ptr = std::unique_ptr<T, vsc_deleter<T>>;
+
+template <typename T>
+struct res_deleter {
+    using pointer = T *;
+    void operator()(void *p) const noexcept
+    {
+        vsc_res_free(p);
+    }
+};
+template <typename T>
+using res_ptr = std::unique_ptr<T, res_deleter<T>>;
+
+template <typename T, typename... Args>
+res_ptr<T> res_allocate(void *parent, Args&&...args)
+{
+    void *p;
+
+    if((p = vsc_res_allocate(parent, sizeof(T), VSC_ALIGNOF(T))) == nullptr)
+        return nullptr;
+
+    try {
+        new (p) T(std::forward<Args>(args)...);
+    } catch(...) {
+        vsc_res_free(p);
+        throw;
+    }
+
+    vsc_res_set_destructor(p, [](void *p, size_t, size_t) { static_cast<T *>(p)->~T(); });
+    return res_ptr<T>(static_cast<T *>(p));
+}
 
 } // namespace vsc
 
