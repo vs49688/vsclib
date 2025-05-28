@@ -48,6 +48,7 @@
 #include "vsclib/time.h"
 #include "vsclib/colour.h"
 #include "vsclib/uuid.h"
+#include "vsclib/resource.h"
 
 #if defined(__cplusplus)
 extern "C" {

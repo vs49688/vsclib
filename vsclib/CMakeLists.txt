@@ -77,7 +77,7 @@ add_library(vsclib STATIC
 		string.c
 
 		memory.c
-		allocator_internal.h
+		allocator_internal.hpp
 
 		ctz.c
 
@@ -136,6 +136,10 @@ add_library(vsclib STATIC
 
 		include/vsclib/colourdef.h
 		include/vsclib/colour.h
+
+		include/vsclib/resourcedef.h
+		include/vsclib/resource.h
+		resource.c
 )
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
