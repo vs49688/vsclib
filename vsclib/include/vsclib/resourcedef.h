@@ -3,7 +3,7 @@
  * https://{github.com,codeberg.org}/vs49688/vsclib
  *
  * SPDX-License-Identifier: Apache-2.0
- * Copyright (c) 2021 Zane van Iperen (zane@zanevaniperen.com)
+ * Copyright (c) 2025 Zane van Iperen (zane@zanevaniperen.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef _VSCLIB_ALLOCATOR_INTERNAL_H
-#define _VSCLIB_ALLOCATOR_INTERNAL_H
+#ifndef _VSCLIB_RESOURCEDEF_H
+#define _VSCLIB_RESOURCEDEF_H
 
-#include <stdint.h>
 #include <stddef.h>
 
-#define VSC__MEMHDR_SIG ((uintptr_t)0xFEED5EEDFEED5EEDu) /* Formerly Chuck's */
+typedef void (*VscResourceDestructorProc)(void *p, size_t size, size_t alignment);
+typedef int VscResourceEnumProc(void *res, void *user);
 
-typedef struct MemHeader {
-    size_t size;
-    union {
-        struct {
-            size_t align_power : 8;
-            size_t reserved : VSC_SIZE_T_BITSIZE - 8;
-        };
-        size_t _pad;
-    };
-    uintptr_t sig;
-} MemHeader;
-
-#endif /* _VSCLIB_ALLOCATOR_INTERNAL_H */
+#endif /* _VSCLIB_RESOURCEDEF_H */
