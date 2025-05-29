@@ -21,6 +21,7 @@
 #ifndef _VSCLIB_IO_H
 #define _VSCLIB_IO_H
 
+#include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
 

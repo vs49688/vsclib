@@ -20,6 +20,7 @@
 #ifndef _VSCLIB_STRING_H
 #define _VSCLIB_STRING_H
 
+#include <stdarg.h>
 #include <stdio.h>
 #include "platform.h"
 #include "types.h"
