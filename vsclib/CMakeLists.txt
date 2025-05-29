@@ -147,6 +147,8 @@ endif()
 set_target_properties(vsclib PROPERTIES
 		C_STANDARD 11
 		C_STANDARD_REQURED ON
+		CXX_STANDARD 17
+		CXX_STANDARD_REQUIRED ON
 )
 target_include_directories(vsclib PUBLIC
 		include
