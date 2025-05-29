@@ -156,9 +156,10 @@ void *vsc_align(size_t alignment, size_t size, void **ptr, size_t *space)
 {
     uintptr_t r = 0;
     if(size <= *space) {
-        uintptr_t p1 = (uintptr_t)*ptr;
-        uintptr_t p2 = (uintptr_t)((size_t)(p1 + (alignment - 1)) & -alignment);
-        size_t    d  = (size_t)(p2 - p1);
+        const uintptr_t mask = (uintptr_t)(alignment - 1);
+        const uintptr_t p1   = (uintptr_t)*ptr;
+        const uintptr_t p2   = (p1 + mask) & ~mask;
+        const size_t    d    = (size_t)(p2 - p1);
 
         if(d <= *space - size) {
             r    = p2;
