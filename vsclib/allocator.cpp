@@ -176,12 +176,11 @@ static size_t size_(void *p, void *user)
 }
 
 static constexpr VscAllocator default_allocator = {
-    .alloc = malloc_<MemHeader>,
-    .free  = free_<MemHeader>,
-    .size  = size_<MemHeader>,
-    /* FIXME: See if I need to use MEMORY_ALLOCATION_ALIGNMENT on Windows */
-    .alignment = VSC_ALIGNOF(vsc_max_align_t),
-    .user      = nullptr,
+    /* .alloc     = */ malloc_<MemHeader>,
+    /* .free      = */ free_<MemHeader>,
+    /* .size      = */ size_<MemHeader>,
+    /* .alignment = */ VSC_ALIGNOF(vsc_max_align_t),
+    /* .user      = */ nullptr,
 };
 
 extern "C" const VscAllocator *const vsclib_system_allocator = &default_allocator;
