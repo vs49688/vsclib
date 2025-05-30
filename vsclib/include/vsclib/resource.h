@@ -21,6 +21,7 @@
 #define _VSCLIB_RESOURCE_H
 
 #include <stdarg.h>
+#include "platform.h"
 #include "memdef.h"
 #include "resourcedef.h"
 
