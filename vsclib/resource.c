@@ -19,7 +19,14 @@
  */
 #include <stdarg.h>
 #include <vsclib/string.h>
+#include <vsclib/mem.h>
 #include <vsclib/resource.h>
+
+void *vsc_res_calloc(void *parent, size_t nmemb, size_t size)
+{
+    const VscAllocator a = vsc_res_allocator(parent);
+    return vsc_xcalloc(&a, nmemb, size);
+}
 
 static int accumulate_size(void *res, void *user)
 {

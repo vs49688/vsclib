@@ -52,6 +52,7 @@ size_t vsc_res_size_total(void *res);
 void   vsc_res_set_destructor(void *res, VscResourceDestructorProc proc);
 int    vsc_res_enum_children(void *res, VscResourceEnumProc proc, void *user);
 
+void *vsc_res_calloc(void *parent, size_t nmemb, size_t size);
 char *vsc_res_strdup(void *parent, const char *s);
 char *vsc_res_strdupr(void *parent, const char *start, const char *end);
 char *vsc_res_vasprintf(void *parent, const char *fmt, va_list ap);
