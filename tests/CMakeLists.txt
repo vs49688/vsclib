@@ -7,6 +7,7 @@ add_executable(vsclib_tests
 
         string.cpp
         memory.cpp
+        resource.cpp
         hash.cpp
         hashmap.cpp
 
