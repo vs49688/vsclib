@@ -292,15 +292,10 @@ extern "C" VscAllocator vsc_res_allocator(void *res)
     };
 }
 
-extern "C" void *vsc_res_allocate(void *parent, size_t size, size_t alignment)
+extern "C" void *vsc_res_alloc(void *parent, size_t size)
 {
-    void              *p = nullptr;
     const VscAllocator a = vsc_res_allocator(parent);
-
-    if(vsc_xalloc_ex(&a, &p, size, VSC_ALLOC_ZERO, alignment) < 0)
-        return nullptr;
-
-    return p;
+    return vsc_xalloc(&a, size);
 }
 
 extern "C" void vsc_res_free(void *res)

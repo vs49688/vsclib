@@ -44,7 +44,7 @@ typedef int VscResourceEnumProc(void *res, void *user);
  */
 VscAllocator vsc_res_allocator(void *res);
 
-void  *vsc_res_allocate(void *parent, size_t size, size_t alignment);
+void  *vsc_res_alloc(void *parent, size_t size);
 void   vsc_res_free(void *res);
 void  *vsc_res_add(void *parent, void *res);
 void  *vsc_res_remove(void *res);
