@@ -6,7 +6,7 @@ TEST_CASE("basic resource tests", "[resource]")
 {
     vsc::res_ptr<void> root;
 
-    void *pp = vsc_res_allocate(nullptr, 0, 0);
+    void *pp = vsc_res_alloc(nullptr, 0);
     root.reset(pp);
 
     vsc_res_strdup(pp, "child res 0");
