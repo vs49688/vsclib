@@ -180,11 +180,11 @@ template <typename T>
 using res_ptr = std::unique_ptr<T, res_deleter<T>>;
 
 template <typename T, typename... Args>
-res_ptr<T> res_allocate(void *parent, Args&&...args)
+res_ptr<T> res_alloc(void *parent, Args&&...args)
 {
     void *p;
 
-    if((p = vsc_res_allocate(parent, sizeof(T), VSC_ALIGNOF(T))) == nullptr)
+    if((p = vsc_res_alloc(parent, sizeof(T))) == nullptr)
         return nullptr;
 
     try {
