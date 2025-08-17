@@ -91,16 +91,11 @@ static void resnode_add_head(ResList<T> *list, ResNode<T> *node)
  * \brief The base header. THIS MUST BE AT THE _END_ OF EVERY OTHER HEADER.
  */
 typedef struct BaseHeader {
-    size_t size;
-    union {
-        struct {
-            size_t align_power : 8;
-            size_t is_resource : 1;
-            size_t in_free : 1;
-            size_t reserved : VSC_SIZE_T_BITSIZE - 10;
-        };
-        size_t _pad;
-    };
+    size_t    size;
+    size_t    align_power : 8;
+    size_t    is_resource : 1;
+    size_t    in_free : 1;
+    size_t    reserved : VSC_SIZE_T_BITSIZE - 10;
     uintptr_t sig;
 } BaseHeader;
 
