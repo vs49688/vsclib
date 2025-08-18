@@ -1,0 +1,33 @@
+name: build
+
+on:
+  - push
+  - pull_request
+  - workflow_dispatch
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: apt-get update && apt-get -y install cmake
+      - run: cmake -B build -DCMAKE_BUILD_TYPE=MinSizeRel
+      - run: cmake --build build
+      - run: ./build/tests/vsclib_tests
+
+  build-nix:
+    runs-on: native
+    strategy:
+      matrix:
+        target:
+          - vsclib
+          - vsclib-clang
+          - vsclib-musl
+          - vsclib-aarch64
+          - vsclib-win32
+          - vsclib-win64
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: nix build -L .#${{ matrix.target }}
